@@ -3,6 +3,7 @@ import "plyr-react/plyr.css";
 import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef } from "react";
 import vodDataBus from "./EventBus";
+import getConfig from "next/config";
 
 const useStyles = createStyles((theme) => ({
   chatPlayer: {

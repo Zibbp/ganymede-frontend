@@ -17,17 +17,9 @@ interface Config {
 
 export const useApi = async (config: Config, allowFail: boolean) => {
   const { publicRuntimeConfig } = getConfig();
-  let apiUrl = process.env.API_URL
-    ? process.env.API_URL
-    : publicRuntimeConfig.API_URL;
-  console.log("FIRST", apiUrl);
-  console.log("REQUEST CONFIG", config);
-  console.log("PUBLIC RUNTIME CONFIG", publicRuntimeConfig);
-  console.log("NORMAL ENV", process.env.API_URL);
-  console.log("PUBLIC ENV", process.env.NEXT_PUBLIC_API_URL);
   // Axios intercetpor
   const axiosInstance = axios.create({
-    baseURL: apiUrl,
+    baseURL: publicRuntimeConfig.API_URL,
     headers: {
       "Content-Type": "application/json",
     },
@@ -100,12 +92,8 @@ export const useApi = async (config: Config, allowFail: boolean) => {
 
 const refreshAccessToken = async () => {
   const { publicRuntimeConfig } = getConfig();
-  let apiUrl = publicRuntimeConfig.API_URL;
-  if (apiUrl == "APP_NEXT_API_URL") {
-    apiUrl = process.env.API_URL;
-  }
   return await axios.post(
-    `${apiUrl}/api/v1/auth/refresh`,
+    `${publicRuntimeConfig.API_URL}/api/v1/auth/refresh`,
     {},
     { withCredentials: true }
   );
@@ -113,11 +101,10 @@ const refreshAccessToken = async () => {
 
 const refreshOAuthAccessToken = async () => {
   const { publicRuntimeConfig } = getConfig();
-  let apiUrl = publicRuntimeConfig.API_URL;
-  if (apiUrl == "APP_NEXT_API_URL") {
-    apiUrl = process.env.API_URL;
-  }
-  return await axios.get(`${apiUrl}/api/v1/auth/oauth/refresh`, {
-    withCredentials: true,
-  });
+  return await axios.get(
+    `${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/refresh`,
+    {
+      withCredentials: true,
+    }
+  );
 };
