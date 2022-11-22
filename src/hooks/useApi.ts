@@ -19,7 +19,7 @@ export const useApi = async (config: Config, allowFail: boolean) => {
   const { publicRuntimeConfig } = getConfig();
   let apiUrl = publicRuntimeConfig.API_URL;
   console.log("FIRST SET API URL", apiUrl);
-  if (apiUrl == "APP_NEXT_API_URL") {
+  if (apiUrl === "APP_NEXT_API_URL") {
     apiUrl = process.env.API_URL;
   }
   console.log("SECOND SET API URL", apiUrl);
