@@ -122,18 +122,19 @@ export const VodPlaylistModalContent = ({ vod }: any) => {
       <Text size="lg" weight={500} pt={5}>
         Current Playlists:
       </Text>
-      {dataVP.map((playlist: any) => (
-        <div style={{ display: "flex" }} key={playlist.id}>
-          <ActionIcon
-            onClick={() => deleteVodFromPlaylistMutation.mutate(playlist.id)}
-            color="red"
-            loading={deleteVodFromPlaylistMutation.isLoading}
-          >
-            <IconX size={18} />
-          </ActionIcon>
-          <span style={{ marginTop: "1px" }}>{playlist.name}</span>
-        </div>
-      ))}
+      {dataVP &&
+        dataVP.map((playlist: any) => (
+          <div style={{ display: "flex" }} key={playlist.id}>
+            <ActionIcon
+              onClick={() => deleteVodFromPlaylistMutation.mutate(playlist.id)}
+              color="red"
+              loading={deleteVodFromPlaylistMutation.isLoading}
+            >
+              <IconX size={18} />
+            </ActionIcon>
+            <span style={{ marginTop: "1px" }}>{playlist.name}</span>
+          </div>
+        ))}
     </div>
   );
 };

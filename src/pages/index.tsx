@@ -8,9 +8,6 @@ import { LandingHero } from "../components/Landing/Hero";
 import LandingRecentlyArchived from "../components/Landing/Recent";
 import styles from "../styles/Home.module.css";
 
-const apiUrl = process.env.API_URL;
-const publicApiUrl = process.env.NEXT_PUBLIC_API_URL;
-
 const useStyles = createStyles((theme) => ({
   recentlyArchivedSection: {
     paddingLeft: theme.spacing.md,
@@ -37,13 +34,6 @@ const useStyles = createStyles((theme) => ({
 
 export default function Home() {
   const { classes } = useStyles();
-  const { publicRuntimeConfig } = getConfig();
-
-  useEffect(() => {
-    console.log("process.env: ", apiUrl);
-    console.log("public process.env: ", publicApiUrl);
-    console.log("publicRuntimeConfig: ", publicRuntimeConfig.API_URL);
-  });
 
   useDocumentTitle("Ganymede - Home");
 
