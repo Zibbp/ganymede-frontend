@@ -68,9 +68,22 @@ export const VodVideoPlayer = ({ vod }: any) => {
     }, 50);
 
     // Set playback data
-    setTimeout(() => {
-      ref.current.plyr.currentTime = data?.time;
-    }, 3000);
+    const intervalPlaybackData = setInterval(() => {
+      console.log("SET PLAYBACK TIME");
+      if (data) {
+        if (data && data.time > 1) {
+          ref.current.plyr.currentTime = data.time;
+        }
+
+        if (ref.current?.plyr.currentTime - data?.time <= 1) {
+          clearInterval(intervalPlaybackData);
+        }
+      }
+    }, 500);
+
+    // setTimeout(() => {
+    //   ref.current.plyr.currentTime = data?.time;
+    // }, 3000);
 
     const playbackInterval = setInterval(async () => {
       // Update playback progress every 20 seconds
@@ -113,6 +126,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
     return () => {
       clearInterval(interval);
       clearInterval(playbackInterval);
+      clearInterval(intervalPlaybackData);
     };
   });
 
