@@ -1,5 +1,6 @@
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
+import getConfig from "next/config";
 import useUserStore from "../store/user";
 
 interface Config {
@@ -15,10 +16,11 @@ interface Config {
 }
 
 export const useApi = async (config: Config, allowFail: boolean) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { publicRuntimeConfig } = getConfig();
+  console.log(publicRuntimeConfig);
   // Axios intercetpor
   const axiosInstance = axios.create({
-    baseURL: apiUrl,
+    baseURL: publicRuntimeConfig.API_URL,
     headers: {
       "Content-Type": "application/json",
     },
@@ -89,16 +91,18 @@ export const useApi = async (config: Config, allowFail: boolean) => {
 };
 
 const refreshAccessToken = async () => {
+  const { publicRuntimeConfig } = getConfig();
   return await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh`,
+    `${publicRuntimeConfig.API_URL}/api/v1/auth/refresh`,
     {},
     { withCredentials: true }
   );
 };
 
 const refreshOAuthAccessToken = async () => {
+  const { publicRuntimeConfig } = getConfig();
   return await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/oauth/refresh`,
+    `${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/refresh`,
     { withCredentials: true }
   );
 };

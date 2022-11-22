@@ -43,15 +43,13 @@ import {
   IconSubtask,
   IconSearch,
 } from "@tabler/icons";
+import getConfig from "next/config";
 import Link from "next/link";
 import router from "next/router";
 import { useState } from "react";
 import { useJsxAuth } from "../../hooks/useJsxAuth";
 import useUserStore from "../../store/user";
 import { ROLES } from "../ProtectedRoute";
-
-const forceSSOAuth = process.env.NEXT_PUBLIC_FORCE_SSO_AUTH;
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -192,6 +190,7 @@ const adminLinks = [
 ];
 
 export function HeaderMenu() {
+  const { publicRuntimeConfig } = getConfig();
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
@@ -323,9 +322,9 @@ export function HeaderMenu() {
             />
             {!user.isLoggedIn && (
               <div>
-                {forceSSOAuth == "true" ? (
+                {publicRuntimeConfig.FORCE_SSO_AUTH == "true" ? (
                   <Link
-                    href={`${apiUrl}/api/v1/auth/oauth/login`}
+                    href={`${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/login`}
                     style={{ marginRight: "0.75rem" }}
                   >
                     <Button variant="default">Log in</Button>
@@ -429,9 +428,9 @@ export function HeaderMenu() {
           <Group position="center" grow pb="xl" px="md">
             {!user.isLoggedIn && (
               <div>
-                {forceSSOAuth == "true" ? (
+                {publicRuntimeConfig.FORCE_SSO_AUTH == "true" ? (
                   <Link
-                    href={`${apiUrl}/api/v1/auth/oauth/login`}
+                    href={`${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/login`}
                     style={{ marginRight: "0.75rem" }}
                   >
                     <Button variant="default">Log in</Button>

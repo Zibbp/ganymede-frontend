@@ -7,6 +7,7 @@ import {
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
+import getConfig from "next/config";
 import { useEffect, useRef, useState } from "react";
 import {
   Comment,
@@ -17,8 +18,6 @@ import {
 } from "../../ganymede-defs";
 import ChatMessage from "./ChatMessage";
 import vodDataBus from "./EventBus";
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const useStyles = createStyles((theme) => ({
   chatContainer: {
@@ -35,6 +34,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const ExperimentalChatPlayer = ({ vod }: any) => {
+  const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
   const [ready, setReady] = useState(false);
   let internalReady = false;
@@ -62,7 +62,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     const fetchChannelId = async () => {
       try {
         const data = await axios.get(
-          `${apiUrl}/api/v1/vod/${vod.id}/chat/userid`
+          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat/userid`
         );
         console.log(`Channel ID: ${data.data}`);
         return data.data;
@@ -74,7 +74,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     const fetchEmotes = async () => {
       try {
         const data = await axios.get(
-          `${apiUrl}/api/v1/vod/${vod.id}/chat/emotes`
+          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat/emotes`
         );
         console.log(`Loaded ${data.data.emotes.length} emotes`);
         data.data.emotes.forEach((emote: GanymedeEmote) => {
@@ -100,7 +100,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
 
       try {
         const badgesResp = await axios.get(
-          `${apiUrl}/api/v1/vod/${vod.id}/chat/badges`
+          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat/badges`
         );
 
         for await (const badge of badgesResp.data.badges) {
@@ -260,7 +260,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     const fetchChat = async (start: Number, end: Number) => {
       try {
         const chatReq = await axios.get(
-          `${apiUrl}/api/v1/vod/${vod.id}/chat?start=${start}&end=${end}`
+          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat?start=${start}&end=${end}`
         );
         if (chatReq.data && chatReq.data.length > 0) {
           // chat.push(...chatReq.data);
@@ -275,7 +275,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     const fetchSeekChat = async (start: Number, count: Number) => {
       try {
         const chatReq = await axios.get(
-          `${apiUrl}/api/v1/vod/${vod.id}/chat/seek?start=${start}&count=${count}`
+          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat/seek?start=${start}&count=${count}`
         );
         if (chatReq.data && chatReq.data.length > 0) {
           // chat.push(...chatReq.data);

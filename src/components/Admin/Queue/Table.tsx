@@ -17,7 +17,7 @@ import {
 import { IconEye, IconPencil, IconSearch, IconTrash } from "@tabler/icons";
 import { useDebouncedValue } from "@mantine/hooks";
 
-import AdminMultiUserDelete from "../Vods/MultiDelete";
+import AdminMultiUserDelete from "../Users/MultiDelete";
 import AdminQueueDrawer from "./Drawer";
 import AdminQueueDelete from "./Delete";
 import AdminMultiQueueDelete from "./MultiDelete";

@@ -4,8 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useApi } from "../../../hooks/useApi";
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
-
 const AdminMultiVodDelete = ({ handleClose, vods }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);

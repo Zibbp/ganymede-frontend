@@ -19,9 +19,9 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { useEffect, useState } from "react";
 import { IconCircleCheck } from "@tabler/icons";
+import getConfig from "next/config";
 dayjs.extend(duration);
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
 const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor: "transparent",
@@ -77,6 +77,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const VodCard = ({ vod, playback }: any) => {
+  const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
   const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
@@ -106,7 +107,7 @@ export const VodCard = ({ vod, playback }: any) => {
               <Image
                 radius="sm"
                 withPlaceholder={true}
-                src={`${cdnUrl}${vod.web_thumbnail_path}`}
+                src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
                 fit="contain"
                 alt={vod.title}
               />
@@ -158,7 +159,7 @@ export const VodCard = ({ vod, playback }: any) => {
             <Image
               radius="sm"
               withPlaceholder={true}
-              src={`${cdnUrl}${vod.web_thumbnail_path}`}
+              src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
               fit="contain"
               alt={vod.title}
             />

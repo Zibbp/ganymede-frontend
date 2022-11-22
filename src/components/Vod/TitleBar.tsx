@@ -8,11 +8,11 @@ import {
 } from "@mantine/core";
 import { IconCalendarEvent, IconUsers } from "@tabler/icons";
 import dayjs from "dayjs";
+import getConfig from "next/config";
 import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import useUserStore from "../../store/user";
 import { VodMenu } from "./Menu";
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
 const useStyles = createStyles((theme) => ({
   titleBarContainer: {
     width: "100%",
@@ -42,13 +42,14 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const VodTitleBar = ({ vod }: any) => {
+  const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
   const { classes, cx, theme } = useStyles();
   return (
     <div className={classes.titleBarContainer}>
       <div className={classes.titleBar}>
         <Avatar
-          src={`${cdnUrl}${vod.edges.channel.image_path}`}
+          src={`${publicRuntimeConfig.CDN_URL}${vod.edges.channel.image_path}`}
           radius="xl"
           alt={vod.edges.display_name}
           mr={10}

@@ -19,7 +19,6 @@ import { ChannelHeader } from "../../components/Channel/Header";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 async function fetchVods(channelId: string, page: number, limit: number) {
   return useApi(

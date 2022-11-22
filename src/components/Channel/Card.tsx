@@ -7,6 +7,7 @@ import {
   Button,
   Group,
 } from "@mantine/core";
+import getConfig from "next/config";
 import Link from "next/link";
 
 interface Channel {
@@ -22,8 +23,6 @@ interface ChannelCardProps {
   channel: Channel;
 }
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
-
 const useStyles = createStyles((theme) => ({
   card: {
     transition: "transform 150ms ease, box-shadow 150ms ease",
@@ -36,6 +35,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
+  const { publicRuntimeConfig } = getConfig();
   const { classes, theme } = useStyles();
   return (
     <Link href={"/channels/" + channel.name}>
@@ -43,7 +43,7 @@ export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
         <Card.Section>
           <Image
             withPlaceholder={true}
-            src={`${cdnUrl}${channel.image_path}`}
+            src={`${publicRuntimeConfig.CDN_URL}${channel.image_path}`}
             height={200}
             alt={channel.display_name}
           />

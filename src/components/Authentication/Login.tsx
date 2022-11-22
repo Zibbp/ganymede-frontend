@@ -19,11 +19,10 @@ import { useLogin } from "../../hooks/useLogin";
 import { useState } from "react";
 import router from "next/router";
 import Link from "next/link";
-
-const showSSOLoginButton = process.env.NEXT_PUBLIC_SHOW_SSO_LOGIN_BUTTON;
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import getConfig from "next/config";
 
 export function LoginForm(props: PaperProps) {
+  const { publicRuntimeConfig } = getConfig();
   const { login } = useLogin();
   const [loading, setLoading] = useState(false);
 
@@ -59,10 +58,12 @@ export function LoginForm(props: PaperProps) {
         Welcome to Ganymede
       </Text>
 
-      {showSSOLoginButton == "true" ? (
+      {publicRuntimeConfig.SHOW_SSO_LOGIN_BUTTON == "true" ? (
         <div>
           <Group grow mb="md" mt="md">
-            <Link href={`${apiUrl}/api/v1/auth/oauth/login`}>
+            <Link
+              href={`${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/login`}
+            >
               <SSOButton>Login with SSO</SSOButton>
             </Link>
           </Group>

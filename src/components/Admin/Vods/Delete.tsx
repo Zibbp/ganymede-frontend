@@ -1,12 +1,12 @@
 import { Button, Code, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import getConfig from "next/config";
 import { useState } from "react";
 import { useApi } from "../../../hooks/useApi";
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
-
 const AdminVodDelete = ({ handleClose, vod }) => {
+  const { publicRuntimeConfig } = getConfig();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
@@ -53,7 +53,7 @@ const AdminVodDelete = ({ handleClose, vod }) => {
       </div>
       <img
         style={{ width: "100%" }}
-        src={`${cdnUrl}${vod.web_thumbnail_path}`}
+        src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
       />
       <div>
         <Text mt={5} size="xs">

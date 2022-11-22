@@ -1,9 +1,10 @@
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import getConfig from "next/config";
 import useUserStore from "../store/user";
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const getAuthentication = async () => {
+  const { publicRuntimeConfig } = getConfig();
   console.debug("getAuthentication hook called");
 
   // Check for user settings stored in localstorage
@@ -24,13 +25,16 @@ export const getAuthentication = async () => {
     // If refresh token exists, attempt to refresh and get access token
     try {
       await axios.post(
-        `${apiUrl}/api/v1/auth/refresh`,
+        `${publicRuntimeConfig.API_URL}/api/v1/auth/refresh`,
         {},
         { withCredentials: true }
       );
-      const response = await axios.get(`${apiUrl}/api/v1/auth/me`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
+        {
+          withCredentials: true,
+        }
+      );
 
       useUserStore.setState({
         isLoggedIn: true,
@@ -49,9 +53,12 @@ export const getAuthentication = async () => {
 
   if (oauthRefreshCookie) {
     try {
-      const response = await axios.get(`${apiUrl}/api/v1/auth/me`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
+        {
+          withCredentials: true,
+        }
+      );
       useUserStore.setState({
         isLoggedIn: true,
         id: response.data.id,
@@ -66,13 +73,19 @@ export const getAuthentication = async () => {
       if (error.response.status === 401) {
         // Attempt a refresh
         try {
-          await axios.get(`${apiUrl}/api/v1/auth/oauth/refresh`, {
-            withCredentials: true,
-          });
+          await axios.get(
+            `${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/refresh`,
+            {
+              withCredentials: true,
+            }
+          );
 
-          const response = await axios.get(`${apiUrl}/api/v1/auth/me`, {
-            withCredentials: true,
-          });
+          const response = await axios.get(
+            `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
+            {
+              withCredentials: true,
+            }
+          );
 
           useUserStore.setState({
             isLoggedIn: true,

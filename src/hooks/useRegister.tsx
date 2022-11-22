@@ -2,9 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 import useUserStore, { Role } from "../store/user";
 import { showNotification } from "@mantine/notifications";
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import getConfig from "next/config";
 
 export const useRegister = () => {
+  const { publicRuntimeConfig } = getConfig();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -13,7 +14,7 @@ export const useRegister = () => {
 
     try {
       const response: any = await axios.post(
-        `${apiUrl}/api/v1/auth/register`,
+        `${publicRuntimeConfig.API_URL}/api/v1/auth/register`,
         { username: inputUsername, password: inputPassword },
         { withCredentials: true }
       );

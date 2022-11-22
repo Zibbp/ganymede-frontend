@@ -6,11 +6,12 @@ import vodDataBus from "./EventBus";
 import useUserStore from "../../store/user";
 import { useApi } from "../../hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
+import getConfig from "next/config";
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
 const useStyles = createStyles((theme) => ({}));
 
 export const VodVideoPlayer = ({ vod }: any) => {
+  const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
   const ref = useRef<APITypes>(null);
   const [playback, setPlayback] = useState(false);
@@ -23,12 +24,12 @@ export const VodVideoPlayer = ({ vod }: any) => {
       title: vod.title,
       sources: [
         {
-          src: `${cdnUrl}${vod.video_path}`,
+          src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
           type: "video/mp4",
           size: 1080,
         },
       ],
-      poster: `${cdnUrl}${vod.thumbnail_path}`,
+      poster: `${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`,
     },
     options: {
       settings: ["captions", "quality", "speed", "loop"],

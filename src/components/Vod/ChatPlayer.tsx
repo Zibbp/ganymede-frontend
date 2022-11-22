@@ -4,7 +4,6 @@ import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef } from "react";
 import vodDataBus from "./EventBus";
 
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
 const useStyles = createStyles((theme) => ({
   chatPlayer: {
     backgroundColor: "red",
@@ -34,6 +33,7 @@ const Plyr = React.forwardRef((props, ref) => {
 });
 
 export const VodChatPlayer = ({ vod }: any) => {
+  const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
   const ref = useRef();
   let player = null;
@@ -76,7 +76,7 @@ export const VodChatPlayer = ({ vod }: any) => {
       title: vod.title,
       sources: [
         {
-          src: `${cdnUrl}${vod.chat_video_path}`,
+          src: `${publicRuntimeConfig.CDN_URL}${vod.chat_video_path}`,
           type: "video/mp4",
           size: 1080,
         },

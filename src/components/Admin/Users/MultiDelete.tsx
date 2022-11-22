@@ -1,10 +1,9 @@
 import { Button, Code, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import getConfig from "next/config";
 import { useState } from "react";
 import { useApi } from "../../../hooks/useApi";
-
-const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL;
 
 const AdminMultiUserDelete = ({ handleClose, users }) => {
   const queryClient = useQueryClient();

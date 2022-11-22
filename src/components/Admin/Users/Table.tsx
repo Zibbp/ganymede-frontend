@@ -18,7 +18,7 @@ import { IconPencil, IconSearch, IconTrash } from "@tabler/icons";
 import { useDebouncedValue } from "@mantine/hooks";
 import AdminUserDrawer from "./Drawer";
 import AdminUserDelete from "./Delete";
-import AdminMultiUserDelete from "../Vods/MultiDelete";
+import AdminMultiUserDelete from "./MultiDelete";
 
 const useStyles = createStyles((theme) => ({
   actionButton: {
