@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import App from "next/app";
 import {
   ColorScheme,
   ColorSchemeProvider,
@@ -17,7 +18,7 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NotificationsProvider } from "@mantine/notifications";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -86,3 +87,9 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+  const appProps = await App.getInitialProps(appContext);
+
+  return { ...appProps };
+};
