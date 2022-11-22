@@ -68,7 +68,6 @@ export const VodVideoPlayer = ({ vod }: any) => {
     }, 50);
 
     // Set playback data
-    console.log(playbackData);
     const intervalPlaybackData = setInterval(() => {
       if (playbackData) {
         ref.current.plyr.currentTime = playbackData.time;
