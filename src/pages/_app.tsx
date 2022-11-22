@@ -71,14 +71,12 @@ export default function App({ Component, pageProps }: AppProps) {
         >
           <NotificationsProvider>
             <QueryClientProvider client={queryClient}>
-              <Hydrate state={pageProps.dehydratedState}>
-                {isLoaded && (
-                  <MainLayout>
-                    <Component {...pageProps} />
-                  </MainLayout>
-                )}
-                <ReactQueryDevtools initialIsOpen={false} position="top-left" />
-              </Hydrate>
+              {isLoaded && (
+                <MainLayout>
+                  <Component {...pageProps} />
+                </MainLayout>
+              )}
+              <ReactQueryDevtools initialIsOpen={false} position="top-left" />
             </QueryClientProvider>
           </NotificationsProvider>
         </MantineProvider>
@@ -86,3 +84,7 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+App.getInitialProps = async ({ Component, pageProps }: AppProps) => ({
+  props: { Component, pageProps },
+});
