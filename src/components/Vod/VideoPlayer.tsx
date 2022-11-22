@@ -124,7 +124,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
       clearInterval(playbackInterval);
       clearInterval(intervalPlaybackData);
     };
-  }, [data]);
+  });
 
   return (
     <div style={{ height: "100%", maxHeight: "100%" }}>
