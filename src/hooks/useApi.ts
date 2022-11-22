@@ -18,9 +18,11 @@ interface Config {
 export const useApi = async (config: Config, allowFail: boolean) => {
   const { publicRuntimeConfig } = getConfig();
   let apiUrl = publicRuntimeConfig.API_URL;
+  console.log("FIRST SET API URL", apiUrl);
   if (apiUrl == "APP_NEXT_API_URL") {
     apiUrl = process.env.API_URL;
   }
+  console.log("SECOND SET API URL", apiUrl);
   console.log("REQUEST CONFIG", config);
   console.log("PUBLIC RUNTIME CONFIG", publicRuntimeConfig);
   console.log("NORMAL ENV", process.env.API_URL);
