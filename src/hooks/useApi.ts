@@ -19,6 +19,8 @@ export const useApi = async (config: Config, allowFail: boolean) => {
   const { publicRuntimeConfig } = getConfig();
   console.log("REQUEST CONFIG", config);
   console.log("PUBLIC RUNTIME CONFIG", publicRuntimeConfig);
+  console.log("NORMAL ENV", process.env.API_URL);
+  console.log("PUBLIC ENV", process.env.NEXT_PUBLIC_API_URL);
   // Axios intercetpor
   const axiosInstance = axios.create({
     baseURL: publicRuntimeConfig.API_URL,
