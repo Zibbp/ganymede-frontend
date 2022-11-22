@@ -17,7 +17,8 @@ interface Config {
 
 export const useApi = async (config: Config, allowFail: boolean) => {
   const { publicRuntimeConfig } = getConfig();
-  console.log(publicRuntimeConfig);
+  console.log("REQUEST CONFIG", config);
+  console.log("PUBLIC RUNTIME CONFIG", publicRuntimeConfig);
   // Axios intercetpor
   const axiosInstance = axios.create({
     baseURL: publicRuntimeConfig.API_URL,
@@ -32,6 +33,7 @@ export const useApi = async (config: Config, allowFail: boolean) => {
     },
     async (err) => {
       const prevRequest = err?.config;
+      console.log(err);
       if (err.response.status === 401 && !prevRequest?.sent) {
         console.debug(
           "Response status 401 detected - attempting to refresh access token"
