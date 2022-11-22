@@ -38,7 +38,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
 
   // Fetch playback data
 
-  const { data: playbackData } = useQuery({
+  const { data } = useQuery({
     refetchOnWindowFocus: false,
     refetchOnmount: false,
     refetchOnReconnect: false,
@@ -69,9 +69,13 @@ export const VodVideoPlayer = ({ vod }: any) => {
 
     // Set playback data
     const intervalPlaybackData = setInterval(() => {
-      if (playbackData) {
-        ref.current.plyr.currentTime = playbackData.time;
-        if (ref.current?.plyr.currentTime - playbackData.time <= 1) {
+      console.log("SET PLAYBACK TIME");
+      if (data) {
+        if (data && data.time > 1) {
+          ref.current.plyr.currentTime = data.time;
+        }
+
+        if (ref.current?.plyr.currentTime - data?.time <= 1) {
           clearInterval(intervalPlaybackData);
         }
       }
@@ -118,8 +122,9 @@ export const VodVideoPlayer = ({ vod }: any) => {
     return () => {
       clearInterval(interval);
       clearInterval(playbackInterval);
+      clearInterval(intervalPlaybackData);
     };
-  }, [playbackData]);
+  }, [data]);
 
   return (
     <div style={{ height: "100%", maxHeight: "100%" }}>
