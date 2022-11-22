@@ -1,4 +1,4 @@
-import Plyr, { APITypes } from "plyr-react";
+import Plyr, { APITypes, PlyrInstance } from "plyr-react";
 import "plyr-react/plyr.css";
 import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
@@ -69,12 +69,14 @@ export const VodVideoPlayer = ({ vod }: any) => {
 
     // Set playback data
     console.log(playbackData);
-    if (playbackData && !playback) {
-      setPlayback(true);
-      setTimeout(() => {
-        ref.current.plyr.currentTime = playbackData?.time;
-      }, 200);
-    }
+    const intervalPlaybackData = setInterval(() => {
+      if (playbackData) {
+        ref.current.plyr.currentTime = playbackData.time;
+        if (ref.current?.plyr.currentTime - playbackData.time <= 1) {
+          clearInterval(intervalPlaybackData);
+        }
+      }
+    }, 500);
 
     const playbackInterval = setInterval(async () => {
       // Update playback progress every 20 seconds
