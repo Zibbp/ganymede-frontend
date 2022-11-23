@@ -11,3 +11,5 @@
 
 
 Visit the main [Ganymede](https://github.com/Zibbp/ganymede) repository for more information.
+
+[Package Repository](https://github.com/Zibbp/ganymede-frontend-archive/pkgs/container/ganymede-frontend) because I can't seem to find how to link an existing package repository to this repository.
