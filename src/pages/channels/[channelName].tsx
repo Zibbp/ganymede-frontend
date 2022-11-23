@@ -47,7 +47,7 @@ const ChannelPage = (props: any) => {
     queryFn: () => fetchVods(props.channel.id, activePage, limit),
   });
 
-  const { data: playbackData } = useQuery({
+  const { data: playbackData, isLoading: playbackDataLoading } = useQuery({
     queryKey: ["playback-data"],
     queryFn: async () => {
       return useApi(
@@ -62,7 +62,7 @@ const ChannelPage = (props: any) => {
   });
 
   if (error) return <div>failed to load</div>;
-  if (isLoading) return <GanymedeLoader />;
+  if (isLoading || playbackDataLoading) return <GanymedeLoader />;
   return (
     <div>
       <ChannelHeader channel={props.channel} />
@@ -121,7 +121,7 @@ const ChannelPage = (props: any) => {
       ) : (
         <div>
           <Center>
-            No VODs found{" "}
+            No VODs found
             <Image src="/images/Sadge.webp" ml={5} height={28} width={28} />
           </Center>
         </div>
