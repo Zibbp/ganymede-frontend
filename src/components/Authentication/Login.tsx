@@ -58,7 +58,7 @@ export function LoginForm(props: PaperProps) {
         Welcome to Ganymede
       </Text>
 
-      {publicRuntimeConfig.SHOW_SSO_LOGIN_BUTTON == "true" ? (
+      {publicRuntimeConfig.SHOW_SSO_LOGIN_BUTTON != "false" ? (
         <div>
           <Group grow mb="md" mt="md">
             <Link
