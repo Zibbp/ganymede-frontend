@@ -63,9 +63,10 @@ const useStyles = createStyles((theme) => ({
   },
   watchedIcon: {
     position: "absolute",
-    bottom: "3.8rem",
-    right: "0.4rem",
+    top: "2px",
+    right: "2px",
   },
+  typeBadge: {},
   vodTitle: {
     color:
       theme.colorScheme === "dark"
@@ -73,6 +74,22 @@ const useStyles = createStyles((theme) => ({
         : theme.colors.dark[8],
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontWeight: 600,
+  },
+  infoBar: {
+    display: "flex",
+  },
+  infoBarRight: {
+    marginLeft: "auto",
+    order: 2,
+  },
+  infoBarText: {
+    fontFamily: `Inter, ${theme.fontFamily}`,
+    fontWeight: 400,
+    fontSize: "15px",
+  },
+  badgeText: {
+    fontFamily: `Inter, ${theme.fontFamily}`,
+    fontWeight: 400,
   },
 }));
 
@@ -111,6 +128,7 @@ export const VodCard = ({ vod, playback }: any) => {
                 fit="contain"
                 alt={vod.title}
               />
+
               {progress > 0 && !watched && (
                 <Progress
                   className={classes.progressBar}
@@ -120,25 +138,22 @@ export const VodCard = ({ vod, playback }: any) => {
                   value={progress}
                 />
               )}
-              {watched && (
+            </Card.Section>
+
+            <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
+              <Text className={classes.badgeText} color="gray.2">
+                {dayjs.duration(vod.duration, "seconds").format("HH:mm:ss")}
+              </Text>
+            </Badge>
+            {watched && (
+              <div className={classes.watchedIcon}>
                 <Tooltip label="Watched">
                   <ThemeIcon className={classes.watchedIcon} color="green">
                     <IconCircleCheck />
                   </ThemeIcon>
                 </Tooltip>
-              )}
-            </Card.Section>
-
-            <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
-              <Text color="gray.2">
-                {dayjs.duration(vod.duration, "seconds").format("HH:mm:ss")}
-              </Text>
-            </Badge>
-            <Badge py={0} px={5} className={classes.dateBadge} radius="xs">
-              <Text color="gray.2">
-                {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
-              </Text>
-            </Badge>
+              </div>
+            )}
 
             <Text mt={5} lineClamp={2} weight={500}>
               <Tooltip
@@ -147,10 +162,30 @@ export const VodCard = ({ vod, playback }: any) => {
                 closeDelay={100}
                 multiline
                 label={vod.title}
+                className={classes.vodTitle}
               >
-                <Text className={classes.vodTitle}>{vod.title}</Text>
+                <span>{vod.title}</span>
               </Tooltip>
             </Text>
+
+            <div className={classes.infoBar}>
+              <Tooltip
+                label={`Streamed At ${new Date(
+                  vod.streamed_at
+                ).toLocaleString()}`}
+              >
+                <Text className={classes.infoBarText}>
+                  {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
+                </Text>
+              </Tooltip>
+              <div className={classes.infoBarRight}>
+                <Tooltip label="Video Type">
+                  <Badge color={theme.colorScheme === "dark" ? "gray" : "dark"}>
+                    {vod.type.toUpperCase()}
+                  </Badge>
+                </Tooltip>
+              </div>
+            </div>
           </Card>
         </Link>
       ) : (
@@ -180,15 +215,19 @@ export const VodCard = ({ vod, playback }: any) => {
           </div>
 
           <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
-            <Text color="gray.2">
+            <Text color="gray.2" className={classes.badgeText}>
               {dayjs.duration(vod.duration, "seconds").format("HH:mm:ss")}
             </Text>
           </Badge>
-          <Badge py={0} px={5} className={classes.dateBadge} radius="xs">
-            <Text color="gray.2">
-              {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
-            </Text>
-          </Badge>
+          {watched && (
+            <div className={classes.watchedIcon}>
+              <Tooltip label="Watched">
+                <ThemeIcon className={classes.watchedIcon} color="green">
+                  <IconCircleCheck />
+                </ThemeIcon>
+              </Tooltip>
+            </div>
+          )}
 
           <Text mt={5} lineClamp={2} weight={500}>
             <Tooltip
@@ -201,6 +240,25 @@ export const VodCard = ({ vod, playback }: any) => {
               <Text className={classes.vodTitle}>{vod.title}</Text>
             </Tooltip>
           </Text>
+
+          <div className={classes.infoBar}>
+            <Tooltip
+              label={`Streamed At ${new Date(
+                vod.streamed_at
+              ).toLocaleString()}`}
+            >
+              <Text className={classes.infoBarText}>
+                {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
+              </Text>
+            </Tooltip>
+            <div className={classes.infoBarRight}>
+              <Tooltip label="Video Type">
+                <Badge color={theme.colorScheme === "dark" ? "gray" : "dark"}>
+                  {vod.type.toUpperCase()}
+                </Badge>
+              </Tooltip>
+            </div>
+          </div>
         </Card>
       )}
     </div>
