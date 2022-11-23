@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   createStyles,
   Divider,
   Group,
@@ -39,6 +40,15 @@ const useStyles = createStyles((theme) => ({
     alignItems: "center",
     marginRight: "5px",
   },
+  typeBadge: {
+    backgroundColor: theme.colors.gray[8],
+    color: theme.white,
+    paddingLeft: "5px",
+    paddingRight: "5px",
+    paddingTop: "2px",
+    paddingBottom: "2px",
+    borderRadius: "5px",
+  },
 }));
 
 export const VodTitleBar = ({ vod }: any) => {
@@ -76,7 +86,7 @@ export const VodTitleBar = ({ vod }: any) => {
                 </div>
               </Tooltip>
             </Group>
-            <Group>
+            <Group mr={15}>
               <Tooltip
                 label={`Originally streamed at ${vod.streamed_at}`}
                 openDelay={250}
@@ -86,6 +96,15 @@ export const VodTitleBar = ({ vod }: any) => {
                     {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
                   </Text>
                   <IconCalendarEvent size={20} />
+                </div>
+              </Tooltip>
+            </Group>
+            <Group>
+              <Tooltip label={`Video Type`} openDelay={250}>
+                <div className={classes.titleBarBadge}>
+                  <Badge color="red" color="violet" size="lg">
+                    {vod.type}
+                  </Badge>
                 </div>
               </Tooltip>
             </Group>
