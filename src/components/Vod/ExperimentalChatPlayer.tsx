@@ -59,18 +59,6 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const fetchChannelId = async () => {
-      try {
-        const data = await axios.get(
-          `${publicRuntimeConfig.API_URL}/api/v1/vod/${vod.id}/chat/userid`
-        );
-        console.log(`Channel ID: ${data.data}`);
-        return data.data;
-      } catch (error) {
-        console.error("Error fetching channel ID", error);
-      }
-    };
-
     const fetchEmotes = async () => {
       try {
         const data = await axios.get(
@@ -135,18 +123,16 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     };
 
     // Fetch channel ID
-    fetchChannelId().then((id) => {
-      channelID = id;
-      fetchBadges().then(() => {
-        fetchEmotes().then(() => {
-          setReady(true);
-          internalReady = true;
 
-          createCustomComment("Chat Player Ready");
-          createCustomComment(
-            `Fetched ${generalBadgeMap.size} badges, ${subscriptionBadgeMap.size} subscription badges, and ${emoteMap.size} emotes.`
-          );
-        });
+    fetchBadges().then(() => {
+      fetchEmotes().then(() => {
+        setReady(true);
+        internalReady = true;
+
+        createCustomComment("Chat Player Ready");
+        createCustomComment(
+          `Fetched ${generalBadgeMap.size} badges, ${subscriptionBadgeMap.size} subscription badges, and ${emoteMap.size} emotes.`
+        );
       });
     });
 
