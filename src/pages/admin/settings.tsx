@@ -12,6 +12,7 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
+import AdminNotificationsDrawer from "../../components/Admin/Settings/NotificationsDrawer";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
@@ -45,16 +46,19 @@ const useStyles = createStyles((theme) => ({
   link: {
     color: theme.colors.blue[6],
   },
+  notificationDrawer: {
+    overflowY: "scroll",
+  },
 }));
 
 const AdminSettingsPage = () => {
   const { classes, cx, theme } = useStyles();
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
-  const [webhookUrl, setWebhookUrl] = useState("");
   const [postVideoFFmpegArgs, setPostVideoFFmpegArgs] = useState("");
   const [streamlinkLiveArgs, setStreamlinkLiveArgs] = useState("");
   const [chatRenderArgs, setChatRenderArgs] = useState("");
   const [loading, setLoading] = useState(false);
+  const [drawerOpened, setDrawerOpened] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - Settings");
 
@@ -68,7 +72,6 @@ const AdminSettingsPage = () => {
         false
       ).then((res) => {
         setRegistrationEnabled(res?.data.registration_enabled);
-        setWebhookUrl(res?.data.webhook_url);
         setPostVideoFFmpegArgs(res?.data.parameters.video_convert);
         setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
         setChatRenderArgs(res?.data.parameters.chat_render);
@@ -86,7 +89,6 @@ const AdminSettingsPage = () => {
           url: `/api/v1/config`,
           data: {
             registration_enabled: registrationEnabled,
-            webhook_url: webhookUrl,
             parameters: {
               video_convert: postVideoFFmpegArgs,
               streamlink_live: streamlinkLiveArgs,
@@ -110,6 +112,14 @@ const AdminSettingsPage = () => {
         });
     },
   });
+
+  const openDrawer = () => {
+    setDrawerOpened(true);
+  };
+
+  const closeDrawerCallback = () => {
+    setDrawerOpened(false);
+  };
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <GanymedeLoader />;
@@ -144,14 +154,18 @@ const AdminSettingsPage = () => {
                 }
                 label="Registration Enabled"
               />
-              <TextInput
-                mt={10}
-                value={webhookUrl}
-                onChange={(event) => setWebhookUrl(event.currentTarget.value)}
-                placeholder="https://webhook.com/123"
-                description="Webhook URL for notifications"
-                label="Webhook URL"
-              />
+
+              <Button
+                mt={15}
+                onClick={() => openDrawer()}
+                fullWidth
+                radius="md"
+                size="md"
+                variant="outline"
+                color="orange"
+              >
+                Notification Settings
+              </Button>
             </div>
             <div>
               <Title mt={15} order={3}>
@@ -207,6 +221,17 @@ const AdminSettingsPage = () => {
           </div>
         </Container>
       </div>
+      <Drawer
+        className={classes.notificationDrawer}
+        opened={drawerOpened}
+        onClose={() => setDrawerOpened(false)}
+        title="Notification Settings"
+        padding="xl"
+        size="xl"
+        position="right"
+      >
+        <AdminNotificationsDrawer handleClose={closeDrawerCallback} />
+      </Drawer>
     </Authorization>
   );
 };
