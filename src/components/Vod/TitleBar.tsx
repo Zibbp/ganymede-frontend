@@ -75,17 +75,28 @@ export const VodTitleBar = ({ vod }: any) => {
         </div>
         <div className={classes.titleBarRight}>
           <div className={classes.titleBarBadge}>
-            <Group mr={15}>
-              <Tooltip
-                label={`${vod.views.toLocaleString()} views`}
-                openDelay={250}
-              >
-                <div className={classes.titleBarBadge}>
-                  <Text mr={3}>{vod.views.toLocaleString()}</Text>
-                  <IconUsers size={20} />
-                </div>
-              </Tooltip>
-            </Group>
+            {vod.views ? (
+              <Group mr={15}>
+                <Tooltip
+                  label={`${vod.views.toLocaleString()} views`}
+                  openDelay={250}
+                >
+                  <div className={classes.titleBarBadge}>
+                    <Text mr={3}>{vod.views.toLocaleString()}</Text>
+                    <IconUsers size={20} />
+                  </div>
+                </Tooltip>
+              </Group>
+            ) : (
+              <Group mr={15}>
+                <Tooltip label={`0 views`} openDelay={250}>
+                  <div className={classes.titleBarBadge}>
+                    <Text mr={3}>0</Text>
+                    <IconUsers size={20} />
+                  </div>
+                </Tooltip>
+              </Group>
+            )}
             <Group mr={15}>
               <Tooltip
                 label={`Originally streamed at ${vod.streamed_at}`}
