@@ -77,6 +77,13 @@ const QueueChatTimeline = ({ queue }: Object) => {
             <Text color="dimmed" size="sm">
               <span
                 className={classes.restartText}
+                onClick={() => openLog("chat-convert")}
+              >
+                logs
+              </span>
+              <span>{" - "}</span>
+              <span
+                className={classes.restartText}
                 onClick={() => restartTask("chat_convert")}
               >
                 restart
