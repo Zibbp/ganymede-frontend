@@ -7,6 +7,7 @@ import useUserStore from "../../store/user";
 import { useApi } from "../../hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
 import getConfig from "next/config";
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({}));
 
@@ -59,20 +60,22 @@ export const VodVideoPlayer = ({ vod }: any) => {
   });
 
   useEffect(() => {
-    let setPlayback = false;
-
-    const set = async () => {
-      while (!setPlayback) {
-        if (data && ref.current?.plyr.ready) {
+    // Set playback data
+    const intervalPlaybackData = setInterval(() => {
+      if (data) {
+        if (data && data.time > 1 && ref.current.plyr.ready) {
           ref.current.plyr.currentTime = data.time;
-          break;
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        if (ref.current?.plyr.currentTime - data?.time <= 1) {
+          clearInterval(intervalPlaybackData);
+        }
       }
-    };
+    }, 500);
 
-    set();
+    return () => {
+      clearInterval(intervalPlaybackData);
+    };
   }, [data]);
 
   useEffect(() => {
@@ -81,7 +84,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
       while (!loaded) {
         if (ref.current?.plyr.ready) {
           loaded = true;
-          console.log("LOADED");
+          // Player loaded and ready
 
           break;
         }
