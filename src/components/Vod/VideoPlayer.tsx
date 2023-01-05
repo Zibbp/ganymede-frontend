@@ -25,7 +25,8 @@ export const VodVideoPlayer = ({ vod }: any) => {
       title: vod.title,
       sources: [
         {
-          src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
+          // src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
+          src: "http://197.100.1.237:4802/vods/staysafetv/1601988177_c00052ed-3f35-11ed-95fd-0242ac1d0003/1601988177-video.mp4",
           type: "video/mp4",
           size: 1080,
         },
@@ -62,12 +63,16 @@ export const VodVideoPlayer = ({ vod }: any) => {
   useEffect(() => {
     // Set playback data
     const intervalPlaybackData = setInterval(() => {
+      console.debug("[Player] Set Playback Data - Waiting");
       if (data) {
+        console.debug("[Player] Set Playback Data - Data Found");
         if (data && data.time > 1 && ref.current.plyr.ready) {
+          console.debug("[Player] Set Playback Data - Set Time");
           ref.current.plyr.currentTime = data.time;
         }
 
-        if (ref.current?.plyr.currentTime - data?.time <= 1) {
+        if (data?.time - ref.current.plyr.currentTime <= 1) {
+          console.debug("[Player] Set Playback Data - Clear Interval");
           clearInterval(intervalPlaybackData);
         }
       }
@@ -164,5 +169,12 @@ const Plyr = React.forwardRef((props, ref) => {
     source,
     options,
   });
-  return <video ref={raptorRef} className="plyr-react plyr" {...rest} />;
+  return (
+    <video
+      ref={raptorRef}
+      preload="auto"
+      className="plyr-react plyr"
+      {...rest}
+    />
+  );
 });
