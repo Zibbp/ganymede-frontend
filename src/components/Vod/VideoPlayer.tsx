@@ -25,8 +25,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
       title: vod.title,
       sources: [
         {
-          // src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
-          src: "http://197.100.1.237:4802/vods/staysafetv/1601988177_c00052ed-3f35-11ed-95fd-0242ac1d0003/1601988177-video.mp4",
+          src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
           type: "video/mp4",
           size: 1080,
         },
