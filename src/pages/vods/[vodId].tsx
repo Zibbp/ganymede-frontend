@@ -64,11 +64,12 @@ const VodPage = (props: any) => {
               <VodChatPlayer vod={data} />
             </Grid.Col>
           )}
-        {data.chat_path && useUserStore.getState().settings.useNewChatPlayer && (
-          <Grid.Col className={classes.videoPlayerColumn} span={2}>
-            <ExperimentalChatPlayer vod={data} />
-          </Grid.Col>
-        )}
+        {data.chat_path &&
+          useUserStore.getState().settings.useNewChatPlayer && (
+            <Grid.Col className={classes.videoPlayerColumn} span={2}>
+              <ExperimentalChatPlayer vod={data} />
+            </Grid.Col>
+          )}
       </Grid>
       <VodTitleBar vod={data} />
     </div>

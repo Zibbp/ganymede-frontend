@@ -1,4 +1,4 @@
-import Plyr, { APITypes, PlyrInstance } from "plyr-react";
+import { usePlyr } from "plyr-react";
 import "plyr-react/plyr.css";
 import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,7 +13,7 @@ const useStyles = createStyles((theme) => ({}));
 export const VodVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
-  const ref = useRef<APITypes>(null);
+  const ref = useRef();
   const [playback, setPlayback] = useState(false);
 
   const { classes, cx, theme } = useStyles();
@@ -59,6 +59,40 @@ export const VodVideoPlayer = ({ vod }: any) => {
   });
 
   useEffect(() => {
+    let setPlayback = false;
+
+    const set = async () => {
+      while (!setPlayback) {
+        if (data && ref.current?.plyr.ready) {
+          ref.current.plyr.currentTime = data.time;
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    };
+
+    set();
+  }, [data]);
+
+  useEffect(() => {
+    const loadPlayer = async () => {
+      let loaded = false;
+      while (!loaded) {
+        if (ref.current?.plyr.ready) {
+          loaded = true;
+          console.log("LOADED");
+
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    };
+
+    loadPlayer();
+
+    // Tick for chat player
     const interval = setInterval(() => {
       vodDataBus.setData({
         time: ref.current?.plyr.currentTime,
@@ -67,23 +101,7 @@ export const VodVideoPlayer = ({ vod }: any) => {
       });
     }, 50);
 
-    // Set playback data
-    const intervalPlaybackData = setInterval(() => {
-      if (data) {
-        if (data && data.time > 1) {
-          ref.current.plyr.currentTime = data.time;
-        }
-
-        if (ref.current?.plyr.currentTime - data?.time <= 1) {
-          clearInterval(intervalPlaybackData);
-        }
-      }
-    }, 500);
-
-    // setTimeout(() => {
-    //   ref.current.plyr.currentTime = data?.time;
-    // }, 3000);
-
+    // Playback progress reporting
     const playbackInterval = setInterval(async () => {
       // Update playback progress every 20 seconds
       if (
@@ -125,13 +143,23 @@ export const VodVideoPlayer = ({ vod }: any) => {
     return () => {
       clearInterval(interval);
       clearInterval(playbackInterval);
-      clearInterval(intervalPlaybackData);
     };
-  });
+  }, []);
+
+  // });
 
   return (
     <div style={{ height: "100%", maxHeight: "100%" }}>
-      <Plyr ref={ref} {...plyrProps} />
+      <Plyr ref={ref} source={plyrProps.source} options={plyrProps.options} />
     </div>
   );
 };
+
+const Plyr = React.forwardRef((props, ref) => {
+  const { source, options = null, ...rest } = props;
+  const raptorRef = usePlyr(ref, {
+    source,
+    options,
+  });
+  return <video ref={raptorRef} className="plyr-react plyr" {...rest} />;
+});
