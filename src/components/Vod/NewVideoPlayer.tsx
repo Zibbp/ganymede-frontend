@@ -67,10 +67,15 @@ const NewVideoPlayer = ({ vod }: any) => {
         type = "hls";
       }
 
+      // Captions?
+      // Get every before the last slash
+      // const path = vod.video_path.substr(0, vod.video_path.lastIndexOf("/"));
+
       const options = {
         title: vod.title,
         theme: "dark",
         controls: true,
+        // Player will break if thumbnail is not found
         image: `${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`,
         sources: [
           {
@@ -82,8 +87,8 @@ const NewVideoPlayer = ({ vod }: any) => {
         // tracks: [
         //   {
         //     kind: "captions",
-        //     file: "",
-        //     label: "English",
+        //     file: `${publicRuntimeConfig.CDN_URL}${path}/captions.vtt`,
+        //     label: "captions.vtt",
         //   },
         // ],
       };
