@@ -168,6 +168,10 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
               title: bitBadgeMap.get(badge.version)?.title,
               url: bitBadgeMap.get(badge.version)?.image_url_1x,
             };
+
+            comment.ganymede_formatted_badges.push(ganymedeFormattedBadge);
+          } else if (badge._id == "no_audio" || badge._id == "no_video") {
+            return;
           } else {
             const ganymedeFormattedBadge: GanymedeFormattedBadge = {
               _id: badge._id,

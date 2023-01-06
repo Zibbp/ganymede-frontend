@@ -54,6 +54,7 @@ const ChatMessage = ({ comment }: Comment) => {
                 className={classes.badge}
                 src={badge.url}
                 title={badge.title}
+                height="18"
               />
             )
           )}
