@@ -30,3 +30,20 @@ a {
   max-height: 100%;
   --plyr-color-main: #6d28d9;
 }
+
+#video-player {
+  --op-accent-color: #6d28d9;
+}
+
+#video-player .op-context-panel {
+  display: none;
+}
+
+.op-caption-text {
+  color: white !important;
+  font-size: 1.5rem !important;
+  padding: 0.5rem !important;
+  height: auto !important;
+  line-height: normal !important;
+  text-shadow: none !important;
+}
