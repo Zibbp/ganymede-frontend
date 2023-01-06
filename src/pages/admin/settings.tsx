@@ -59,6 +59,7 @@ const AdminSettingsPage = () => {
   const [chatRenderArgs, setChatRenderArgs] = useState("");
   const [loading, setLoading] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const [saveAsHls, setSaveAsHls] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - Settings");
 
@@ -75,6 +76,7 @@ const AdminSettingsPage = () => {
         setPostVideoFFmpegArgs(res?.data.parameters.video_convert);
         setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
         setChatRenderArgs(res?.data.parameters.chat_render);
+        setSaveAsHls(res?.data.archive.save_as_hls);
         return res?.data;
       }),
   });
@@ -93,6 +95,9 @@ const AdminSettingsPage = () => {
               video_convert: postVideoFFmpegArgs,
               streamlink_live: streamlinkLiveArgs,
               chat_render: chatRenderArgs,
+            },
+            archive: {
+              save_as_hls: saveAsHls,
             },
           },
           withCredentials: true,
@@ -148,6 +153,7 @@ const AdminSettingsPage = () => {
             <div>
               <Title order={3}>Core</Title>
               <Switch
+                mt={5}
                 checked={registrationEnabled}
                 onChange={(event) =>
                   setRegistrationEnabled(event.currentTarget.checked)
@@ -166,6 +172,18 @@ const AdminSettingsPage = () => {
               >
                 Notification Settings
               </Button>
+            </div>
+            <div>
+              <Title mt={15} order={3}>
+                Archive
+              </Title>
+              <Text size="sm">Convert the archived mp4 to a HLS playlist.</Text>
+              <Switch
+                mt={5}
+                checked={saveAsHls}
+                onChange={(event) => setSaveAsHls(event.currentTarget.checked)}
+                label="Convert to HLS"
+              />
             </div>
             <div>
               <Title mt={15} order={3}>
