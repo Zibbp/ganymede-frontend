@@ -7,8 +7,6 @@ import getConfig from "next/config";
 
 const useStyles = createStyles((theme) => ({
   chatPlayer: {
-    backgroundColor: "red",
-
     video: {
       bottom: 0,
       position: "absolute",
@@ -20,13 +18,13 @@ const useStyles = createStyles((theme) => ({
 const Plyr = React.forwardRef((props, ref) => {
   const { classes, cx, theme } = useStyles();
   const { source, options = null, ...rest } = props;
-  const raptorRef = usePlyr(ref, {
+  const chatPlayerRef = usePlyr(ref, {
     source,
     options,
   });
   return (
     <video
-      ref={raptorRef}
+      ref={chatPlayerRef}
       className={`plyr-react plyr ${classes.chatPlayer}`}
       {...rest}
     />
@@ -36,14 +34,14 @@ const Plyr = React.forwardRef((props, ref) => {
 export const VodChatPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
-  const ref = useRef();
+  const chatRef = useRef();
   let player = null;
   let lastTime = 0;
   let ready = false;
 
   useEffect(() => {
     setTimeout(() => {
-      const playerRef = ref.current;
+      const playerRef = chatRef.current;
       player = playerRef.plyr;
       ready = true;
     }, 250);
@@ -53,6 +51,7 @@ export const VodChatPlayer = ({ vod }: any) => {
       if (!ready) {
         return;
       }
+      // console.log(time, playing, paused);
 
       if (playing) {
         player.play();
@@ -79,7 +78,6 @@ export const VodChatPlayer = ({ vod }: any) => {
         {
           src: `${publicRuntimeConfig.CDN_URL}${vod.chat_video_path}`,
           type: "video/mp4",
-          size: 1080,
         },
       ],
     },
@@ -96,7 +94,7 @@ export const VodChatPlayer = ({ vod }: any) => {
       style={{ height: "100%", maxHeight: "100%" }}
       className={classes.chatPlayer}
     >
-      <Plyr ref={ref} {...plyrProps} />
+      <Plyr ref={chatRef} {...plyrProps} />
       {/* <Plyr
         ref={(player) => (this.player.current = player)}
         {...plyrProps}
