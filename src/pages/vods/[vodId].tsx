@@ -9,6 +9,8 @@ import { VodVideoPlayer } from "../../components/Vod/VideoPlayer";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
 import Error from "next/error";
+import dynamic from "next/dynamic";
+import NewVideoPlayer from "../../components/Vod/NewVideoPlayer";
 
 const useStyles = createStyles((theme) => ({
   videoPlayerColumn: {
@@ -56,7 +58,8 @@ const VodPage = (props: any) => {
     <div>
       <Grid columns={12} gutter={0}>
         <Grid.Col className={classes.videoPlayerColumn} span="auto">
-          <VodVideoPlayer vod={data} />
+          {/* <VodVideoPlayer vod={data} /> */}
+          <NewVideoPlayer vod={data} />
         </Grid.Col>
         {data.chat_video_path &&
           !useUserStore.getState().settings.useNewChatPlayer && (
