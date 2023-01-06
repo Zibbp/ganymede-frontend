@@ -159,7 +159,7 @@ const ArchivePage = () => {
                   placeholder="VOD ID"
                   withAsterisk
                 />
-                <Group>
+                <Group mt={5} mb={5}>
                   <Select
                     placeholder="Resolution"
                     value={archiveQuality}
@@ -168,7 +168,6 @@ const ArchivePage = () => {
                     dropdownPosition="bottom"
                   />
                   <Switch
-                    mb={15}
                     checked={archiveChat}
                     onChange={setArchiveChat}
                     label="Archive Chat"
