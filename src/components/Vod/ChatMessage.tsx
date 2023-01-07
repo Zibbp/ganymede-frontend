@@ -13,8 +13,8 @@ const useStyles = createStyles((theme) => ({
     fontStyle: "normal",
     fontWeight: "normal",
     fontSize: "14px",
-    marginTop: "4px",
-    marginBottom: "4px",
+    marginTop: "6px",
+    marginBottom: "6px",
 
     color:
       theme.colorScheme === "dark"
