@@ -4,6 +4,7 @@ import {
   Divider,
   Loader,
   LoadingOverlay,
+  Text,
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
 import axios from "axios";
@@ -390,7 +391,10 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
       {!ready && (
         <Center>
           <div style={{ marginTop: "100%" }}>
-            <Loader color="violet" size="xl" />
+            <Center>
+              <Loader color="violet" size="xl" />
+            </Center>
+            <Text mt={5}>Loading Chat</Text>
           </div>
         </Center>
       )}
