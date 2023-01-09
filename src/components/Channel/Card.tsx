@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import getConfig from "next/config";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Channel {
   id: string;
@@ -46,10 +46,20 @@ export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
   const { classes, theme } = useStyles();
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const preloadImage = (url) => {
+    const image = new window.Image();
+    image.src = url;
+  };
+
   const handleImageLoaded = () => {
     setImageLoaded(true);
   };
+
   const imageStyle = !imageLoaded ? { display: "none" } : {};
+
+  useEffect(() => {
+    preloadImage(`${publicRuntimeConfig.CDN_URL}${channel.image_path}`);
+  }, [channel.image_path]);
 
   return (
     <Link href={"/channels/" + channel.name}>

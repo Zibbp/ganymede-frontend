@@ -95,10 +95,6 @@ const useStyles = createStyles((theme) => ({
     width: "100%",
     height: "auto",
   },
-  placeholderImage: {
-    backgroundColor: theme.colors.dark[1],
-    width: "100%",
-  },
 }));
 
 export const VodCard = ({ vod, playback }: any) => {
@@ -124,10 +120,21 @@ export const VodCard = ({ vod, playback }: any) => {
     }
   }, []);
 
+  const preloadImage = (url) => {
+    const image = new window.Image();
+    image.src = url;
+  };
+
   const handleImageLoaded = () => {
     setImageLoaded(true);
   };
+
   const imageStyle = !imageLoaded ? { display: "none" } : {};
+
+  useEffect(() => {
+    preloadImage(`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`);
+  }, [vod.web_thumbnail_path]);
+
   return (
     <div>
       {!vod.processing ? (
