@@ -138,6 +138,7 @@ export const VodCard = ({ vod, playback }: any) => {
                 <img
                   src="/images/ganymede-thumbnail.webp"
                   className={classes.image}
+                  alt={vod.title}
                 />
               )}
               <img
@@ -147,6 +148,7 @@ export const VodCard = ({ vod, playback }: any) => {
                 }}
                 className={classes.image}
                 style={imageStyle}
+                alt={vod.title}
               />
               {Math.round(progress) > 0 && !watched && (
                 <Tooltip label={`${Math.round(progress)}% watched`}>
@@ -216,6 +218,7 @@ export const VodCard = ({ vod, playback }: any) => {
               <img
                 src="/images/ganymede-thumbnail.webp"
                 className={classes.image}
+                alt={vod.title}
               />
             )}
             <img
@@ -225,6 +228,7 @@ export const VodCard = ({ vod, playback }: any) => {
               }}
               className={classes.image}
               style={imageStyle}
+              alt={vod.title}
             />
           </Card.Section>
           <div className={classes.processingOverlay}>
