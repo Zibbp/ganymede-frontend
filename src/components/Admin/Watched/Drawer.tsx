@@ -195,6 +195,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           <Title order={3}>Live Streams</Title>
           <Text>Archive live streams as they are broadcasted.</Text>
           <Switch
+            mt={5}
             label="Watch Live Streams"
             checked={watchLive}
             onChange={(e) => setWatchLive(e.currentTarget.checked)}
@@ -208,15 +209,17 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
             Check for new videos occurs once a day.
           </Text>
           <Switch
+            mt={5}
             label="Watch Videos to Archive"
             checked={watchVod}
             onChange={(e) => setWatchVod(e.currentTarget.checked)}
           />
           <div style={{ marginLeft: "55px" }}>
-            <Text mt={10} mb={-5} size="sm">
+            <Text mb={5} size="sm">
               Select which video types to archive.
             </Text>
             <Switch
+              mt={5}
               label="Download Archives"
               description="Download past live streams"
               checked={downloadArchives}
@@ -224,6 +227,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
             />
 
             <Switch
+              mt={5}
               label="Download Highlights"
               description="Download past highlights"
               checked={downloadHighlights}
@@ -231,6 +235,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
             />
 
             <Switch
+              mt={5}
               label="Download Uploads"
               description="Download past uploads"
               checked={downloadUploads}
