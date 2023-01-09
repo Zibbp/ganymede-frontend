@@ -91,6 +91,14 @@ const useStyles = createStyles((theme) => ({
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontWeight: 400,
   },
+  image: {
+    width: "100%",
+    height: "auto",
+  },
+  placeholderImage: {
+    backgroundColor: theme.colors.dark[1],
+    width: "100%",
+  },
 }));
 
 export const VodCard = ({ vod, playback }: any) => {
@@ -98,6 +106,7 @@ export const VodCard = ({ vod, playback }: any) => {
   const { classes, cx, theme } = useStyles();
   const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     if (playback) {
@@ -115,28 +124,40 @@ export const VodCard = ({ vod, playback }: any) => {
     }
   }, []);
 
+  const handleImageLoaded = () => {
+    setImageLoaded(true);
+  };
+  const imageStyle = !imageLoaded ? { display: "none" } : {};
   return (
     <div>
       {!vod.processing ? (
         <Link href={"/vods/" + vod.id}>
           <Card className={classes.card} p="0" radius={0}>
             <Card.Section>
-              <Image
-                radius="sm"
-                withPlaceholder={true}
-                src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
-                fit="contain"
-                alt={vod.title}
-              />
-
-              {progress > 0 && !watched && (
-                <Progress
-                  className={classes.progressBar}
-                  color="red"
-                  radius="xs"
-                  size="sm"
-                  value={progress}
+              {!imageLoaded && (
+                <img
+                  src="/images/ganymede-thumbnail.webp"
+                  className={classes.image}
                 />
+              )}
+              <img
+                src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
+                onLoad={() => {
+                  handleImageLoaded();
+                }}
+                className={classes.image}
+                style={imageStyle}
+              />
+              {Math.round(progress) > 0 && !watched && (
+                <Tooltip label={`${Math.round(progress)}% watched`}>
+                  <Progress
+                    className={classes.progressBar}
+                    color="violet"
+                    radius="0"
+                    size="sm"
+                    value={progress}
+                  />
+                </Tooltip>
               )}
             </Card.Section>
 
@@ -191,12 +212,19 @@ export const VodCard = ({ vod, playback }: any) => {
       ) : (
         <Card className={classes.card} p="0" radius={0}>
           <Card.Section>
-            <Image
-              radius="sm"
-              withPlaceholder={true}
+            {!imageLoaded && (
+              <img
+                src="/images/ganymede-thumbnail.webp"
+                className={classes.image}
+              />
+            )}
+            <img
               src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
-              fit="contain"
-              alt={vod.title}
+              onLoad={() => {
+                handleImageLoaded();
+              }}
+              className={classes.image}
+              style={imageStyle}
             />
           </Card.Section>
           <div className={classes.processingOverlay}>
