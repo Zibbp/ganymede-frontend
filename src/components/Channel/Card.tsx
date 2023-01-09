@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import getConfig from "next/config";
 import Link from "next/link";
+import { useState } from "react";
 
 interface Channel {
   id: string;
@@ -32,19 +33,43 @@ const useStyles = createStyles((theme) => ({
       transform: "scale(1.05)",
     },
   },
+  imageSection: {},
+  image: {
+    width: "100%",
+    height: "200px",
+    objectFit: "cover",
+  },
 }));
 
 export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
   const { publicRuntimeConfig } = getConfig();
   const { classes, theme } = useStyles();
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const handleImageLoaded = () => {
+    setImageLoaded(true);
+  };
+  const imageStyle = !imageLoaded ? { display: "none" } : {};
+
   return (
     <Link href={"/channels/" + channel.name}>
       <Card p="md" radius="md" className={classes.card}>
-        <Card.Section>
-          <Image
-            withPlaceholder={true}
+        <Card.Section className={classes.imageSection}>
+          {!imageLoaded && (
+            <img
+              src="/images/ganymede-channel.webp"
+              height={200}
+              className={classes.image}
+              alt={channel.display_name}
+            />
+          )}
+          <img
             src={`${publicRuntimeConfig.CDN_URL}${channel.image_path}`}
-            height={200}
+            onLoad={() => {
+              handleImageLoaded();
+            }}
+            className={classes.image}
+            style={imageStyle}
             alt={channel.display_name}
           />
         </Card.Section>
