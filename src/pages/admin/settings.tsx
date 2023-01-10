@@ -13,6 +13,7 @@ import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import AdminNotificationsDrawer from "../../components/Admin/Settings/NotificationsDrawer";
+import AdminStorageSettingsDrawer from "../../components/Admin/Settings/StorageSettingsDrawer";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
@@ -59,6 +60,8 @@ const AdminSettingsPage = () => {
   const [chatRenderArgs, setChatRenderArgs] = useState("");
   const [loading, setLoading] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const [storageTemplateDrawerOpened, setStorageTemplateDrawerOpened] =
+    useState(false);
   const [saveAsHls, setSaveAsHls] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - Settings");
@@ -126,6 +129,14 @@ const AdminSettingsPage = () => {
     setDrawerOpened(false);
   };
 
+  const openStorageTemplateDrawer = () => {
+    setStorageTemplateDrawerOpened(true);
+  };
+
+  const closeStorageTemplateDrawerCallback = () => {
+    setStorageTemplateDrawerOpened(false);
+  };
+
   if (error) return <div>failed to load</div>;
   if (isLoading) return <GanymedeLoader />;
 
@@ -184,6 +195,17 @@ const AdminSettingsPage = () => {
                 onChange={(event) => setSaveAsHls(event.currentTarget.checked)}
                 label="Convert to HLS"
               />
+              <Button
+                mt={15}
+                onClick={() => openStorageTemplateDrawer()}
+                fullWidth
+                radius="md"
+                size="md"
+                variant="outline"
+                color="orange"
+              >
+                Storage Template Settings
+              </Button>
             </div>
             <div>
               <Title mt={15} order={3}>
@@ -249,6 +271,19 @@ const AdminSettingsPage = () => {
         position="right"
       >
         <AdminNotificationsDrawer handleClose={closeDrawerCallback} />
+      </Drawer>
+      <Drawer
+        className={classes.notificationDrawer}
+        opened={storageTemplateDrawerOpened}
+        onClose={() => setStorageTemplateDrawerOpened(false)}
+        title="Storage Template Settings"
+        padding="xl"
+        size="xl"
+        position="right"
+      >
+        <AdminStorageSettingsDrawer
+          handleClose={closeStorageTemplateDrawerCallback}
+        />
       </Drawer>
     </Authorization>
   );
