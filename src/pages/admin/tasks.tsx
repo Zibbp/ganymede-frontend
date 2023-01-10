@@ -242,6 +242,46 @@ const AdminTasksPage = () => {
               </Grid.Col>
             </Grid>
           </div>
+          {/* Storage */}
+          <div>
+            <div className={classes.sectionHeader}>
+              <Title order={4}>Storage</Title>
+            </div>
+            <Grid className={classes.taskItem}>
+              <Grid.Col span={10}>
+                <div>
+                  <span>
+                    <Text mr={5}>Storage Template Migration</Text>
+                    <Text italic size="xs">
+                      Apply your current storage template to existing files.
+                      Read the{" "}
+                      <a
+                        href="https://github.com/Zibbp/ganymede/wiki/Storage-Templates-and-Migration"
+                        style={{ color: "#228be6" }}
+                        target="_blank"
+                      >
+                        docs
+                      </a>{" "}
+                      before starting.
+                    </Text>
+                  </span>
+                </div>
+              </Grid.Col>
+              <Grid.Col span={2}>
+                <Tooltip label="Start Task">
+                  <ActionIcon
+                    onClick={() => startTask.mutate("storage_migration")}
+                    loading={loading}
+                    color="green"
+                    variant="filled"
+                    size="lg"
+                  >
+                    <IconRefresh size={24} />
+                  </ActionIcon>
+                </Tooltip>
+              </Grid.Col>
+            </Grid>
+          </div>
         </Container>
       </div>
     </Authorization>
