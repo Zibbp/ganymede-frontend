@@ -47,7 +47,7 @@ const AdminStorageSettingsDrawer = ({ handleClose }) => {
   const [loading, setLoading] = useState(false);
 
   const folderExample1 = "{{id}}-{{uuid}}";
-  const folderExample2 = "{{created_at}}-{{title}}-{{type}}-{{id}}-{{uuid}}";
+  const folderExample2 = "{{date}}-{{title}}-{{type}}-{{id}}-{{uuid}}";
   const fileExample1 = "{{id}}";
 
   const { data, error, isLoading } = useQuery({
@@ -147,12 +147,10 @@ const AdminStorageSettingsDrawer = ({ handleClose }) => {
             <Text>Ganymede</Text>
             <Code>{"{{uuid}}"}</Code>
             <Text>Twitch Video</Text>
-            <Code>
-              {"{{id}} {{channel}} {{title}} {{created_at}} {{type}}"}
-            </Code>
+            <Code>{"{{id}} {{channel}} {{title}} {{date}} {{type}}"}</Code>
             <Text ml={20} mt={5} size="sm">
-              ID: Twitch Video ID <br /> Type: Twitch Video Type (live, archive,
-              highlight)
+              ID: Twitch video ID <br /> Date: Date streamed or uploaded <br />{" "}
+              Type: Twitch video type (live, archive, highlight)
             </Text>
           </div>
         </div>
