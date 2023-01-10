@@ -111,6 +111,10 @@ const ArchivePage = () => {
       // Get ID from the url
       if (id.includes("twitch.tv/videos/")) {
         id = id.split("twitch.tv/videos/")[1];
+        // Remove any query params
+        if (id.includes("?")) {
+          id = id.split("?")[0];
+        }
       }
       setArchiveInput(id);
       if (id == "") {
