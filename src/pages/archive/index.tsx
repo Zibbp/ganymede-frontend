@@ -46,6 +46,9 @@ const useStyles = createStyles((theme) => ({
   card: {
     overflow: "visible",
   },
+  qualitySelect: {
+    width: "7rem",
+  },
 }));
 
 const ArchivePage = () => {
@@ -56,6 +59,7 @@ const ArchivePage = () => {
     null
   );
   const [archiveChat, setArchiveChat] = useInputState(true);
+  const [renderChat, setRenderChat] = useInputState(true);
   const [archiveQuality, setArchiveQuality] = useInputState<string | null>(
     "best"
   );
@@ -85,6 +89,7 @@ const ArchivePage = () => {
             vod_id: archiveInput,
             quality: archiveQuality,
             chat: archiveChat,
+            render_chat: renderChat,
           },
           withCredentials: true,
         },
@@ -160,11 +165,12 @@ const ArchivePage = () => {
                 <TextInput
                   value={archiveInput}
                   onChange={(e) => getVodInfo.mutate(e.currentTarget.value)}
-                  placeholder="VOD ID"
+                  placeholder="Video ID"
                   withAsterisk
                 />
                 <Group mt={5} mb={5}>
                   <Select
+                    className={classes.qualitySelect}
                     placeholder="Resolution"
                     value={archiveQuality}
                     onChange={setArchiveQuality}
@@ -175,6 +181,12 @@ const ArchivePage = () => {
                     checked={archiveChat}
                     onChange={setArchiveChat}
                     label="Archive Chat"
+                    color="violet"
+                  />
+                  <Switch
+                    checked={renderChat}
+                    onChange={setRenderChat}
+                    label="Render Chat"
                     color="violet"
                   />
                 </Group>

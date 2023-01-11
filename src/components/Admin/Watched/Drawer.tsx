@@ -24,6 +24,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [downloadUploads, setDownloadUploads] = useState(true);
   const [resolution, setResolution] = useState("best");
   const [archiveChat, setArchiveChat] = useState(true);
+  const [renderChat, setRenderChat] = useState(true);
   const [lastLive, setLastLive] = useState(watched?.last_live);
   const [channelId, setChannelId] = useState("");
 
@@ -50,6 +51,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setArchiveChat(watched?.archive_chat);
       setLastLive(watched?.last_live);
       setChannelId(watched?.edges.channel.id);
+      setRenderChat(watched?.render_chat);
     }
   }, []);
 
@@ -72,6 +74,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_archives: downloadArchives,
               download_highlights: downloadHighlights,
               download_uploads: downloadUploads,
+              render_chat: renderChat,
             },
             withCredentials: true,
           },
@@ -105,6 +108,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_archives: downloadArchives,
               download_highlights: downloadHighlights,
               download_uploads: downloadUploads,
+              render_chat: renderChat,
             },
             withCredentials: true,
           },
@@ -181,12 +185,20 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           onChange={setResolution}
           searchable
           mb="xs"
+          mb={10}
         />
 
         <Switch
           label="Archive Chat"
           checked={archiveChat}
           onChange={(e) => setArchiveChat(e.currentTarget.checked)}
+          mb={10}
+        />
+
+        <Switch
+          label="Render Chat"
+          checked={renderChat}
+          onChange={(e) => setRenderChat(e.currentTarget.checked)}
           mb={20}
         />
 
