@@ -63,6 +63,7 @@ const AdminSettingsPage = () => {
   const [storageTemplateDrawerOpened, setStorageTemplateDrawerOpened] =
     useState(false);
   const [saveAsHls, setSaveAsHls] = useState(false);
+  const [twitchToken, setTwitchToken] = useState("");
 
   useDocumentTitle("Ganymede - Admin - Settings");
 
@@ -80,6 +81,7 @@ const AdminSettingsPage = () => {
         setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
         setChatRenderArgs(res?.data.parameters.chat_render);
         setSaveAsHls(res?.data.archive.save_as_hls);
+        setTwitchToken(res?.data.parameters.twitch_token);
         return res?.data;
       }),
   });
@@ -98,6 +100,7 @@ const AdminSettingsPage = () => {
               video_convert: postVideoFFmpegArgs,
               streamlink_live: streamlinkLiveArgs,
               chat_render: chatRenderArgs,
+              twitch_token: twitchToken,
             },
             archive: {
               save_as_hls: saveAsHls,
@@ -213,13 +216,12 @@ const AdminSettingsPage = () => {
               </Title>
 
               <TextInput
-                value={postVideoFFmpegArgs}
-                onChange={(event) =>
-                  setPostVideoFFmpegArgs(event.currentTarget.value)
-                }
-                placeholder="-c:v copy -c:a copy"
-                label="Video Convert FFmpeg Args"
-                description="Post video download ffmpeg args."
+                mt={5}
+                value={twitchToken}
+                onChange={(event) => setTwitchToken(event.currentTarget.value)}
+                placeholder="abcef13456789"
+                label="Twitch Token"
+                description="Supply your Twitch Token for downloading subscriber only videos."
               />
               <TextInput
                 mt={5}
@@ -230,6 +232,16 @@ const AdminSettingsPage = () => {
                 placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
                 label="Streamlink Args"
                 description="Streamlink arguments for live streams. Must be comma separated."
+              />
+              <TextInput
+                mt={5}
+                value={postVideoFFmpegArgs}
+                onChange={(event) =>
+                  setPostVideoFFmpegArgs(event.currentTarget.value)
+                }
+                placeholder="-c:v copy -c:a copy"
+                label="Video Convert FFmpeg Args"
+                description="Post video download ffmpeg args."
               />
             </div>
             <div>
