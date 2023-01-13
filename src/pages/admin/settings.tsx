@@ -219,7 +219,7 @@ const AdminSettingsPage = () => {
                 mt={5}
                 value={twitchToken}
                 onChange={(event) => setTwitchToken(event.currentTarget.value)}
-                placeholder="abcef13456789"
+                placeholder="abcdefg1234567890"
                 label="Twitch Token"
                 description="Supply your Twitch token for downloading subscriber only videos."
               />
