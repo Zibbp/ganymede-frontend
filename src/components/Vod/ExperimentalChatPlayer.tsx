@@ -153,7 +153,7 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
             };
 
             comment.ganymede_formatted_badges.push(ganymedeFormattedBadge);
-          } else if (badge._id === "sub-gifter") {
+          } else if (badge._id === "sub-gifter" || badge._id === "sub_gifter") {
             const ganymedeFormattedBadge: GanymedeFormattedBadge = {
               _id: badge._id,
               version: badge.version,
