@@ -95,11 +95,6 @@ export const VodChatPlayer = ({ vod }: any) => {
       className={classes.chatPlayer}
     >
       <Plyr ref={chatRef} {...plyrProps} />
-      {/* <Plyr
-        ref={(player) => (this.player.current = player)}
-        {...plyrProps}
-        style={{ backgroundColor: "red" }}
-      /> */}
     </div>
   );
 };
