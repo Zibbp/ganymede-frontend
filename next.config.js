@@ -1,5 +1,3 @@
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   publicRuntimeConfig: {
