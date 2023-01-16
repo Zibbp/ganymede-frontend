@@ -14,20 +14,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Note: we provide webpack above so you should not `require` it
-    // Perform customizations to webpack config
-    config.plugins.push(
-      new CopyWebpackPlugin({
-        patterns: [
-          { from: "node_modules/hls.js/dist/hls.min.js", to: "../public/dist" },
-        ],
-      })
-    );
-
-    // Important: return the modified config
-    return config;
-  },
 };
 
 module.exports = nextConfig;

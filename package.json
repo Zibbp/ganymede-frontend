@@ -18,10 +18,10 @@
     "@mantine/hooks": "^5.10.0",
     "@mantine/next": "^5.10.0",
     "@mantine/notifications": "^5.10.0",
-    "@next/font": "^13.1.1",
+    "@next/font": "^13.1.2",
     "@tabler/icons": "^1.119.0",
-    "@tanstack/react-query": "^4.20.9",
-    "@tanstack/react-query-devtools": "^4.20.9",
+    "@tanstack/react-query": "^4.22.0",
+    "@tanstack/react-query-devtools": "^4.22.0",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.10",
@@ -29,16 +29,19 @@
     "cookies-next": "^2.1.1",
     "copy-webpack-plugin": "^11.0.0",
     "dayjs": "^1.11.7",
-    "hls.js": "^1.2.9",
     "lodash": "^4.17.21",
-    "mantine-datatable": "^1.7.33",
-    "next": "13.1.1",
-    "ovenplayer": "^0.10.25",
+    "mantine-datatable": "^1.7.34",
+    "next": "13.1.2",
     "plyr-react": "^5.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.41.5",
+    "react-hook-form": "^7.42.1",
     "typescript": "4.9.4",
-    "zustand": "^4.2.0"
+    "video.js": "^7.20.3",
+    "videojs-hotkeys": "^0.2.28",
+    "zustand": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/video.js": "^7.3.50"
   }
 }
