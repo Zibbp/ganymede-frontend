@@ -89,3 +89,13 @@ a {
 .vjs-paused.vjs-has-started .vjs-big-play-button {
   display: block;
 }
+
+.video-js .vjs-loading-spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.video-js .vjs-loading-spinner:before {
+  border-top-color: #6d28d9 !important;
+}
+.video-js .vjs-loading-spinner:after {
+  border-top-color: rgba(109, 40, 217, 0.6) !important;
+}
