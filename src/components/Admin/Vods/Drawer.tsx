@@ -35,6 +35,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
   const [chatPath, setChatPath] = useState(vod?.chat_path);
   const [chatVideoPath, setChatVideoPath] = useState(vod?.chat_video_path);
   const [infoPath, setInfoPath] = useState(vod?.info_path);
+  const [captionPath, setCaptionPath] = useState(vod?.caption_path);
   const [streamedAt, setStreamedAt] = useState();
 
   const [loading, setLoading] = useState(false);
@@ -115,6 +116,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
               chat_path: chatPath,
               chat_video_path: chatVideoPath,
               info_path: infoPath,
+              caption_path: captionPath,
               streamed_at: streamedAt,
             },
             withCredentials: true,
@@ -156,6 +158,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
               chat_path: chatPath,
               chat_video_path: chatVideoPath,
               info_path: infoPath,
+              caption_path: captionPath,
               streamed_at: streamedAt,
             },
             withCredentials: true,
@@ -320,6 +323,14 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
           onChange={(e) => setChatVideoPath(e.currentTarget.value)}
           placeholder="/vods/channel/123_456/123-chat.mp4"
           label="Chat Video Path"
+          mb="xs"
+        />
+
+        <TextInput
+          value={captionPath}
+          onChange={(e) => setCaptionPath(e.currentTarget.value)}
+          placeholder="/vods/channel/123_456/123.vtt"
+          label="Caption Path (vtt)"
           mb="xs"
         />
 
