@@ -31,19 +31,61 @@ a {
   --plyr-color-main: #6d28d9;
 }
 
-#video-player {
-  --op-accent-color: #6d28d9;
+.video-js {
+  width: 100%;
+  height: 100%;
+  /* color: #6d28d9 !important; */
 }
 
-#video-player .op-context-panel {
-  display: none;
+.video-js .vjs-control-bar {
+  background: rgba(24, 20, 18, 0.7) !important;
 }
 
-.op-caption-text {
-  color: white !important;
-  font-size: 1.5rem !important;
-  padding: 0.5rem !important;
-  height: auto !important;
-  line-height: normal !important;
-  text-shadow: none !important;
+.video-js .vjs-volume-level {
+  background: #6d28d9 !important;
+}
+
+.video-js .vjs-play-progress {
+  background: #6d28d9 !important;
+}
+
+.video-js .vjs-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.video-js .vjs-slider:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable focus visible */
+.video-js:focus-visible {
+  outline: none !important;
+}
+
+:focus-visible {
+  outline: none !important;
+}
+
+.video-js .vjs-big-play-button {
+  line-height: 75px !important;
+  font-size: 5em !important;
+  height: 75px !important;
+  width: 75px !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin-left: -50px !important;
+  margin-top: -50px !important;
+  border-radius: 100% !important;
+  border: none !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+.video-js:hover .vjs-big-play-button,
+.video-js .vjs-big-play-button:focus {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.vjs-paused.vjs-has-started .vjs-big-play-button {
+  display: block;
 }

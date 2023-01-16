@@ -6,21 +6,24 @@ import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
 import { useQuery } from "@tanstack/react-query";
+import VideoJS from "./VideoJS";
 
-const useStyles = createStyles((theme) => ({}));
+const useStyles = createStyles((theme) => ({
+  playerContainer: {
+    width: "100%",
+    height: "100%",
+    minHeight: "100%",
+  },
+}));
 
 const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
   const user = useUserStore((state) => state);
+  const playerRef = useRef(null);
 
-  const vplayer = useRef();
-
-  const [player, setPlayer] = useState(null);
-
-  const busTime = useRef(0);
-  const busPlaying = useRef(false);
-  const busPaused = useRef(true);
+  const [playerReady, setPlayerReady] = useState(false);
+  const [videoJsOptions, setVideoJsOptions] = useState({});
 
   // Fetch playback data
   const { data } = useQuery({
@@ -50,160 +53,147 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   useEffect(() => {
-    if (!data) {
-      return;
+    if (!data) return;
+
+    const ext = vod.video_path.substr(vod.video_path.length - 4);
+    let type = "video/mp4";
+    if (ext == "m3u8") {
+      type = "application/x-mpegURL";
     }
-    let started = false;
-    const start = async () => {
-      const OvenPlayer = await import("ovenplayer");
 
-      // OvenPlayer.debug(true);
-
-      // Figure out which type of video we're dealing with
-      // Get last 4 characters of video path
-      const ext = vod.video_path.substr(vod.video_path.length - 4);
-      let type = "mp4";
-      if (ext === "m3u8") {
-        type = "hls";
-      }
-
-      // Captions?
-      // Get every before the last slash
-      // const path = vod.video_path.substr(0, vod.video_path.lastIndexOf("/"));
-
-      const options = {
-        title: vod.title,
-        theme: "dark",
-        controls: true,
-        // Player will break if thumbnail is not found
-        image: `${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`,
-        sources: [
-          {
-            label: `Archive - ${type}`,
-            file: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
-            type: type,
-          },
-        ],
-        // tracks: [
-        //   {
-        //     kind: "captions",
-        //     file: `${publicRuntimeConfig.CDN_URL}${path}/captions.vtt`,
-        //     label: "captions.vtt",
-        //   },
-        // ],
-      };
-
-      // Get volume if stored
-      const localVolume = localStorage.getItem("ganymede-volume");
-      if (localVolume) {
-        options.volume = Number(localVolume);
-      }
-
-      const _player = OvenPlayer.create(vplayer.current, options);
-
-      _player.on("ready", () => {
-        console.log(data);
-        if (data.time) {
-          _player.seek(data.time);
-        }
-      });
-
-      // Set player
-      setPlayer(_player);
-
-      _player.on("time", (e) => {
-        busTime.current = e.position;
-      });
-
-      _player.on("stateChanged", (e) => {
-        if (e.newstate === "playing") {
-          busPlaying.current = true;
-          busPaused.current = false;
-        }
-        if (e.newstate === "paused") {
-          busPlaying.current = false;
-          busPaused.current = true;
-        }
-      });
-
-      // Save volume on change
-      _player.on("volumeChanged", (e) => {
-        try {
-          localStorage.setItem("ganymede-volume", e.volume);
-        } catch (error) {
-          console.error("error setting volume", error);
-        }
-      });
+    const options = {
+      autoplay: false,
+      controls: true,
+      playbackRates: [0.5, 1, 1.5, 2, 2.5],
+      sources: [
+        {
+          src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
+          type: type,
+        },
+      ],
+      plugins: {
+        hotkeys: {
+          seekStep: 20,
+          volumeStep: 0.1,
+          enableModifiersForNumbers: false,
+        },
+      },
     };
 
-    start();
+    // If thumbnail
+    if (vod.thumbnail_path) {
+      options.poster = `${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`;
+    }
+
+    // If captions
+    if (vod.caption_path) {
+      options.tracks = [
+        {
+          kind: "captions",
+          src: `${publicRuntimeConfig.CDN_URL}${vod.caption_path}`,
+          srclang: "en",
+          label: "Captions",
+        },
+      ];
+    }
+
+    setVideoJsOptions(options);
+
+    setPlayerReady(true);
   }, [data]);
 
-  useEffect(() => {
-    //! Tick for chat
-    if (player) {
-      const interval = setInterval(() => {
-        vodDataBus.setData({
-          time: busTime.current,
-          playing: busPlaying.current,
-          paused: busPaused.current,
-        });
-      }, 50);
-      return () => {
-        clearInterval(interval);
-      };
+  const handlePlayerReady = (player) => {
+    playerRef.current = player;
+
+    // Volume
+    const localVolume = localStorage.getItem("ganymede-volume");
+    if (localVolume) {
+      player.volume(localVolume);
     }
-  }, [player]);
+
+    player.on("volumechange", () => {
+      localStorage.setItem("ganymede-volume", player.volume());
+    });
+
+    // Playback data
+    if (data.time) {
+      player.currentTime(data.time);
+    }
+
+    player.on("play", () => {
+      player.bigPlayButton.hide();
+    });
+
+    player.on("pause", () => {
+      player.bigPlayButton.show();
+    });
+  };
+
+  // Tick for chat
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (playerRef.current == null) return;
+      vodDataBus.setData({
+        time: playerRef.current.currentTime(),
+        paused: playerRef.current.paused(),
+        playing: !playerRef.current.paused(),
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, [playerRef.current]);
 
   // Playback progress reporting
   useEffect(() => {
-    // Playback progress reporting
-    const playbackInterval = setInterval(async () => {
-      // Update playback progress every 20 seconds
-      if (busPlaying.current && user.isLoggedIn && busTime.current > 1) {
-        const currentTime = parseInt(busTime.current);
+    const playbackInerval = setInterval(async () => {
+      if (!user.isLoggedIn) return;
+      if (playerRef.current == null) return;
+      if (playerRef.current.paused()) return;
+
+      const playbackData = {
+        vod_id: vod.id,
+        time: parseInt(playerRef.current.currentTime()),
+      };
+
+      if (playbackData.time == 0) return;
+
+      await useApi(
+        {
+          method: "POST",
+          url: "/api/v1/playback/progress",
+          data: playbackData,
+          withCredentials: true,
+        },
+        false
+      );
+
+      // If progress is 98% or more, mark as watched
+      if (playbackData.time / vod.duration >= 0.98) {
         await useApi(
           {
             method: "POST",
-            url: "/api/v1/playback/progress",
+            url: "/api/v1/playback/status",
             data: {
               vod_id: vod.id,
-              time: currentTime,
+              status: "finished",
             },
             withCredentials: true,
           },
           false
         );
-        // Check if progress is 99% of the video
-        if (currentTime / vod.duration >= 0.99) {
-          await useApi(
-            {
-              method: "POST",
-              url: "/api/v1/playback/status",
-              data: {
-                vod_id: vod.id,
-                status: "finished",
-              },
-              withCredentials: true,
-            },
-            false
-          );
-        }
+
+        // Remove interval
+        clearInterval(playbackInerval);
       }
     }, 20000);
-
-    return () => {
-      clearInterval(playbackInterval);
-    };
+    return () => clearInterval(playbackInerval);
   });
 
   return (
-    <>
-      <Script src="/dist/hls.min.js" />
-      <div style={{ height: "100%", maxHeight: "100%" }}>
-        <div ref={vplayer} id="video-player"></div>
-      </div>
-    </>
+    <div className={classes.playerContainer}>
+      {playerReady && (
+        <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+      )}
+    </div>
   );
 };
 
