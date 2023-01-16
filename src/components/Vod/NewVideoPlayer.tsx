@@ -105,6 +105,9 @@ const NewVideoPlayer = ({ vod }: any) => {
   const handlePlayerReady = (player) => {
     playerRef.current = player;
 
+    // Show control bar on initial load
+    player.addClass("vjs-has-started");
+
     // Volume
     const localVolume = localStorage.getItem("ganymede-volume");
     if (localVolume) {
