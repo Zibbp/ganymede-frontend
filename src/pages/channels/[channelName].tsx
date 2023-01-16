@@ -87,6 +87,11 @@ const ChannelPage = (props: any) => {
     },
   });
 
+  const setVodType = (value: string[]) => {
+    setSelected(value);
+    setPage(1);
+  };
+
   if (error) return <div>failed to load</div>;
 
   return (
@@ -99,7 +104,7 @@ const ChannelPage = (props: any) => {
           <MultiSelect
             data={videoTypes}
             value={selected}
-            onChange={setSelected}
+            onChange={(value) => setVodType(value)}
             label="Filter by"
             placeholder="Select video types"
             clearable
