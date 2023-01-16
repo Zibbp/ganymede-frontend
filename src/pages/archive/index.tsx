@@ -156,7 +156,7 @@ const ArchivePage = () => {
               >
                 <Center mb={10}>
                   <div>
-                    <Title>Archive VOD</Title>
+                    <Title>Archive Video</Title>
                     <Center>
                       <Text>Enter ID or URL</Text>
                     </Center>
