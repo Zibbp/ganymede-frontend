@@ -27,6 +27,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [renderChat, setRenderChat] = useState(true);
   const [lastLive, setLastLive] = useState(watched?.last_live);
   const [channelId, setChannelId] = useState("");
+  const [downloadSubOnly, setDownloadSubOnly] = useState(false);
 
   const [channelData, setChannelData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setLastLive(watched?.last_live);
       setChannelId(watched?.edges.channel.id);
       setRenderChat(watched?.render_chat);
+      setDownloadSubOnly(watched?.download_sub_only);
     }
   }, []);
 
@@ -75,6 +77,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_highlights: downloadHighlights,
               download_uploads: downloadUploads,
               render_chat: renderChat,
+              download_sub_only: downloadSubOnly,
             },
             withCredentials: true,
           },
@@ -109,6 +112,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_highlights: downloadHighlights,
               download_uploads: downloadUploads,
               render_chat: renderChat,
+              download_sub_only: downloadSubOnly,
             },
             withCredentials: true,
           },
@@ -228,7 +232,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           />
           <div style={{ marginLeft: "55px" }}>
             <Text mb={5} size="sm">
-              Select which video types to archive.
+              Video Archive Settings.
             </Text>
             <Switch
               mt={5}
@@ -252,6 +256,14 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               description="Download past uploads"
               checked={downloadUploads}
               onChange={(e) => setDownloadUploads(e.currentTarget.checked)}
+            />
+
+            <Switch
+              mt={5}
+              label="Download Subscriber Only Videos"
+              description="Do not check this if you are not a subscriber. Must have Twitch token set in Admin > Settings to download subscriber only videos."
+              checked={downloadSubOnly}
+              onChange={(e) => setDownloadSubOnly(e.currentTarget.checked)}
             />
           </div>
         </div>
