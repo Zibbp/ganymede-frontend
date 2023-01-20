@@ -75,6 +75,8 @@ const NewVideoPlayer = ({ vod }: any) => {
         hotkeys: {
           seekStep: 20,
           volumeStep: 0.1,
+          enableVolumeScroll: false,
+          enableHoverScroll: true,
           enableModifiersForNumbers: false,
         },
       },
