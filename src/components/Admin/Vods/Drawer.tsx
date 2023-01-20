@@ -200,8 +200,8 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={extId}
           onChange={(e) => setExtId(e.currentTarget.value)}
-          placeholder="External ID"
-          label="123456789"
+          placeholder="123456789"
+          label="External ID"
           required
           mb="xs"
         />
