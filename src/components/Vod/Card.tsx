@@ -243,7 +243,7 @@ export const VodCard = ({ vod, playback }: any) => {
               <div className={classes.processingContent}>
                 <div>
                   <Center>
-                    <Loader color="violet" size="lg" variant="bars" />
+                    <Loader color="violet" size="lg" />
                   </Center>
                 </div>
                 <Text className={classes.processingText} size="xl" weight={700}>
