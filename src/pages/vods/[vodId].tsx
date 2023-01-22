@@ -52,7 +52,11 @@ const VodPage = (props: any) => {
   });
 
   const checkLoginRequired = () => {
-    if (publicRuntimeConfig.REQUIRE_LOGIN && !user.isLoggedIn) {
+    if (
+      publicRuntimeConfig.REQUIRE_LOGIN &&
+      publicRuntimeConfig.REQUIRE_LOGIN == "true" &&
+      !user.isLoggedIn
+    ) {
       return true;
     }
     return false;
