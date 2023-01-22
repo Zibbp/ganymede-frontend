@@ -130,9 +130,9 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
         setReady(true);
         internalReady = true;
 
-        createCustomComment("Chat Player Ready");
+        createCustomComment("Chat player ready.");
         createCustomComment(
-          `Fetched ${generalBadgeMap.size} badges, ${subscriptionBadgeMap.size} subscription badges, and ${emoteMap.size} emotes.`
+          `Fetched ${generalBadgeMap.size.toLocaleString()} badges, ${subscriptionBadgeMap.size.toLocaleString()} subscription badges, and ${emoteMap.size.toLocaleString()} emotes.`
         );
       });
     });
