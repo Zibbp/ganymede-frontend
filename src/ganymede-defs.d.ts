@@ -1,3 +1,26 @@
+export interface Video {
+  id: string;
+  ext_id: string;
+  platform: string;
+  type: string;
+  title: string;
+  duration: number;
+  views: number;
+  resolution: string;
+  processing: boolean;
+  thumbnail_path: string;
+  video_path: string;
+  chat_path: string;
+  chat_video_path: string;
+  info_path: string;
+  caption_path: string;
+  streamed_at: Date;
+  created_at: Date;
+  updated_at: Date;
+  folder_name: string;
+  file_name: string;
+}
+
 export interface GanymedeEmote {
   id: string;
   name: string;
