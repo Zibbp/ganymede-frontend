@@ -61,7 +61,7 @@ const SearchPage = (props) => {
           url: "/api/v1/playback",
           withCredentials: true,
         },
-        false
+        true
       ).then((res) => res?.data);
     },
   });
