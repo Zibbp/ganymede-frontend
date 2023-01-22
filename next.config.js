@@ -5,6 +5,7 @@ const nextConfig = {
     CDN_URL: process.env.CDN_URL || process.env.NUXT_PUBLIC_CDN_URL,
     SHOW_SSO_LOGIN_BUTTON: process.env.SHOW_SSO_LOGIN_BUTTON,
     FORCE_SSO_AUTH: process.env.FORCE_SSO_AUTH,
+    REQUIRE_LOGIN: process.env.REQUIRE_LOGIN,
   },
   reactStrictMode: true,
   swcMinify: true,
