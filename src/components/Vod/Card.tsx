@@ -20,7 +20,6 @@ import duration from "dayjs/plugin/duration";
 import { useEffect, useState } from "react";
 import { IconCircleCheck } from "@tabler/icons";
 import getConfig from "next/config";
-import { useHover } from "@mantine/hooks";
 dayjs.extend(duration);
 
 const useStyles = createStyles((theme) => ({
@@ -60,7 +59,7 @@ const useStyles = createStyles((theme) => ({
     color: theme.white,
   },
   progressBar: {
-    marginTop: "-0.6rem",
+    marginTop: "-0.3rem",
   },
   watchedIcon: {
     position: "absolute",
@@ -95,16 +94,6 @@ const useStyles = createStyles((theme) => ({
   image: {
     width: "100%",
     height: "auto",
-    transition: "transform 200ms ease-out",
-  },
-  imageHover: {
-    display: "block",
-    transform: "scale(1.05)",
-    transformOrigin: "50% 50%",
-  },
-  outerImage: {
-    display: "inline-block",
-    overflow: "hidden",
   },
 }));
 
@@ -114,7 +103,6 @@ export const VodCard = ({ vod, playback }: any) => {
   const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { hovered, ref } = useHover();
 
   useEffect(() => {
     if (playback) {
@@ -148,31 +136,27 @@ export const VodCard = ({ vod, playback }: any) => {
   }, [vod.web_thumbnail_path]);
 
   return (
-    <div ref={ref}>
+    <div>
       {!vod.processing ? (
         <Link href={"/vods/" + vod.id}>
           <Card className={classes.card} p="0" radius={0}>
             <Card.Section>
-              <div className={classes.outerImage}>
-                {!imageLoaded && (
-                  <img
-                    src="/images/ganymede-thumbnail.webp"
-                    className={classes.image}
-                    alt={vod.title}
-                  />
-                )}
+              {!imageLoaded && (
                 <img
-                  src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
-                  onLoad={() => {
-                    handleImageLoaded();
-                  }}
-                  className={`${classes.image} ${
-                    hovered ? classes.imageHover : ""
-                  }`}
-                  style={imageStyle}
+                  src="/images/ganymede-thumbnail.webp"
+                  className={classes.image}
                   alt={vod.title}
                 />
-              </div>
+              )}
+              <img
+                src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
+                onLoad={() => {
+                  handleImageLoaded();
+                }}
+                className={classes.image}
+                style={imageStyle}
+                alt={vod.title}
+              />
               {Math.round(progress) > 0 && !watched && (
                 <Tooltip label={`${Math.round(progress)}% watched`}>
                   <Progress
