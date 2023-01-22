@@ -10,6 +10,7 @@ import Error from "next/error";
 import NewVideoPlayer from "../../components/Vod/NewVideoPlayer";
 import getConfig from "next/config";
 import VodLoginRequired from "../../components/Vod/LoginRequred";
+import Head from "next/head";
 
 const useStyles = createStyles((theme) => ({
   videoPlayerColumn: {
@@ -68,6 +69,9 @@ const VodPage = (props: any) => {
 
   return (
     <div>
+      <Head>
+        <title>{data.title} - Ganymede</title>
+      </Head>
       {checkLoginRequired() && <VodLoginRequired {...data} />}
       {!checkLoginRequired() && (
         <div>
