@@ -13,6 +13,27 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  generateBuildId: async () => {
+    // Get the latest commit hash from git
+    const { execSync } = require("child_process");
+    const gitHash = execSync("git rev-parse HEAD").toString().trim();
+    // Get the current date
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dateString = `${year}-${month}-${day}`;
+    // Return the build id
+    return `${gitHash}-${dateString}`;
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
+      })
+    );
+    return config;
+  },
 };
 
 module.exports = nextConfig;

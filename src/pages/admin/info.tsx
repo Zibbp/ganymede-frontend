@@ -12,6 +12,7 @@ import {
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import getConfig from "next/config";
 import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
@@ -51,16 +52,9 @@ const useStyles = createStyles((theme) => ({
 
 const AdminInfoPage = () => {
   const { classes, cx, theme } = useStyles();
-  const [registrationEnabled, setRegistrationEnabled] = useState(true);
-  const [webhookUrl, setWebhookUrl] = useState("");
-  const [postVideoFFmpegArgs, setPostVideoFFmpegArgs] = useState("");
-  const [streamlinkLiveArgs, setStreamlinkLiveArgs] = useState("");
-  const [chatRenderArgs, setChatRenderArgs] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { publicRuntimeConfig } = getConfig();
 
   useDocumentTitle("Ganymede - Admin - Info");
-
-  const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["admin-info"],
@@ -82,12 +76,18 @@ const AdminInfoPage = () => {
         <Container className={classes.settingsSections} size="md">
           <div className={classes.header}>
             <div>
-              <Title order={2}>Information</Title>
+              <Title order={2}>Frontend</Title>
             </div>
           </div>
+          <div className={classes.settingItem}>
+            <Text mr={5}>Version:</Text>
+            <Code>{process.env.CONFIG_BUILD_ID}</Code>
+          </div>
           <div>
-            <div>
-              <Title order={3}>Ganymede</Title>
+            <div className={classes.header}>
+              <div>
+                <Title order={2}>API</Title>
+              </div>
             </div>
             <div className={classes.settingItem}>
               <Text mr={5}>Version:</Text>
