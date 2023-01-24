@@ -29,9 +29,9 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
-    strategy:
-      matrix:
-        arch: [amd64, arm64]
+    # strategy:
+    #   matrix:
+    #     arch: [amd64, arm64]
 
     steps:
       - name: Checkout repository
@@ -74,5 +74,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/${{ matrix.arch }}
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=${{ env.IMAGE_NAME }}
