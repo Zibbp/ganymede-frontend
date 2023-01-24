@@ -13,11 +13,16 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
+import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
 
-const SearchPage = (props) => {
+interface SearchPageProps {
+  q: string;
+}
+
+const SearchPage = (props: SearchPageProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [displaySearchTerm, setDisplaySearchTerm] = useState("");
   const [page, setPage] = useState(1);
@@ -85,7 +90,7 @@ const SearchPage = (props) => {
         </Center>
 
         {isLoading && <GanymedeLoader />}
-        {!isLoading && data && (
+        {!isLoading && data && data.data.length > 0 ? (
           <div>
             <div>
               <Grid mt={10}>
@@ -136,6 +141,10 @@ const SearchPage = (props) => {
                 </Center>
               </div>
             </Center>
+          </div>
+        ) : (
+          <div style={{ marginTop: "1rem" }}>
+            <ChannelNoVideosFound />
           </div>
         )}
       </Container>

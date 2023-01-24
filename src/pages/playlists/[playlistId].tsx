@@ -2,6 +2,7 @@ import { Center, Container, Grid, Image, Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import DeletePlaylistModal from "../../components/Playlist/DeletePlaylistModal";
 import EditPlaylistModal from "../../components/Playlist/EditPlaylistModal";
 import PlaylistHeader from "../../components/Playlist/Header";
@@ -65,12 +66,7 @@ const PlaylistPage = (props: any) => {
           </div>
         </Container>
       ) : (
-        <div>
-          <Center>
-            No VODs found{" "}
-            <Image src="/images/Sadge.webp" ml={5} height={28} width={28} />
-          </Center>
-        </div>
+        <ChannelNoVideosFound />
       )}
       <Modal
         opened={opened}

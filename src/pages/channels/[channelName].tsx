@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { ChannelHeader } from "../../components/Channel/Header";
+import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
@@ -174,12 +175,7 @@ const ChannelPage = (props: any) => {
               </Center>
             </Container>
           ) : (
-            <div>
-              <Center>
-                No videos found
-                <Image src="/images/Sadge.webp" ml={5} height={19} width={27} />
-              </Center>
-            </div>
+            <ChannelNoVideosFound />
           )}
         </div>
       )}
