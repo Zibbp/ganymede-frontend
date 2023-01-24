@@ -71,8 +71,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
-          cache-from: type=gha,scope=${{ env.IMAGE_NAME }}
-          cache-to: type=gha,scope=${{ env.IMAGE_NAME }},mode=max
 
   build-push-arm64:
     # Only run on release tags
@@ -127,5 +125,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}-arm64
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/arm64
-          cache-from: type=gha,scope=${{ env.IMAGE_NAME }}-arm64
-          cache-to: type=gha,scope=${{ env.IMAGE_NAME }}-arm64,mode=max
