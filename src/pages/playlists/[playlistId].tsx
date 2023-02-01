@@ -1,6 +1,7 @@
 import { Center, Container, Grid, Image, Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
+import Head from "next/head";
 import { useState } from "react";
 import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import DeletePlaylistModal from "../../components/Playlist/DeletePlaylistModal";
@@ -29,6 +30,20 @@ const PlaylistPage = (props: any) => {
       ).then((res) => res?.data),
   });
 
+  const { data: playbackData, isLoading: playbackDataLoading } = useQuery({
+    queryKey: ["playback-data"],
+    queryFn: async () => {
+      return useApi(
+        {
+          method: "GET",
+          url: "/api/v1/playback",
+          withCredentials: true,
+        },
+        true
+      ).then((res) => res?.data);
+    },
+  });
+
   const closeModalCallback = () => {
     setOpened(false);
   };
@@ -47,19 +62,24 @@ const PlaylistPage = (props: any) => {
 
   return (
     <div>
+      <Head>
+        <title>{data.name} - Ganymede Playlist</title>
+      </Head>
       <PlaylistHeader
         playlist={data}
         handleOpen={openModalCallback}
         handleDeleteOpen={openDeletePlaylistModalCallback}
       />
 
-      {data.edges.vods ? (
+      {isLoading || playbackDataLoading ? (
+        <GanymedeLoader />
+      ) : data.edges.vods ? (
         <Container mt={5} size="xl" px="xl" fluid={true}>
           <div>
             <Grid>
               {data.edges.vods.map((vod: any) => (
                 <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
-                  <VodCard vod={vod}></VodCard>
+                  <VodCard vod={vod} playback={playbackData}></VodCard>
                 </Grid.Col>
               ))}
             </Grid>
