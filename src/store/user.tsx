@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface UserState {
+export interface UserState {
   isLoggedIn: boolean;
   id: string;
   username: string;
