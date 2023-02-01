@@ -67,12 +67,16 @@ export const VodInfoModalContent = ({ vod }: any) => {
       <div>
         Created/Archived At: <Code>{vod.created_at}</Code>
       </div>
-      <div>
-        Channel: <Code>{vod.edges.channel.name}</Code>
-      </div>
-      <div>
-        Channel Id: <Code>{vod.edges.channel.id}</Code>
-      </div>
+      {vod.edges.channel && (
+        <div>
+          <div>
+            Channel: <Code>{vod.edges.channel.name}</Code>
+          </div>
+          <div>
+            Channel Id: <Code>{vod.edges.channel.id}</Code>
+          </div>
+        </div>
+      )}
       <div>
         <Text mt={15} size="lg" weight={500}>
           Video FFprobe

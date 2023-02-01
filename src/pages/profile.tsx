@@ -45,7 +45,7 @@ const ProfilePage = () => {
 
   const { classes, theme } = useStyles();
 
-  useDocumentTitle("Ganymede - Profile");
+  useDocumentTitle("Profile - Ganymede");
 
   useEffect(() => {
     setChecked(user.settings.useNewChatPlayer);

@@ -32,7 +32,7 @@ const NewVideoPlayer = ({ vod }: any) => {
     refetchOnReconnect: false,
     retry: false,
     staleTime: Infinity,
-    queryKey: ["playback-data", vod.id],
+    queryKey: ["playback-data-player", vod.id],
     queryFn: async () =>
       useApi(
         {

@@ -24,7 +24,7 @@ const PlaylistsPage = () => {
   const { classes, cx, theme } = useStyles();
   const [opened, setOpened] = useState(false);
 
-  useDocumentTitle("Ganymede - Playlists");
+  useDocumentTitle("Playlists - Ganymede");
 
   const closeModalCallback = () => {
     setOpened(false);

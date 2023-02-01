@@ -13,13 +13,18 @@ import {
   Title,
   Progress,
   ThemeIcon,
+  ActionIcon,
 } from "@mantine/core";
 import Link from "next/link";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { useEffect, useState } from "react";
-import { IconCircleCheck } from "@tabler/icons";
+import { IconCircleCheck, IconDotsVertical } from "@tabler/icons";
 import getConfig from "next/config";
+import { useHover } from "@mantine/hooks";
+import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
+import { VodMenu } from "./Menu";
+import useUserStore, { UserState } from "../../store/user";
 dayjs.extend(duration);
 
 const useStyles = createStyles((theme) => ({
@@ -66,7 +71,9 @@ const useStyles = createStyles((theme) => ({
     top: "2px",
     right: "2px",
   },
-  typeBadge: {},
+  typeBadge: {
+    marginTop: "0.3rem",
+  },
   vodTitle: {
     color:
       theme.colorScheme === "dark"
@@ -79,6 +86,7 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
   },
   infoBarRight: {
+    display: "flex",
     marginLeft: "auto",
     order: 2,
   },
@@ -86,6 +94,7 @@ const useStyles = createStyles((theme) => ({
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontWeight: 400,
     fontSize: "15px",
+    marginTop: "0.1rem",
   },
   badgeText: {
     fontFamily: `Inter, ${theme.fontFamily}`,
@@ -95,6 +104,14 @@ const useStyles = createStyles((theme) => ({
     width: "100%",
     height: "auto",
   },
+  menuIcon: {
+    // position: "absolute",
+    // bottom: "0px",
+    // right: "0px",
+    // zIndex: 2,
+    // marginTop: "-0.5rem",
+    marginLeft: "0.2em",
+  },
 }));
 
 export const VodCard = ({ vod, playback }: any) => {
@@ -103,6 +120,7 @@ export const VodCard = ({ vod, playback }: any) => {
   const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { hovered, ref } = useHover();
 
   useEffect(() => {
     if (playback) {
@@ -116,9 +134,32 @@ export const VodCard = ({ vod, playback }: any) => {
           const progress = (vodInPlayback.time / vod.duration) * 100;
           setProgress(progress);
         }
+      } else {
+        setWatched(false);
+        setProgress(0);
       }
     }
-  }, []);
+  }, [playback]);
+
+  const user: UserState = useUserStore();
+  const menuPermissions = () => {
+    if (!user.isLoggedIn) {
+      return false;
+    }
+
+    // If no roles return true
+    if (user.role && user.role.length == 0) {
+      return false;
+    }
+
+    // Check roles
+    const roles = [ROLES.ADMIN, ROLES.EDITOR, ROLES.ARCHIVER];
+    if (roles.length > 0) {
+      return roles.includes(user.role);
+    }
+
+    return true;
+  };
 
   const preloadImage = (url) => {
     const image = new window.Image();
@@ -136,11 +177,11 @@ export const VodCard = ({ vod, playback }: any) => {
   }, [vod.web_thumbnail_path]);
 
   return (
-    <div>
+    <div ref={ref}>
       {!vod.processing ? (
         <Link href={"/vods/" + vod.id}>
-          <Card className={classes.card} p="0" radius={0}>
-            <Card.Section>
+          <Card className={classes.card} p={0} radius={0}>
+            <Card.Section style={{ position: "relative" }}>
               {!imageLoaded && (
                 <img
                   src="/images/ganymede-thumbnail.webp"
@@ -162,7 +203,7 @@ export const VodCard = ({ vod, playback }: any) => {
                   <Progress
                     className={classes.progressBar}
                     color="violet"
-                    radius="0"
+                    radius={0}
                     size="sm"
                     value={progress}
                   />
@@ -208,12 +249,25 @@ export const VodCard = ({ vod, playback }: any) => {
                   {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
                 </Text>
               </Tooltip>
+
               <div className={classes.infoBarRight}>
                 <Tooltip label="Video Type">
-                  <Badge color={theme.colorScheme === "dark" ? "gray" : "dark"}>
+                  <Badge
+                    color={theme.colorScheme === "dark" ? "gray" : "dark"}
+                    className={classes.typeBadge}
+                  >
                     {vod.type.toUpperCase()}
                   </Badge>
                 </Tooltip>
+                {menuPermissions() && (
+                  // hovered ? (
+                  <div
+                    className={classes.menuIcon}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <VodMenu vod={vod} style="card" />
+                  </div>
+                )}
               </div>
             </div>
           </Card>

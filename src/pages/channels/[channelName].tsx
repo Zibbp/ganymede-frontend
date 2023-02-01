@@ -63,7 +63,7 @@ const ChannelPage = (props: any) => {
     { value: "clip", label: "Clip" },
   ];
 
-  useDocumentTitle(`Ganymede - ${props.channel.display_name}`);
+  useDocumentTitle(`${props.channel.display_name} - Ganymede`);
 
   const queryClient = useQueryClient();
 

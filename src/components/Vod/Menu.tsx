@@ -8,16 +8,19 @@ import {
   IconHourglassEmpty,
   IconHourglass,
   IconHourglassHigh,
+  IconDotsVertical,
 } from "@tabler/icons";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { VodInfoModalContent } from "./InfoModalContent";
 import { VodPlaylistModalContent } from "./PlaylistModalContent";
 
-export const VodMenu = ({ vod }: any) => {
+export const VodMenu = ({ vod, style }: any) => {
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const markAsWatched = useMutation({
     mutationKey: ["mark-as-watched", vod.id],
@@ -34,6 +37,7 @@ export const VodMenu = ({ vod }: any) => {
         },
         false
       ).then(() => {
+        queryClient.invalidateQueries(["playback-data"]);
         showNotification({
           title: "Marked as Watched",
           message: "VOD has been successfully marked as watched",
@@ -53,6 +57,7 @@ export const VodMenu = ({ vod }: any) => {
         },
         false
       ).then(() => {
+        queryClient.invalidateQueries(["playback-data"]);
         showNotification({
           title: "Marked as UnWatched",
           message: "VOD has been successfully marked as unwatched",
@@ -64,11 +69,20 @@ export const VodMenu = ({ vod }: any) => {
   return (
     <div>
       <Menu shadow="md" width={200}>
-        <Menu.Target>
-          <ActionIcon size="xl">
-            <IconMenu2 />
-          </ActionIcon>
-        </Menu.Target>
+        {style == "card" && (
+          <Menu.Target>
+            <ActionIcon>
+              <IconDotsVertical size={18} />
+            </ActionIcon>
+          </Menu.Target>
+        )}
+        {style == "header" && (
+          <Menu.Target>
+            <ActionIcon size="xl">
+              <IconMenu2 />
+            </ActionIcon>
+          </Menu.Target>
+        )}
 
         <Menu.Dropdown>
           <Menu.Label>VOD Settings</Menu.Label>
