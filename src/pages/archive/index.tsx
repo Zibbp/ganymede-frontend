@@ -64,7 +64,7 @@ const ArchivePage = () => {
     "best"
   );
 
-  useDocumentTitle("Ganymede - Archive");
+  useDocumentTitle("Archive - Ganymede");
 
   const qualityOptions = [
     { label: "Best", value: "best" },

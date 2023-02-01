@@ -5,7 +5,7 @@ import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import QueueTable from "../../components/Queue/Table";
 
 const QueuePage = () => {
-  useDocumentTitle("Ganymede - Queue");
+  useDocumentTitle("Queue - Ganymede");
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <Container mt={10} size="2xl">

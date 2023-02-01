@@ -35,7 +35,7 @@ const useStyles = createStyles((theme) => ({
 export default function Home() {
   const { classes } = useStyles();
 
-  useDocumentTitle("Ganymede - Home");
+  useDocumentTitle("Ganymede");
 
   return (
     <div>
