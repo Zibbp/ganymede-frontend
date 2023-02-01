@@ -123,7 +123,7 @@ export const VodTitleBar = ({ vod }: any) => {
           {useJsxAuth({
             loggedIn: true,
             roles: [ROLES.ADMIN, ROLES.EDITOR, ROLES.ARCHIVER],
-          }) && <VodMenu vod={vod} />}
+          }) && <VodMenu vod={vod} style="header" />}
         </div>
       </div>
     </div>

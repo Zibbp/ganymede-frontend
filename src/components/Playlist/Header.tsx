@@ -24,7 +24,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const PlaylistHeader = ({ playlist, handleOpen, handleDeleteOpen }: Object) => {
+const PlaylistHeader = ({ playlist, handleOpen, handleDeleteOpen }: any) => {
   const user = useUserStore((state) => state);
   const { classes, cx, theme } = useStyles();
   return (
