@@ -85,7 +85,7 @@ export const VodMenu = ({ vod, style }: any) => {
         )}
 
         <Menu.Dropdown>
-          <Menu.Label>VOD Settings</Menu.Label>
+          <Menu.Label>Video Menu</Menu.Label>
           <Menu.Item
             onClick={() => setPlaylistModalOpened(true)}
             icon={<IconPlaylistAdd size={14} />}
