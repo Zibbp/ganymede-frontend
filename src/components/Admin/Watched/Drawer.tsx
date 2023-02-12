@@ -2,6 +2,8 @@ import {
   Button,
   Divider,
   Group,
+  Loader,
+  MultiSelect,
   Select,
   Switch,
   Text,
@@ -13,6 +15,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
+import GanymedeLoader from "../../Utils/GanymedeLoader";
 
 const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const { handleSubmit } = useForm();
@@ -32,6 +35,12 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [channelData, setChannelData] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [twitchCategoriesLoading, setTwitchCategoriesLoading] = useState(false);
+  const [formattedTwitchCategories, setFormattedTwitchCategories] = useState(
+    []
+  );
+  const [selectedTwitchCategories, setSelectedTwitchCategories] = useState([]);
+
   const qualityOptions = [
     { label: "Best", value: "best" },
     { label: "720p60", value: "720p60" },
@@ -42,6 +51,8 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
 
   useEffect(() => {
     if (mode == "edit") {
+      console.log(watched);
+
       setId(watched?.id);
       setWatchLive(watched?.watch_live);
       setWatchVod(watched?.watch_vod);
@@ -54,6 +65,14 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setChannelId(watched?.edges.channel.id);
       setRenderChat(watched?.render_chat);
       setDownloadSubOnly(watched?.download_sub_only);
+
+      if (watched?.edges?.categories) {
+        const tmpArr = [];
+        watched?.edges?.categories.forEach((category) => {
+          tmpArr.push(category.name);
+        });
+        setSelectedTwitchCategories(tmpArr);
+      }
     }
   }, []);
 
@@ -78,6 +97,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_uploads: downloadUploads,
               render_chat: renderChat,
               download_sub_only: downloadSubOnly,
+              categories: selectedTwitchCategories,
             },
             withCredentials: true,
           },
@@ -98,6 +118,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       }
       if (mode == "create") {
         setLoading(true);
+
         return useApi(
           {
             method: "POST",
@@ -113,6 +134,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_uploads: downloadUploads,
               render_chat: renderChat,
               download_sub_only: downloadSubOnly,
+              categories: selectedTwitchCategories,
             },
             withCredentials: true,
           },
@@ -157,6 +179,42 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
         return res?.data;
       });
     },
+  });
+
+  // Fetch categories
+  const { data: twitchCategoriesResp } = useQuery({
+    queryKey: ["admin-categories"],
+    queryFn: () => {
+      setTwitchCategoriesLoading(true);
+      return useApi(
+        {
+          method: "GET",
+          url: `/api/v1/twitch/categories`,
+          withCredentials: true,
+        },
+        false
+      )
+        .then((res) => {
+          // Format Twitch categories
+          const tmpArr = [];
+          res?.data.forEach((category) => {
+            tmpArr.push({
+              label: category.name,
+              value: category.name,
+            });
+          });
+          setFormattedTwitchCategories(tmpArr);
+          setTwitchCategoriesLoading(false);
+          return res?.data;
+        })
+        .catch((err) => {
+          showNotification({
+            title: "Error",
+            message: "Error fetching Twitch categories",
+          });
+        });
+    },
+    refetchOnWindowFocus: false,
   });
 
   return (
@@ -266,6 +324,30 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               onChange={(e) => setDownloadSubOnly(e.currentTarget.checked)}
             />
           </div>
+        </div>
+
+        <Divider my="md" size="md" />
+        <div>
+          <Title order={3}>Advanced</Title>
+        </div>
+        <div>
+          {twitchCategoriesLoading || formattedTwitchCategories.length == 0 ? (
+            <Loader color="violet" />
+          ) : (
+            <MultiSelect
+              searchable
+              limit={20}
+              value={selectedTwitchCategories}
+              onChange={setSelectedTwitchCategories}
+              data={formattedTwitchCategories}
+              dropdownPosition="top"
+              label="Archive specific video categories"
+              placeholder="Search for a category"
+              description="Archive only videos from these categories. Leave blank to archive all categories. Does not apply to live streams."
+              clearButtonLabel="Clear selection"
+              clearable
+            />
+          )}
         </div>
 
         <Button
