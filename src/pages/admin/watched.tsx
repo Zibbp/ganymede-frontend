@@ -25,6 +25,9 @@ const useStyles = createStyles((theme) => ({
     marginLeft: "auto",
     order: 2,
   },
+  watchedDrawer: {
+    overflowY: "scroll",
+  },
 }));
 
 const AdminWatchedPage = () => {
@@ -64,6 +67,7 @@ const AdminWatchedPage = () => {
         </Container>
         <Drawer
           opened={drawerOpened}
+          className={classes.watchedDrawer}
           onClose={() => setDrawerOpened(false)}
           title="Watched Channel"
           padding="xl"
