@@ -57,6 +57,26 @@ const ProfilePage = () => {
       "ganymedeUserSettings",
       JSON.stringify(useUserStore.getState().settings)
     );
+    showNotification({
+      autoClose: 2000,
+      title: "Settings",
+      message: "Settings updated successfully",
+      styles: (theme) => ({
+        root: {
+          backgroundColor: theme.colors.green[6],
+          borderColor: theme.colors.green[6],
+
+          "&::before": { backgroundColor: theme.white },
+        },
+
+        title: { color: theme.white },
+        description: { color: theme.white },
+        closeButton: {
+          color: theme.white,
+          "&:hover": { backgroundColor: theme.colors.blue[7] },
+        },
+      }),
+    });
   };
 
   const logout = () => {
