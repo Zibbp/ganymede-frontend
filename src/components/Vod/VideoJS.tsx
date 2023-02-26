@@ -1,12 +1,24 @@
-import React from "react";
+import { useFullscreen } from "@mantine/hooks";
+import React, { useRef } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "videojs-hotkeys";
+import eventBus from "../../util/eventBus";
 
 export const VideoJS = (props) => {
-  const videoRef = React.useRef(null);
-  const playerRef = React.useRef(null);
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
   const { options, onReady } = props;
+  const { toggle, fullscreen } = useFullscreen();
+  const isFullscreen = useRef(false);
+
+  const setTheaterMode = () => {
+    isFullscreen.current = !isFullscreen.current;
+    eventBus.emit("theaterMode", isFullscreen.current);
+    console.log("Emitted: ", isFullscreen.current);
+
+    // toggle();
+  };
 
   React.useEffect(() => {
     // Make sure Video.js player is only initialized once
@@ -21,6 +33,15 @@ export const VideoJS = (props) => {
         videojs.log("player is ready");
         onReady && onReady(player);
       }));
+
+      var theaterButton = player.controlBar.addChild("button", {}, 100);
+      var theaterButtonDom = theaterButton.el();
+      theaterButton.addClass("vjs-icon-square");
+      theaterButton.controlText("Theater Mode");
+      theaterButtonDom.onclick = function () {
+        setTheaterMode();
+      };
+      theaterButtonDom.addEventListener("touchstart", setTheaterMode);
 
       // You could update an existing player in the `else` block here
       // on prop change, for example:
