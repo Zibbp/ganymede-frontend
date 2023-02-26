@@ -29,7 +29,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [archiveChat, setArchiveChat] = useState(true);
   const [renderChat, setRenderChat] = useState(true);
   const [lastLive, setLastLive] = useState(watched?.last_live);
-  const [channelId, setChannelId] = useState("");
+  const [channelId, setChannelId] = useState([]);
   const [downloadSubOnly, setDownloadSubOnly] = useState(false);
 
   const [channelData, setChannelData] = useState([]);
@@ -51,8 +51,6 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
 
   useEffect(() => {
     if (mode == "edit") {
-      console.log(watched);
-
       setId(watched?.id);
       setWatchLive(watched?.watch_live);
       setWatchVod(watched?.watch_vod);
@@ -62,7 +60,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setResolution(watched?.resolution);
       setArchiveChat(watched?.archive_chat);
       setLastLive(watched?.last_live);
-      setChannelId(watched?.edges.channel.id);
+      setChannelId([...channelId, watched?.edges.channel.id]);
       setRenderChat(watched?.render_chat);
       setDownloadSubOnly(watched?.download_sub_only);
 
@@ -119,27 +117,55 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       if (mode == "create") {
         setLoading(true);
 
-        return useApi(
-          {
-            method: "POST",
-            url: `/api/v1/live`,
-            data: {
-              channel_id: channelId,
-              resolution: resolution,
-              archive_chat: archiveChat,
-              watch_live: watchLive,
-              watch_vod: watchVod,
-              download_archives: downloadArchives,
-              download_highlights: downloadHighlights,
-              download_uploads: downloadUploads,
-              render_chat: renderChat,
-              download_sub_only: downloadSubOnly,
-              categories: selectedTwitchCategories,
-            },
-            withCredentials: true,
-          },
-          false
-        )
+        const requestRoute = () => {
+          if (channelId.length > 1) {
+            return useApi(
+              {
+                method: "POST",
+                url: `/api/v1/live/multiple`,
+                data: {
+                  channel_id: channelId,
+                  resolution: resolution,
+                  archive_chat: archiveChat,
+                  watch_live: watchLive,
+                  watch_vod: watchVod,
+                  download_archives: downloadArchives,
+                  download_highlights: downloadHighlights,
+                  download_uploads: downloadUploads,
+                  render_chat: renderChat,
+                  download_sub_only: downloadSubOnly,
+                  categories: selectedTwitchCategories,
+                },
+                withCredentials: true,
+              },
+              false
+            );
+          } else {
+            return useApi(
+              {
+                method: "POST",
+                url: `/api/v1/live`,
+                data: {
+                  channel_id: channelId[0],
+                  resolution: resolution,
+                  archive_chat: archiveChat,
+                  watch_live: watchLive,
+                  watch_vod: watchVod,
+                  download_archives: downloadArchives,
+                  download_highlights: downloadHighlights,
+                  download_uploads: downloadUploads,
+                  render_chat: renderChat,
+                  download_sub_only: downloadSubOnly,
+                  categories: selectedTwitchCategories,
+                },
+                withCredentials: true,
+              },
+              false
+            );
+          }
+        };
+
+        return requestRoute()
           .then(() => {
             queryClient.invalidateQueries(["admin-watched"]);
             setLoading(false);
@@ -228,7 +254,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           disabled
           mb="xs"
         />
-        <Select
+        <MultiSelect
           label="Channel"
           placeholder="ganymede"
           data={channelData}
