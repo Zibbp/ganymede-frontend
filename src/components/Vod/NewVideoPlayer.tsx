@@ -1,6 +1,5 @@
 import getConfig from "next/config";
 import React, { useEffect, useRef, useState } from "react";
-import Script from "next/script";
 import { createStyles } from "@mantine/core";
 import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
@@ -21,9 +20,9 @@ const NewVideoPlayer = ({ vod }: any) => {
   const { classes, cx, theme } = useStyles();
   const user = useUserStore((state) => state);
   const playerRef = useRef(null);
-
   const [playerReady, setPlayerReady] = useState(false);
   const [videoJsOptions, setVideoJsOptions] = useState({});
+  const [tapped, setTapped] = useState(false);
 
   // Fetch playback data
   const { data } = useQuery({
@@ -103,6 +102,36 @@ const NewVideoPlayer = ({ vod }: any) => {
 
     setPlayerReady(true);
   }, [data]);
+
+  // Mobile tap support
+  // Single tap to play/pause
+  // Double tap to seek +/- 10 seconds depending on side of screen
+  let timeout: any;
+  const handleTouchStart = (event) => {
+    console.log(event);
+
+    const player = playerRef.current;
+    if (!tapped) {
+      setTapped(true);
+      timeout = setTimeout(() => setTapped(false), 300);
+      if (player.paused()) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    } else {
+      clearTimeout(timeout);
+      setTapped(false);
+      const currentTime = player.currentTime();
+      const duration = player.duration();
+      const seekTime =
+        event.changedTouches[0].clientX < window.innerWidth / 2
+          ? currentTime - 10
+          : currentTime + 10;
+      player.currentTime(Math.max(0, Math.min(seekTime, duration)));
+      player.play();
+    }
+  };
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
@@ -194,7 +223,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   return (
-    <div className={classes.playerContainer}>
+    <div className={classes.playerContainer} onTouchStart={handleTouchStart}>
       {playerReady && (
         <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
       )}
