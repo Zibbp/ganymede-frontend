@@ -52,7 +52,6 @@ const VodPage = (props: any) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [fullScreenHideElements, setFullScreenHideElements] = useState(false);
   // listen to media query width to determine if the chat column should be changed
   const smallDevice = useMediaQuery("(max-width: 1000px)");
   const { ref, toggle, fullscreen } = useFullscreen();
@@ -69,9 +68,6 @@ const VodPage = (props: any) => {
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
-      if (!isSmallDevice.current) {
-        setFullScreenHideElements(data);
-      }
       if (isSmallDevice.current) {
         toggle();
       }
@@ -108,7 +104,10 @@ const VodPage = (props: any) => {
           <Grid columns={12} gutter={0}>
             <Grid.Col
               className={
-                isFullscreen
+                // isFullscreen is for desktop theater mode
+                // fullscreen is for mobile theater mode
+                // need to be seperated as desktop doesn't get toggled into fullscreen
+                isFullscreen || fullscreen
                   ? classes.videoPlayerColumnNoHeader
                   : classes.videoPlayerColumn
               }
@@ -120,7 +119,7 @@ const VodPage = (props: any) => {
               !useUserStore.getState().settings.useNewChatPlayer && (
                 <Grid.Col
                   className={
-                    isFullscreen
+                    isFullscreen || fullscreen
                       ? classes.videoPlayerColumnNoHeader
                       : classes.videoPlayerColumn
                   }
@@ -133,7 +132,7 @@ const VodPage = (props: any) => {
               useUserStore.getState().settings.useNewChatPlayer && (
                 <Grid.Col
                   className={
-                    isFullscreen
+                    isFullscreen || fullscreen
                       ? classes.videoPlayerColumnNoHeader
                       : classes.videoPlayerColumn
                   }
@@ -145,7 +144,7 @@ const VodPage = (props: any) => {
           </Grid>
         </div>
       )}
-      {!fullScreenHideElements && <VodTitleBar vod={data} />}
+      {!isFullscreen && <VodTitleBar vod={data} />}
     </div>
   );
 };

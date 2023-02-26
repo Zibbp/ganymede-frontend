@@ -5,7 +5,6 @@ import { useMediaQuery } from "@mantine/hooks";
 
 export default function MainLayout({ children }) {
   const [fullscreen, setFullscreen] = useState(false);
-  const [fullScreenHideElements, setFullScreenHideElements] = useState(false);
   const smallDevice = useMediaQuery("(max-width: 1000px)");
   const isSmallDevice = useRef(false);
 
@@ -13,9 +12,6 @@ export default function MainLayout({ children }) {
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
       setFullscreen(data);
-      if (!isSmallDevice.current) {
-        setFullScreenHideElements(data);
-      }
     });
   }, []);
 
@@ -25,7 +21,7 @@ export default function MainLayout({ children }) {
 
   return (
     <>
-      {!fullScreenHideElements && <HeaderMenu />}
+      {!fullscreen && <HeaderMenu />}
       <main>{children}</main>
     </>
   );
