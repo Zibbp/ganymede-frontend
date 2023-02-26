@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "ganymede-color-scheme",
-    defaultValue: "light",
+    defaultValue: "dark",
     getInitialValueInEffect: true,
   });
 
