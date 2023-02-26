@@ -108,8 +108,6 @@ const NewVideoPlayer = ({ vod }: any) => {
   // Double tap to seek +/- 10 seconds depending on side of screen
   let timeout: any;
   const handleTouchStart = (event) => {
-    console.log(event);
-
     const player = playerRef.current;
     if (!tapped) {
       setTapped(true);
