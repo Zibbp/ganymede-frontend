@@ -52,8 +52,6 @@ const VodPage = (props: any) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // listen to media query width to determine if the chat column should be changed
-  const smallDevice = useMediaQuery("(max-width: 1000px)");
   const { ref, toggle, fullscreen } = useFullscreen();
   const isSmallDevice = useRef(false);
 
@@ -64,8 +62,21 @@ const VodPage = (props: any) => {
     queryFn: () => fetchVod(props.vodId),
   });
 
+  const getDevice = () => {
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   // Theater mode support
   useEffect(() => {
+    isSmallDevice.current = getDevice();
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
       if (isSmallDevice.current) {
@@ -73,10 +84,6 @@ const VodPage = (props: any) => {
       }
     });
   }, []);
-
-  useEffect(() => {
-    isSmallDevice.current = smallDevice;
-  }, [smallDevice]);
 
   const checkLoginRequired = () => {
     if (
@@ -123,7 +130,7 @@ const VodPage = (props: any) => {
                       ? classes.videoPlayerColumnNoHeader
                       : classes.videoPlayerColumn
                   }
-                  span={smallDevice ? 3 : 2}
+                  span={getDevice() ? 3 : 2}
                 >
                   <VodChatPlayer vod={data} />
                 </Grid.Col>
@@ -136,7 +143,7 @@ const VodPage = (props: any) => {
                       ? classes.videoPlayerColumnNoHeader
                       : classes.videoPlayerColumn
                   }
-                  span={smallDevice ? 3 : 2}
+                  span={getDevice() ? 3 : 2}
                 >
                   <ExperimentalChatPlayer vod={data} />
                 </Grid.Col>
