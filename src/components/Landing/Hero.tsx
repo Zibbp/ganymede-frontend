@@ -18,8 +18,8 @@ const useStyles = createStyles((theme) => ({
     backgroundPosition: "center",
     backgroundImage:
       "linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #120643 70%), url(/images/landing-hero.webp)",
-    paddingTop: theme.spacing.xl * 3,
-    paddingBottom: theme.spacing.xl * 3,
+    paddingTop: theme.spacing.xl * 1,
+    paddingBottom: theme.spacing.xl * 1,
   },
 
   inner: {
