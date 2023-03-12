@@ -221,7 +221,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   return (
-    <div className={classes.playerContainer} onTouchStart={handleTouchStart}>
+    <div className={classes.playerContainer} onTouchEnd={handleTouchStart}>
       {playerReady && (
         <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
       )}
