@@ -4,12 +4,18 @@ import getConfig from "next/config";
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect } from "react";
+import LandingContinueWatching from "../components/Landing/ContinueWatching";
 import { LandingHero } from "../components/Landing/Hero";
 import LandingRecentlyArchived from "../components/Landing/Recent";
+import useUserStore from "../store/user";
 import styles from "../styles/Home.module.css";
 
 const useStyles = createStyles((theme) => ({
   recentlyArchivedSection: {
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
+  },
+  continueWatchingSection: {
     paddingLeft: theme.spacing.md,
     paddingRight: theme.spacing.md,
     paddingBottom: theme.spacing.xs,
@@ -37,9 +43,21 @@ export default function Home() {
 
   useDocumentTitle("Ganymede");
 
+  const user = useUserStore((state) => state);
+
   return (
     <div>
       <LandingHero />
+      {user.isLoggedIn && (
+        <div className={classes.continueWatchingSection}>
+          <Center>
+            <Title className={classes.title}>Continue Watching</Title>
+          </Center>
+          <Center>
+            <LandingContinueWatching />
+          </Center>
+        </div>
+      )}
       <div className={classes.recentlyArchivedSection}>
         <Center>
           <Title className={classes.title}>Recently Archived</Title>
