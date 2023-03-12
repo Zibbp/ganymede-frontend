@@ -12,6 +12,7 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const [displayName, setDisplayName] = useState(channel?.display_name);
   const [imagePath, setImagePath] = useState(channel?.image_path);
   const [loading, setLoading] = useState(false);
+  const [updateImageLoading, setUpdateImageLoading] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -77,6 +78,32 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
     },
   });
 
+  const updateChannelImage = useMutation({
+    mutationKey: ["update-channel-image"],
+    mutationFn: (id: string) => {
+      setUpdateImageLoading(true);
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/channel/update-image?id=${id}`,
+          withCredentials: true,
+        },
+        false
+      )
+        .then(() => {
+          setUpdateImageLoading(false);
+          showNotification({
+            title: "Channel Updated",
+            message: "Channel image has been updated successfully",
+          });
+          handleClose();
+        })
+        .catch((err) => {
+          setUpdateImageLoading(false);
+        });
+    },
+  });
+
   return (
     <div>
       <form onSubmit={handleSubmit(mutate)}>
@@ -112,6 +139,20 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           required
           mb="xs"
         />
+
+        <Button
+          fullWidth
+          radius="md"
+          size="xs"
+          color="gray"
+          variant="outline"
+          mb="sm"
+          loading={updateImageLoading}
+          onClick={() => updateChannelImage.mutate(id)}
+        >
+          Update Channel Image
+        </Button>
+
         <Button
           type="submit"
           fullWidth
