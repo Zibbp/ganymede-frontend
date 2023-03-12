@@ -18,8 +18,6 @@ const useStyles = createStyles((theme) => ({
   continueWatchingSection: {
     paddingLeft: theme.spacing.md,
     paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
-    marginBottom: theme.spacing.md,
   },
   title: {
     color: [theme.colorScheme === "dark" ? "white" : theme.black],
