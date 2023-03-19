@@ -176,6 +176,18 @@ export const VodCard = ({ vod, playback }: any) => {
     preloadImage(`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`);
   }, [vod.web_thumbnail_path]);
 
+  const formatDuration = (duration: number) => {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    const seconds = Math.floor(duration % 60);
+
+    const formattedHours = hours.toString().padStart(2, "0");
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    const formattedSeconds = seconds.toString().padStart(2, "0");
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  };
+
   return (
     <div ref={ref}>
       {!vod.processing ? (
@@ -213,7 +225,7 @@ export const VodCard = ({ vod, playback }: any) => {
 
             <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
               <Text className={classes.badgeText} color="gray.2">
-                {dayjs.duration(vod.duration, "seconds").format("HH:mm:ss")}
+                {formatDuration(vod.duration)}
               </Text>
             </Badge>
             {watched && (
@@ -309,7 +321,7 @@ export const VodCard = ({ vod, playback }: any) => {
 
           <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
             <Text color="gray.2" className={classes.badgeText}>
-              {dayjs.duration(vod.duration, "seconds").format("HH:mm:ss")}
+              {formatDuration(vod.duration)}
             </Text>
           </Badge>
           {watched && (
