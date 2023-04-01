@@ -358,7 +358,10 @@ export const VodCard = ({ vod, playback }: any) => {
               ).toLocaleString()}`}
             >
               <Text className={classes.infoBarText}>
-                {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
+                {dayjs(vod.streamed_at).format("YYYY/MM/DD")}{" "}
+                {user.settings.moreUIDetails && (
+                  <span>{dayjs(vod.streamed_at).format("LT")}</span>
+                )}
               </Text>
             </Tooltip>
             <div className={classes.infoBarRight}>
