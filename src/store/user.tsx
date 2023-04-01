@@ -13,6 +13,7 @@ export interface UserState {
 
 interface UserSettings {
   useNewChatPlayer: boolean;
+  moreUIDetails: boolean;
 }
 
 const useUserStore = create<UserState>((set) => ({
@@ -24,6 +25,7 @@ const useUserStore = create<UserState>((set) => ({
   createdAt: "",
   settings: {
     useNewChatPlayer: true,
+    moreUIDetails: false,
   },
   oauth: false,
   setUser: (user: UserState) => set(user),

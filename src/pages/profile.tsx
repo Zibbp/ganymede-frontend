@@ -41,18 +41,25 @@ const ProfilePage = () => {
   const [oldPassword, setOldPassword] = useInputState("");
   const [password, setPassword] = useInputState("");
   const [passwordConfirm, setPasswordConfirm] = useInputState("");
-  const [checked, setChecked] = useState(false);
+  const [useNewChatPlayer, setUseNewChatPlayer] = useState(false);
+  const [showMoreUIDetails, setShowMoreUIDetails] = useState(false);
 
   const { classes, theme } = useStyles();
 
   useDocumentTitle("Profile - Ganymede");
 
   useEffect(() => {
-    setChecked(user.settings.useNewChatPlayer);
+    setUseNewChatPlayer(user.settings.useNewChatPlayer);
+    setShowMoreUIDetails(user.settings.moreUIDetails);
   }, []);
 
   const updateUserSettings = async () => {
-    useUserStore.setState({ settings: { useNewChatPlayer: checked } });
+    useUserStore.setState({
+      settings: {
+        useNewChatPlayer: useNewChatPlayer,
+        moreUIDetails: showMoreUIDetails,
+      },
+    });
     localStorage.setItem(
       "ganymedeUserSettings",
       JSON.stringify(useUserStore.getState().settings)
@@ -158,10 +165,21 @@ const ProfilePage = () => {
 
             <div>
               <Switch
-                checked={checked}
-                onChange={(event) => setChecked(event.currentTarget.checked)}
+                checked={useNewChatPlayer}
+                onChange={(event) =>
+                  setUseNewChatPlayer(event.currentTarget.checked)
+                }
                 label="Use new chat player"
                 description="Disable to use the standard rendered video chat playback."
+                mb={10}
+              />
+              <Switch
+                checked={showMoreUIDetails}
+                onChange={(event) =>
+                  setShowMoreUIDetails(event.currentTarget.checked)
+                }
+                label="More UI details"
+                description="Show more information in the UI."
               />
               <Button
                 onClick={() => updateUserSettings()}
