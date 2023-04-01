@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import { useEffect, useState } from "react";
 import { IconCircleCheck, IconDotsVertical } from "@tabler/icons";
 import getConfig from "next/config";
@@ -26,6 +27,7 @@ import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import { VodMenu } from "./Menu";
 import useUserStore, { UserState } from "../../store/user";
 dayjs.extend(duration);
+dayjs.extend(localizedFormat);
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -258,7 +260,10 @@ export const VodCard = ({ vod, playback }: any) => {
                 ).toLocaleString()}`}
               >
                 <Text className={classes.infoBarText}>
-                  {dayjs(vod.streamed_at).format("YYYY/MM/DD")}
+                  {dayjs(vod.streamed_at).format("YYYY/MM/DD")}{" "}
+                  {user.settings.moreUIDetails && (
+                    <span>{dayjs(vod.streamed_at).format("LT")}</span>
+                  )}
                 </Text>
               </Tooltip>
 
