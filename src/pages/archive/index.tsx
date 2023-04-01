@@ -12,6 +12,7 @@ import {
   Select,
   createStyles,
   Switch,
+  Divider,
 } from "@mantine/core";
 import { useDocumentTitle, useInputState } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -63,7 +64,8 @@ const ArchivePage = () => {
   const [archiveQuality, setArchiveQuality] = useInputState<string | null>(
     "best"
   );
-
+  const [channelData, setChannelData] = useState([]);
+  const [channelId, setChannelID] = useState("");
   useDocumentTitle("Archive - Ganymede");
 
   const qualityOptions = [
@@ -77,36 +79,98 @@ const ArchivePage = () => {
   const archiveVodSubmit = useMutation({
     mutationKey: ["archive-vod"],
     mutationFn: () => {
-      if (archiveInput == "") {
+      if (!archiveInput && !channelId) {
+        return;
+      }
+      if (archiveInput && channelId) {
+        showNotification({
+          title: "Select one",
+          message: "Please either enter an ID or select a channel (not both)",
+        });
         return;
       }
       setArchiveSubmitLoading(true);
+      if (archiveInput != "") {
+        return useApi(
+          {
+            method: "POST",
+            url: `/api/v1/archive/vod`,
+            data: {
+              vod_id: archiveInput,
+              quality: archiveQuality,
+              chat: archiveChat,
+              render_chat: renderChat,
+            },
+            withCredentials: true,
+          },
+          false
+        )
+          .then((res) => {
+            setArchiveSubmitLoading(false);
+            setTwitchVodInfo(null);
+            setArchiveInput("");
+            showNotification({
+              title: "VOD Archived",
+              message: "VOD has been added to the archive queue",
+            });
+          })
+          .catch((err) => {
+            setArchiveSubmitLoading(false);
+          });
+      }
+      if (channelId != "") {
+        return useApi(
+          {
+            method: "POST",
+            url: `/api/v1/live/archive`,
+            data: {
+              channel_id: channelId,
+              resolution: archiveQuality,
+              archive_chat: archiveChat,
+              render_chat: renderChat,
+            },
+            withCredentials: true,
+          },
+          false
+        )
+          .then((res) => {
+            setArchiveSubmitLoading(false);
+            setTwitchVodInfo(null);
+            setArchiveInput("");
+            showNotification({
+              title: "Livestream Archived",
+              message: "Livestream has been added to the archive queue",
+            });
+          })
+          .catch((err) => {
+            setArchiveSubmitLoading(false);
+          });
+      }
+    },
+  });
+
+  // Fetch channels
+  const { data: channels } = useQuery({
+    queryKey: ["admin-channels"],
+    queryFn: () => {
       return useApi(
         {
-          method: "POST",
-          url: `/api/v1/archive/vod`,
-          data: {
-            vod_id: archiveInput,
-            quality: archiveQuality,
-            chat: archiveChat,
-            render_chat: renderChat,
-          },
+          method: "GET",
+          url: `/api/v1/channel`,
           withCredentials: true,
         },
         false
-      )
-        .then((res) => {
-          setArchiveSubmitLoading(false);
-          setTwitchVodInfo(null);
-          setArchiveInput("");
-          showNotification({
-            title: "VOD Archived",
-            message: "VOD has been added to the archive queue",
+      ).then((res) => {
+        const tmpArr = [];
+        res.data.forEach((channel) => {
+          tmpArr.push({
+            label: channel.name,
+            value: channel.id,
           });
-        })
-        .catch((err) => {
-          setArchiveSubmitLoading(false);
         });
+        setChannelData(tmpArr);
+        return res?.data;
+      });
     },
   });
 
@@ -154,21 +218,32 @@ const ArchivePage = () => {
                 radius="md"
                 withBorder
               >
-                <Center mb={10}>
+                <Center>
                   <div>
-                    <Title>Archive Video</Title>
-                    <Center>
-                      <Text>Enter ID or URL</Text>
-                    </Center>
+                    <Title>Archive</Title>
                   </div>
+                </Center>
+                <Center mb={10}>
+                  <Text>
+                    Enter a video ID or select a channel to archive a livestream
+                  </Text>
                 </Center>
                 <TextInput
                   value={archiveInput}
                   onChange={(e) => getVodInfo.mutate(e.currentTarget.value)}
-                  placeholder="Video ID"
+                  placeholder="Video ID or URL"
                   withAsterisk
                 />
-                <Group mt={5} mb={5}>
+                <Divider my="xs" label="Or" labelPosition="center" />
+                <Select
+                  placeholder="Channel"
+                  data={channelData}
+                  value={channelId}
+                  onChange={setChannelID}
+                  searchable
+                  mb="md"
+                />
+                <Group mt={5} mb={10}>
                   <Select
                     className={classes.qualitySelect}
                     placeholder="Resolution"
@@ -204,7 +279,6 @@ const ArchivePage = () => {
               </Card>
               {twitchVodInfo?.id && <VodPreview vod={twitchVodInfo} />}
             </div>
-            {/* Show VOD preview */}
           </Center>
         </Container>
       </div>
