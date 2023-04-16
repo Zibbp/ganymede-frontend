@@ -23,6 +23,8 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [playerReady, setPlayerReady] = useState(false);
   const [videoJsOptions, setVideoJsOptions] = useState({});
   const [tapped, setTapped] = useState(false);
+  const handleKeyRef = useRef<any>(null);
+  const seekAmount = 20;
 
   // Fetch playback data
   const { data } = useQuery({
@@ -72,7 +74,7 @@ const NewVideoPlayer = ({ vod }: any) => {
       ],
       plugins: {
         hotkeys: {
-          seekStep: 20,
+          seekStep: 0,
           volumeStep: 0.1,
           enableVolumeScroll: false,
           enableHoverScroll: true,
@@ -159,6 +161,20 @@ const NewVideoPlayer = ({ vod }: any) => {
     player.on("pause", () => {
       player.bigPlayButton.show();
     });
+    const handleKeyDown = (event) => {
+      switch (event.keyCode) {
+        case 37: // left arrow
+          player.currentTime(player.currentTime() - seekAmount);
+          break;
+        case 39: // right arrow
+          player.currentTime(player.currentTime() + seekAmount);
+          break;
+        default:
+          break;
+      }
+    };
+    handleKeyRef.current = handleKeyDown;
+    document.addEventListener("keydown", handleKeyDown);
   };
 
   // Tick for chat
@@ -171,7 +187,10 @@ const NewVideoPlayer = ({ vod }: any) => {
         playing: !playerRef.current.paused(),
       });
     }, 100);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("keydown", handleKeyRef.current);
+    };
   }, [playerRef.current]);
 
   // Playback progress reporting
@@ -221,10 +240,12 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   return (
-    <div className={classes.playerContainer} onTouchEnd={handleTouchStart}>
-      {playerReady && (
-        <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
-      )}
+    <div className={classes.playerContainer}>
+      <div className={classes.playerContainer} onTouchEnd={handleTouchStart}>
+        {playerReady && (
+          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+        )}
+      </div>
     </div>
   );
 };
