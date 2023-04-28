@@ -266,7 +266,7 @@ const AdminVodsTable = () => {
       <Modal
         opened={deletedOpened}
         onClose={() => setDeletedOpened(false)}
-        title="Delete VOD"
+        title="Delete Video"
       >
         <AdminVodDelete
           handleClose={closeDeleteModalCallback}
@@ -276,7 +276,7 @@ const AdminVodsTable = () => {
       <Modal
         opened={multiDeleteOpened}
         onClose={() => setMultiDeleteOpened(false)}
-        title="Delete VODs"
+        title="Delete Videos"
       >
         <AdminMultiVodDelete
           handleClose={closeMultiDeleteModalCallback}

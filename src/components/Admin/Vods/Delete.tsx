@@ -1,4 +1,4 @@
-import { Button, Code, Text } from "@mantine/core";
+import { Button, Code, Switch, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import getConfig from "next/config";
@@ -9,15 +9,19 @@ const AdminVodDelete = ({ handleClose, vod }) => {
   const { publicRuntimeConfig } = getConfig();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [deleteFiles, setDeleteFiles] = useState(false);
 
   const deleteVod = useMutation({
     mutationKey: ["delete-vod"],
     mutationFn: () => {
       setLoading(true);
+      const url = deleteFiles
+        ? `/api/v1/vod/${vod.id}?delete_files=true`
+        : `/api/v1/vod/${vod.id}`;
       return useApi(
         {
           method: "DELETE",
-          url: `/api/v1/vod/${vod.id}`,
+          url,
           withCredentials: true,
         },
         false
@@ -40,34 +44,38 @@ const AdminVodDelete = ({ handleClose, vod }) => {
   return (
     <div>
       <Text weight={600} size="lg">
-        Are you sure you want to delete the following VOD?
+        Are you sure you want to delete this video?
       </Text>
-      <div>
-        ID: <Code>{vod.id}</Code>
-      </div>
-      <div>
-        Eexternal ID: <Code>{vod.ext_id}</Code>
-      </div>
-      <div>
-        Title: <Code>{vod.title}</Code>
-      </div>
+      <Code block mb={5}>
+        <pre>ID: {vod.id}</pre>
+        <pre>External ID: {vod.ext_id}</pre>
+        <pre>Title: {vod.title}</pre>
+      </Code>
+
       <img
         style={{ width: "100%" }}
         src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
       />
-      <div>
-        <Text mt={5} size="xs">
-          This action does not delete any files.
-        </Text>
-      </div>
-      <div style={{ float: "right" }}>
-        <Button
-          onClick={() => deleteVod.mutate()}
-          color="red"
-          loading={loading}
-        >
-          Delete
-        </Button>
+      <div style={{ float: "right", marginTop: "1rem" }}>
+        <div style={{ display: "flex" }}>
+          <Switch
+            checked={deleteFiles}
+            onChange={(event) => setDeleteFiles(event.currentTarget.checked)}
+            mt={6}
+            mr={10}
+            labelPosition="left"
+            label="Delete files"
+            color="red"
+          />
+
+          <Button
+            onClick={() => deleteVod.mutate()}
+            color="red"
+            loading={loading}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );

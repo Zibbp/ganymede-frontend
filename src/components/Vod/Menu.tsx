@@ -9,16 +9,20 @@ import {
   IconHourglass,
   IconHourglassHigh,
   IconDotsVertical,
+  IconTrashX,
 } from "@tabler/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { VodInfoModalContent } from "./InfoModalContent";
 import { VodPlaylistModalContent } from "./PlaylistModalContent";
+import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
+import AdminVodDelete from "../Admin/Vods/Delete";
 
 export const VodMenu = ({ vod, style }: any) => {
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
+  const [deletedOpened, setDeletedOpened] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -66,9 +70,17 @@ export const VodMenu = ({ vod, style }: any) => {
     },
   });
 
+  const openDeleteModal = () => {
+    setDeletedOpened(true);
+  };
+
+  const closeDeleteModalCallback = () => {
+    setDeletedOpened(false);
+  };
+
   return (
     <div>
-      <Menu shadow="md" width={200}>
+      <Menu shadow="md" width={200} position="top-end">
         {style == "card" && (
           <Menu.Target>
             <ActionIcon>
@@ -110,6 +122,20 @@ export const VodMenu = ({ vod, style }: any) => {
           >
             Mark as Unwatched
           </Menu.Item>
+          {useJsxAuth({
+            loggedIn: true,
+            roles: [ROLES.ADMIN],
+          }) && (
+            <Menu.Item
+              color="red"
+              onClick={() => {
+                openDeleteModal();
+              }}
+              icon={<IconTrashX size={14} />}
+            >
+              Delete
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
       <Modal
@@ -126,6 +152,13 @@ export const VodMenu = ({ vod, style }: any) => {
         title="VOD Information"
       >
         <VodInfoModalContent vod={vod} />
+      </Modal>
+      <Modal
+        opened={deletedOpened}
+        onClose={() => setDeletedOpened(false)}
+        title="Delete Video"
+      >
+        <AdminVodDelete handleClose={closeDeleteModalCallback} vod={vod} />
       </Modal>
     </div>
   );
