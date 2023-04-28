@@ -32,6 +32,7 @@ dayjs.extend(localizedFormat);
 const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor: "transparent",
+    overflow: "visible"
   },
   dateBadge: {
     position: "absolute",
