@@ -10,9 +10,11 @@ import {
   IconHourglassHigh,
   IconDotsVertical,
   IconTrashX,
+  IconLock,
+  IconLockOpen,
 } from "@tabler/icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { VodInfoModalContent } from "./InfoModalContent";
 import { VodPlaylistModalContent } from "./PlaylistModalContent";
@@ -23,8 +25,15 @@ export const VodMenu = ({ vod, style }: any) => {
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
   const [deletedOpened, setDeletedOpened] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (vod?.locked) {
+      setIsLocked(true);
+    }
+  }, [vod]);
 
   const markAsWatched = useMutation({
     mutationKey: ["mark-as-watched", vod.id],
@@ -50,6 +59,26 @@ export const VodMenu = ({ vod, style }: any) => {
     },
   });
 
+  const lockVod = useMutation({
+    mutationKey: ["lock-vod", vod.id],
+    mutationFn: (lock: boolean) => {
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/vod/${vod.id}/lock?locked=${lock}`,
+          withCredentials: true,
+        },
+        false
+      ).then(() => {
+        queryClient.invalidateQueries(["vod", vod.id]);
+        showNotification({
+          title: "Video Updated",
+          message: `Video has been ${lock ? "locked" : "unlocked"}`,
+        });
+      });
+    },
+  });
+
   const markAsUnWatched = useMutation({
     mutationKey: ["mark-as-unwatched", vod.id],
     mutationFn: () => {
@@ -63,7 +92,7 @@ export const VodMenu = ({ vod, style }: any) => {
       ).then(() => {
         queryClient.invalidateQueries(["playback-data"]);
         showNotification({
-          title: "Marked as UnWatched",
+          title: "Marked as Unwatched",
           message: "VOD has been successfully marked as unwatched",
         });
       });
@@ -122,6 +151,21 @@ export const VodMenu = ({ vod, style }: any) => {
           >
             Mark as Unwatched
           </Menu.Item>
+          {isLocked ? (
+            <Menu.Item
+              onClick={() => lockVod.mutate(false)}
+              icon={<IconLockOpen size={14} />}
+            >
+              Unlock
+            </Menu.Item>
+          ) : (
+            <Menu.Item
+              onClick={() => lockVod.mutate(true)}
+              icon={<IconLock size={14} />}
+            >
+              Lock
+            </Menu.Item>
+          )}
           {useJsxAuth({
             loggedIn: true,
             roles: [ROLES.ADMIN],

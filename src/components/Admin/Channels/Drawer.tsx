@@ -1,9 +1,19 @@
-import { Button, TextInput } from "@mantine/core";
+import {
+  Button,
+  Text,
+  NumberInput,
+  Switch,
+  TextInput,
+  ActionIcon,
+  Tooltip,
+  Group,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
+import { IconQuestionCircle } from "@tabler/icons";
 
 const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const { handleSubmit } = useForm();
@@ -13,6 +23,8 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const [imagePath, setImagePath] = useState(channel?.image_path);
   const [loading, setLoading] = useState(false);
   const [updateImageLoading, setUpdateImageLoading] = useState(false);
+  const [retentionEnabled, setRetentionEnabled] = useState(channel?.retention);
+  const [retentionDays, setRetentionDays] = useState(channel?.retention_days);
 
   const queryClient = useQueryClient();
 
@@ -29,6 +41,8 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
               name: name,
               display_name: displayName,
               image_path: imagePath,
+              retention: retentionEnabled,
+              retention_days: retentionDays,
             },
             withCredentials: true,
           },
@@ -57,6 +71,8 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
               name: name,
               display_name: displayName,
               image_path: imagePath,
+              retention: retentionEnabled,
+              retention_days: retentionDays,
             },
             withCredentials: true,
           },
@@ -140,7 +156,39 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           mb="xs"
         />
 
+        <div style={{ display: "flex" }}>
+          <Text>Retention settings</Text>
+          <Tooltip
+            multiline
+            width={400}
+            label="If this settings is enabled, channel videos will be deleted (including files) after a
+          certain amount of time. 'Lock' a video to prevent it from being
+          deleted."
+          >
+            <ActionIcon color="dark">
+              <IconQuestionCircle size="1.125rem" />
+            </ActionIcon>
+          </Tooltip>
+        </div>
+
+        <Switch
+          label="Enable retention"
+          checked={retentionEnabled}
+          onChange={(event) => setRetentionEnabled(event.currentTarget.checked)}
+          color="violet"
+        />
+        {retentionEnabled && (
+          <NumberInput
+            defaultValue={7}
+            placeholder="Retention Days"
+            label="Retention Days"
+            value={retentionDays}
+            onChange={setRetentionDays}
+          />
+        )}
+
         <Button
+          mt={10}
           fullWidth
           radius="md"
           size="xs"
