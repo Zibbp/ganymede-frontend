@@ -47,18 +47,22 @@ const LandingContinueWatching = () => {
 
   return (
     <div>
-      <Container size="2xl">
-        <div className={classes.vodSection}>
-          {data?.data?.map((item: any) => (
-            <div className={classes.vodItem} key={item.vod.id}>
-              <VodCard vod={item.vod} playback={data?.playback}></VodCard>
-            </div>
-          ))}
-          {[...Array(4 - data?.data?.length)].map((_, index) => (
-            <div className={classes.vodItem} key={index} />
-          ))}
-        </div>
-      </Container>
+      {data?.data?.length > 0 ? (
+        <Container size="2xl">
+          <div className={classes.vodSection}>
+            {data?.data?.map((item: any) => (
+              <div className={classes.vodItem} key={item.vod.id}>
+                <VodCard vod={item.vod} playback={data?.playback}></VodCard>
+              </div>
+            ))}
+            {[...Array(4 - data?.data?.length)].map((_, index) => (
+              <div className={classes.vodItem} key={index} />
+            ))}
+          </div>
+        </Container>
+      ) : (
+        <Container size="2xl">No watch progress found</Container>
+      )}
     </div>
   );
 };
