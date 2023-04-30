@@ -9,6 +9,7 @@ import { LandingHero } from "../components/Landing/Hero";
 import LandingRecentlyArchived from "../components/Landing/Recent";
 import useUserStore from "../store/user";
 import styles from "../styles/Home.module.css";
+import { LandingLoggedInHero } from "../components/Landing/LoggedInHero";
 
 const useStyles = createStyles((theme) => ({
   recentlyArchivedSection: {
@@ -45,7 +46,7 @@ export default function Home() {
 
   return (
     <div>
-      <LandingHero />
+      {user.isLoggedIn ? <LandingLoggedInHero /> : <LandingHero />}
       {user.isLoggedIn && (
         <div className={classes.continueWatchingSection}>
           <Center>
