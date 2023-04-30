@@ -24,7 +24,9 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const [loading, setLoading] = useState(false);
   const [updateImageLoading, setUpdateImageLoading] = useState(false);
   const [retentionEnabled, setRetentionEnabled] = useState(channel?.retention);
-  const [retentionDays, setRetentionDays] = useState(channel?.retention_days);
+  const [retentionDays, setRetentionDays] = useState(
+    channel?.retention_days || 7
+  );
 
   const queryClient = useQueryClient();
 
