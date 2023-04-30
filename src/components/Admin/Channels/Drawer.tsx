@@ -161,7 +161,7 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           <Tooltip
             multiline
             width={400}
-            label="If this settings is enabled, channel videos will be deleted (including files) after a
+            label="If this setting is enabled, channel videos will be deleted (including files) after a
           certain amount of time. 'Lock' a video to prevent it from being
           deleted."
           >
@@ -177,6 +177,11 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           onChange={(event) => setRetentionEnabled(event.currentTarget.checked)}
           color="violet"
         />
+        {retentionEnabled && (
+          <Text c="red" mt={5}>
+            Videos will be deleted after {retentionDays} days
+          </Text>
+        )}
         {retentionEnabled && (
           <NumberInput
             defaultValue={7}
