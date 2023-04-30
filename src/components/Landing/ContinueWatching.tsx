@@ -54,6 +54,9 @@ const LandingContinueWatching = () => {
               <VodCard vod={item.vod} playback={data?.playback}></VodCard>
             </div>
           ))}
+          {[...Array(4 - data?.data?.length)].map((_, index) => (
+            <div className={classes.vodItem} key={index} />
+          ))}
         </div>
       </Container>
     </div>

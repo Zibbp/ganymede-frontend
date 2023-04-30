@@ -32,7 +32,7 @@ dayjs.extend(localizedFormat);
 const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor: "transparent",
-    overflow: "visible"
+    overflow: "visible",
   },
   dateBadge: {
     position: "absolute",
@@ -47,9 +47,10 @@ const useStyles = createStyles((theme) => ({
     left: "5px",
     pointerEvents: "none",
     backgroundColor: "rgba(0, 0, 0, 0.6)",
+    borderRadius: "0.5rem",
   },
   processingOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -67,7 +68,7 @@ const useStyles = createStyles((theme) => ({
     color: theme.white,
   },
   progressBar: {
-    marginTop: "-0.3rem",
+    marginTop: "-0.5rem",
   },
   watchedIcon: {
     position: "absolute",
@@ -106,6 +107,18 @@ const useStyles = createStyles((theme) => ({
   image: {
     width: "100%",
     height: "auto",
+    transition: "transform 200ms ease-out",
+    borderTopLeftRadius: "0.5rem",
+    borderTopRightRadius: "0.5rem",
+  },
+  imageHover: {
+    display: "block",
+    transform: "scale(1.05)",
+    transformOrigin: "50% 50%",
+  },
+  outerImage: {
+    display: "inline-block",
+    overflow: "hidden",
   },
   menuIcon: {
     // position: "absolute",
@@ -197,22 +210,27 @@ export const VodCard = ({ vod, playback }: any) => {
         <Link href={"/vods/" + vod.id}>
           <Card className={classes.card} p={0} radius={0}>
             <Card.Section style={{ position: "relative" }}>
-              {!imageLoaded && (
+              <div className={classes.outerImage}>
+                {!imageLoaded && (
+                  <img
+                    src="/images/ganymede-thumbnail.webp"
+                    className={classes.image}
+                    alt={vod.title}
+                  />
+                )}
+
                 <img
-                  src="/images/ganymede-thumbnail.webp"
-                  className={classes.image}
+                  src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
+                  onLoad={() => {
+                    handleImageLoaded();
+                  }}
+                  className={`${classes.image} ${
+                    hovered ? classes.imageHover : ""
+                  }`}
+                  style={imageStyle}
                   alt={vod.title}
                 />
-              )}
-              <img
-                src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
-                onLoad={() => {
-                  handleImageLoaded();
-                }}
-                className={classes.image}
-                style={imageStyle}
-                alt={vod.title}
-              />
+              </div>
               {Math.round(progress) > 0 && !watched && (
                 <Tooltip label={`${Math.round(progress)}% watched`}>
                   <Progress
@@ -278,7 +296,6 @@ export const VodCard = ({ vod, playback }: any) => {
                   </Badge>
                 </Tooltip>
                 {menuPermissions() && (
-                  // hovered ? (
                   <div
                     className={classes.menuIcon}
                     onClick={(e) => e.preventDefault()}

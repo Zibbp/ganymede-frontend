@@ -37,6 +37,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
   const [infoPath, setInfoPath] = useState(vod?.info_path);
   const [captionPath, setCaptionPath] = useState(vod?.caption_path);
   const [streamedAt, setStreamedAt] = useState();
+  const [isLocked, setIsLocked] = useState(vod?.locked);
 
   const [loading, setLoading] = useState(false);
 
@@ -118,6 +119,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
               info_path: infoPath,
               caption_path: captionPath,
               streamed_at: streamedAt,
+              locked: isLocked,
             },
             withCredentials: true,
           },
@@ -160,6 +162,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
               info_path: infoPath,
               caption_path: captionPath,
               streamed_at: streamedAt,
+              locked: isLocked,
             },
             withCredentials: true,
           },
@@ -188,6 +191,15 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
           label="Is Processing"
           checked={processing}
           onChange={(e) => setProcessing(e.currentTarget.checked)}
+          color="violet"
+          mb={10}
+        />
+        <Switch
+          mb={5}
+          label="Locked"
+          checked={isLocked}
+          onChange={(event) => setIsLocked(event.currentTarget.checked)}
+          color="violet"
         />
         <TextInput
           value={id}
