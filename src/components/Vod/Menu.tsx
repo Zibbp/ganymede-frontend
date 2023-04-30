@@ -1,20 +1,18 @@
 import { Menu, Button, Text, ActionIcon, Modal } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import {
-  IconPhoto,
   IconMenu2,
   IconPlaylistAdd,
   IconInfoCircle,
   IconHourglassEmpty,
-  IconHourglass,
   IconHourglassHigh,
   IconDotsVertical,
   IconTrashX,
   IconLock,
   IconLockOpen,
 } from "@tabler/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { VodInfoModalContent } from "./InfoModalContent";
 import { VodPlaylistModalContent } from "./PlaylistModalContent";
@@ -25,15 +23,15 @@ export const VodMenu = ({ vod, style }: any) => {
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
   const [deletedOpened, setDeletedOpened] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-
-  const queryClient = useQueryClient();
+  const isLocked = useRef(false);
 
   useEffect(() => {
-    if (vod?.locked) {
-      setIsLocked(true);
+    if (vod.locked) {
+      isLocked.current = true;
     }
   }, [vod]);
+
+  const queryClient = useQueryClient();
 
   const markAsWatched = useMutation({
     mutationKey: ["mark-as-watched", vod.id],
@@ -75,6 +73,12 @@ export const VodMenu = ({ vod, style }: any) => {
           title: "Video Updated",
           message: `Video has been ${lock ? "locked" : "unlocked"}`,
         });
+        if (lock == true) {
+          isLocked.current = true;
+        } else {
+          isLocked.current = false;
+        }
+        console.log(isLocked.current);
       });
     },
   });
@@ -151,7 +155,7 @@ export const VodMenu = ({ vod, style }: any) => {
           >
             Mark as Unwatched
           </Menu.Item>
-          {isLocked ? (
+          {isLocked.current ? (
             <Menu.Item
               onClick={() => lockVod.mutate(false)}
               icon={<IconLockOpen size={14} />}
