@@ -50,9 +50,6 @@ export default function Home() {
       {user.isLoggedIn && (
         <div className={classes.continueWatchingSection}>
           <Center>
-            <Title className={classes.title}>Continue Watching</Title>
-          </Center>
-          <Center>
             <LandingContinueWatching />
           </Center>
         </div>

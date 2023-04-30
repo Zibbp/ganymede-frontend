@@ -1,4 +1,4 @@
-import { Container, createStyles } from "@mantine/core";
+import { Center, Container, Title, createStyles } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useApi } from "../../hooks/useApi";
@@ -21,6 +21,21 @@ const useStyles = createStyles((theme) => ({
     width: "640px",
     [theme.fn.smallerThan("lg")]: {
       width: "100%",
+    },
+  },
+  title: {
+    color: [theme.colorScheme === "dark" ? "white" : theme.black],
+    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+    fontWeight: 900,
+    lineHeight: 1.05,
+    maxWidth: 500,
+    fontSize: 36,
+    marginTop: theme.spacing.lg,
+
+    [theme.fn.smallerThan("md")]: {
+      maxWidth: "100%",
+      fontSize: 34,
+      lineHeight: 1.15,
     },
   },
 }));
@@ -47,21 +62,24 @@ const LandingContinueWatching = () => {
 
   return (
     <div>
-      {data?.data?.length > 0 ? (
-        <Container size="2xl">
-          <div className={classes.vodSection}>
-            {data?.data?.map((item: any) => (
-              <div className={classes.vodItem} key={item.vod.id}>
-                <VodCard vod={item.vod} playback={data?.playback}></VodCard>
-              </div>
-            ))}
-            {[...Array(4 - data?.data?.length)].map((_, index) => (
-              <div className={classes.vodItem} key={index} />
-            ))}
-          </div>
-        </Container>
-      ) : (
-        <Container size="2xl">No watch progress found</Container>
+      {data?.data?.length > 0 && (
+        <div>
+          <Center>
+            <Title className={classes.title}>Continue Watching</Title>
+          </Center>
+          <Container size="2xl">
+            <div className={classes.vodSection}>
+              {data?.data?.map((item: any) => (
+                <div className={classes.vodItem} key={item.vod.id}>
+                  <VodCard vod={item.vod} playback={data?.playback}></VodCard>
+                </div>
+              ))}
+              {[...Array(4 - data?.data?.length)].map((_, index) => (
+                <div className={classes.vodItem} key={index} />
+              ))}
+            </div>
+          </Container>
+        </div>
       )}
     </div>
   );
