@@ -1,11 +1,25 @@
-import { createStyles, Loader, Text, ThemeIcon, Tooltip } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
+import {
+  ActionIcon,
+  createStyles,
+  Loader,
+  Text,
+  ThemeIcon,
+  Tooltip,
+} from "@mantine/core";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
 import { DataTable } from "mantine-datatable";
-import { IconCheck, IconPlayerPause, IconX } from "@tabler/icons";
+import {
+  IconCheck,
+  IconPlayerPause,
+  IconPlayerStop,
+  IconSquareX,
+  IconX,
+} from "@tabler/icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   errBadge: {
@@ -24,6 +38,7 @@ const QueueTable = () => {
   const [perPage, setPerPage] = useState(10);
   const [records, setRecords] = useState(null);
   const [initialRecords, setInitialRecords] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { isLoading, error, data } = useQuery({
     queryKey: ["queue"],
     queryFn: async () =>
@@ -48,6 +63,31 @@ const QueueTable = () => {
       setRecords(data.slice(from, to));
     }
   }, [data, page, perPage]);
+
+  const stopQueueItem = useMutation({
+    mutationKey: ["stop-queue"],
+    mutationFn: (id: string) => {
+      setLoading(true);
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/queue/${id}/stop`,
+          withCredentials: true,
+        },
+        false
+      )
+        .then(() => {
+          setLoading(false);
+          showNotification({
+            title: "Stopped Queue Item",
+            message: "Video and chat download has been stopped",
+          });
+        })
+        .catch((err) => {
+          setLoading(false);
+        });
+    },
+  });
 
   const checkFailed = (record) => {
     if (
@@ -134,7 +174,28 @@ const QueueTable = () => {
           {
             accessor: "actions",
             title: "Actions",
-            render: ({ id }) => <Link href={"/queue/" + id}>View</Link>,
+            render: ({ id, live_archive }) => (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Link href={"/queue/" + id}>View</Link>
+                {live_archive && (
+                  <Tooltip label="Stop queue item" withinPortal>
+                    <ActionIcon
+                      color="red"
+                      variant="light"
+                      onClick={() => stopQueueItem.mutate(id)}
+                    >
+                      <IconSquareX size="1.125rem" />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </div>
+            ),
           },
         ]}
         totalRecords={data.length}
