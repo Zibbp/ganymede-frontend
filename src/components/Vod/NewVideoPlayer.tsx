@@ -5,13 +5,27 @@ import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
 import { useQuery } from "@tanstack/react-query";
-import VideoJS from "./VideoJS";
+import { type MediaPlayerElement } from "vidstack";
+
+import "vidstack/styles/defaults.css";
+import "vidstack/styles/community-skin/video.css";
+
+import {
+  MediaCommunitySkin,
+  MediaOutlet,
+  MediaPlayer,
+  MediaPoster,
+  useMediaRemote,
+} from "@vidstack/react";
 
 const useStyles = createStyles((theme) => ({
   playerContainer: {
     width: "100%",
     height: "100%",
-    minHeight: "100%",
+  },
+  playerMediaOutlet: {
+    paddingBottom: "0",
+    height: "100%",
   },
 }));
 
@@ -25,6 +39,14 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [tapped, setTapped] = useState(false);
   const handleKeyRef = useRef<any>(null);
   const seekAmount = 20;
+
+  const player = useRef<MediaPlayerElement>(null);
+  const playerRemote = useMediaRemote(player);
+
+  const [videoSource, setVideoSource] = useState<string>("");
+  const [videoType, setVideoType] = useState<string>("");
+  const [videoPoster, setVideoPoster] = useState<string>("");
+  const [videoTitle, setVideoTitle] = useState<string>("");
 
   // Fetch playback data
   const { data } = useQuery({
@@ -56,153 +78,73 @@ const NewVideoPlayer = ({ vod }: any) => {
   useEffect(() => {
     if (!data) return;
 
+    if (!player) return;
+
     const ext = vod.video_path.substr(vod.video_path.length - 4);
     let type = "video/mp4";
     if (ext == "m3u8") {
       type = "application/x-mpegURL";
     }
 
-    const options = {
-      autoplay: false,
-      controls: true,
-      playbackRates: [0.5, 1, 1.5, 2, 2.5],
-      sources: [
-        {
-          src: `${publicRuntimeConfig.CDN_URL}${vod.video_path}`,
-          type: type,
-        },
-      ],
-      plugins: {
-        hotkeys: {
-          seekStep: 0,
-          volumeStep: 0.1,
-          enableVolumeScroll: false,
-          enableHoverScroll: true,
-          enableModifiersForNumbers: false,
-        },
-      },
-    };
+    setVideoSource(`${publicRuntimeConfig.CDN_URL}${vod.video_path}`);
+    setVideoType(type);
+    setVideoTitle(vod.title);
 
     // If thumbnail
     if (vod.thumbnail_path) {
-      options.poster = `${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`;
+      setVideoPoster(`${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`);
     }
 
     // If captions
     if (vod.caption_path) {
-      options.tracks = [
-        {
-          kind: "captions",
-          src: `${publicRuntimeConfig.CDN_URL}${vod.caption_path}`,
-          srclang: "en",
-          label: "Captions",
-        },
-      ];
+      // todo: add captions
     }
-
-    setVideoJsOptions(options);
-
-    setPlayerReady(true);
-  }, [data]);
-
-  // Mobile tap support
-  // Single tap to play/pause
-  // Double tap to seek +/- 10 seconds depending on side of screen
-  let timeout: any;
-  const handleTouchStart = (event) => {
-    const player = playerRef.current;
-    if (!tapped) {
-      setTapped(true);
-      timeout = setTimeout(() => setTapped(false), 300);
-      if (player.paused()) {
-        player.play();
-      } else {
-        player.pause();
-      }
-    } else {
-      clearTimeout(timeout);
-      setTapped(false);
-      const currentTime = player.currentTime();
-      const duration = player.duration();
-      const seekTime =
-        event.changedTouches[0].clientX < window.innerWidth / 2
-          ? currentTime - 10
-          : currentTime + 10;
-      player.currentTime(Math.max(0, Math.min(seekTime, duration)));
-      player.play();
-    }
-  };
-
-  const handlePlayerReady = (player) => {
-    playerRef.current = player;
-
-    // Show control bar on initial load
-    player.addClass("vjs-has-started");
 
     // Volume
     const localVolume = localStorage.getItem("ganymede-volume");
     if (localVolume) {
-      player.volume(localVolume);
+      console.debug(`setting volume to ${parseFloat(localVolume)}`);
+      player.current!.volume = parseFloat(localVolume);
     }
 
-    player.on("volumechange", () => {
-      localStorage.setItem("ganymede-volume", player.volume());
+    player.current?.subscribe(({ volume }) => {
+      localStorage.setItem("ganymede-volume", volume.toString());
     });
 
     // Playback data
     if (data.time) {
-      player.currentTime(data.time);
+      player.current!.currentTime = data.time;
     }
 
-    player.on("play", () => {
-      player.bigPlayButton.hide();
-    });
-
-    player.on("pause", () => {
-      player.bigPlayButton.show();
-    });
-    const handleKeyDown = (event) => {
-      switch (event.keyCode) {
-        case 37: // left arrow
-          player.currentTime(player.currentTime() - seekAmount);
-          break;
-        case 39: // right arrow
-          player.currentTime(player.currentTime() + seekAmount);
-          break;
-        default:
-          break;
-      }
-    };
-    handleKeyRef.current = handleKeyDown;
-    document.addEventListener("keydown", handleKeyDown);
-  };
+    setPlayerReady(true);
+  }, [data, player]);
 
   // Tick for chat
   useEffect(() => {
     const interval = setInterval(() => {
-      if (playerRef.current == null) return;
+      if (player.current == null) return;
       vodDataBus.setData({
-        time: playerRef.current.currentTime(),
-        paused: playerRef.current.paused(),
-        playing: !playerRef.current.paused(),
+        time: player.current!.state.currentTime,
+        paused: player.current!.state.paused,
+        playing: player.current!.state.playing,
       });
     }, 100);
     return () => {
       clearInterval(interval);
       document.removeEventListener("keydown", handleKeyRef.current);
     };
-  }, [playerRef.current]);
+  }, [player.current]);
 
   // Playback progress reporting
   useEffect(() => {
     const playbackInerval = setInterval(async () => {
       if (!user.isLoggedIn) return;
-      if (playerRef.current == null) return;
-      if (playerRef.current.paused()) return;
+      if (player.current == null) return;
+      if (player.current!.paused) return;
 
       const playbackData = {
         vod_id: vod.id,
-        time: parseInt(playerRef.current.currentTime()),
+        time: parseInt(player.current!.currentTime),
       };
 
       if (playbackData.time == 0) return;
@@ -241,11 +183,19 @@ const NewVideoPlayer = ({ vod }: any) => {
 
   return (
     <div className={classes.playerContainer}>
-      <div className={classes.playerContainer} onTouchEnd={handleTouchStart}>
-        {playerReady && (
-          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
-        )}
-      </div>
+      <MediaPlayer
+        className={classes.playerContainer}
+        title={videoTitle}
+        src={videoSource}
+        poster={videoPoster}
+        aspect-ratio={16 / 9}
+        ref={player}
+      >
+        <MediaOutlet className={classes.playerMediaOutlet}>
+          <MediaPoster alt={videoTitle} />
+        </MediaOutlet>
+        <MediaCommunitySkin />
+      </MediaPlayer>
     </div>
   );
 };

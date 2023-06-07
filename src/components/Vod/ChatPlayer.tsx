@@ -51,7 +51,6 @@ export const VodChatPlayer = ({ vod }: any) => {
       if (!ready) {
         return;
       }
-      // console.log(time, playing, paused);
 
       if (playing) {
         player.play();
