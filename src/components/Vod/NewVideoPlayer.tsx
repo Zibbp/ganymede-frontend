@@ -110,8 +110,6 @@ const NewVideoPlayer = ({ vod }: any) => {
     if (data.time) {
       player.current!.currentTime = data.time;
     }
-
-    setPlayerReady(true);
   }, [data, player]);
 
   // Tick for chat
@@ -139,7 +137,7 @@ const NewVideoPlayer = ({ vod }: any) => {
 
       const playbackData = {
         vod_id: vod.id,
-        time: parseInt(player.current!.currentTime),
+        time: player.current!.currentTime,
       };
 
       if (playbackData.time == 0) return;
