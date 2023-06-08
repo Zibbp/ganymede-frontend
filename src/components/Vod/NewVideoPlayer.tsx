@@ -33,12 +33,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const { classes, cx, theme } = useStyles();
   const user = useUserStore((state) => state);
-  const playerRef = useRef(null);
-  const [playerReady, setPlayerReady] = useState(false);
-  const [videoJsOptions, setVideoJsOptions] = useState({});
-  const [tapped, setTapped] = useState(false);
   const handleKeyRef = useRef<any>(null);
-  const seekAmount = 20;
 
   const player = useRef<MediaPlayerElement>(null);
   const playerRemote = useMediaRemote(player);
@@ -185,7 +180,6 @@ const NewVideoPlayer = ({ vod }: any) => {
     <div className={classes.playerContainer}>
       <MediaPlayer
         className={classes.playerContainer}
-        title={videoTitle}
         src={videoSource}
         poster={videoPoster}
         aspect-ratio={16 / 9}
