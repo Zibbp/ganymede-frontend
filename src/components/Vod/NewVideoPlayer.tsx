@@ -137,7 +137,7 @@ const NewVideoPlayer = ({ vod }: any) => {
 
       const playbackData = {
         vod_id: vod.id,
-        time: player.current!.currentTime,
+        time: parseInt(player.current!.currentTime),
       };
 
       if (playbackData.time == 0) return;
