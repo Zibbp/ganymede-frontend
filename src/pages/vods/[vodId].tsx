@@ -7,7 +7,7 @@ import { VodTitleBar } from "../../components/Vod/TitleBar";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
 import Error from "next/error";
-import NewVideoPlayer from "../../components/Vod/NewVideoPlayer";
+import NewVideoPlayer from "../../components/Vod/VideoPlayer";
 import getConfig from "next/config";
 import VodLoginRequired from "../../components/Vod/LoginRequred";
 import Head from "next/head";

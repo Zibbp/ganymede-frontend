@@ -98,7 +98,7 @@ export const VodPlaylistModalContent = ({ vod }: any) => {
   });
 
   return (
-    <div>
+    <div style={{ minHeight: "10rem" }}>
       <Text size="lg" weight={500}>
         Add to Playlist
       </Text>
@@ -109,6 +109,7 @@ export const VodPlaylistModalContent = ({ vod }: any) => {
           onChange={setValue}
           searchable
           placeholder="Select a Playlist"
+          dropdownPosition="bottom"
         />
         <Button
           color="green"

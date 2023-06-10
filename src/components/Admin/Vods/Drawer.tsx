@@ -6,7 +6,7 @@ import {
   Switch,
   TextInput,
 } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
+import { DatePicker, DatePickerInput } from "@mantine/dates";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -286,7 +286,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
           mb="xs"
         />
 
-        <DatePicker
+        <DatePickerInput
           value={streamedAt}
           onChange={setStreamedAt}
           allowFreeInput

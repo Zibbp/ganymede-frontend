@@ -40,7 +40,7 @@ const AdminMultiVodDelete = ({ handleClose, vods }) => {
   });
 
   return (
-    <div>
+    <div style={{ marginBottom: "2rem" }}>
       <Text weight={600} size="lg">
         Are you sure you want to delete the selected videos?
       </Text>

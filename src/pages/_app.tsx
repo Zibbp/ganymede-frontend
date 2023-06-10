@@ -16,7 +16,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { NotificationsProvider } from "@mantine/notifications";
+import { Notifications } from "@mantine/notifications";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -70,18 +70,17 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           withGlobalStyles
           withNormalizeCSS
         >
-          <NotificationsProvider>
-            <QueryClientProvider client={queryClient}>
-              <Hydrate state={pageProps.dehydratedState}>
-                {isLoaded && (
-                  <MainLayout>
-                    <Component {...pageProps} />
-                  </MainLayout>
-                )}
-                <ReactQueryDevtools initialIsOpen={false} position="top-left" />
-              </Hydrate>
-            </QueryClientProvider>
-          </NotificationsProvider>
+          <Notifications />
+          <QueryClientProvider client={queryClient}>
+            <Hydrate state={pageProps.dehydratedState}>
+              {isLoaded && (
+                <MainLayout>
+                  <Component {...pageProps} />
+                </MainLayout>
+              )}
+              <ReactQueryDevtools initialIsOpen={false} position="top-left" />
+            </Hydrate>
+          </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>

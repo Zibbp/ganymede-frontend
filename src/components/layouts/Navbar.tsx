@@ -80,7 +80,7 @@ const useStyles = createStyles((theme) => ({
 
   subLink: {
     width: "100%",
-    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
     borderRadius: theme.radius.md,
 
     ...theme.fn.hover({

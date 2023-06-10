@@ -14,6 +14,7 @@ import {
   Progress,
   ThemeIcon,
   ActionIcon,
+  rem,
 } from "@mantine/core";
 import Link from "next/link";
 import dayjs from "dayjs";
@@ -33,6 +34,10 @@ const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor: "transparent",
     overflow: "visible",
+  },
+  cardSection: {
+    marginRight: "0",
+    marginLeft: "0",
   },
   dateBadge: {
     position: "absolute",
@@ -68,7 +73,8 @@ const useStyles = createStyles((theme) => ({
     color: theme.white,
   },
   progressBar: {
-    marginTop: "-0.5rem",
+    marginTop: rem(-11),
+    marginBottom: rem(5),
   },
   watchedIcon: {
     position: "absolute",
@@ -85,6 +91,9 @@ const useStyles = createStyles((theme) => ({
         : theme.colors.dark[8],
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontWeight: 600,
+  },
+  titleText: {
+    marginTop: "0 !important",
   },
   infoBar: {
     display: "flex",
@@ -209,7 +218,10 @@ export const VodCard = ({ vod, playback }: any) => {
       {!vod.processing ? (
         <Link href={"/vods/" + vod.id}>
           <Card className={classes.card} p={0} radius={0}>
-            <Card.Section style={{ position: "relative" }}>
+            <Card.Section
+              style={{ position: "relative" }}
+              className={classes.cardSection}
+            >
               <div className={classes.outerImage}>
                 {!imageLoaded && (
                   <img
@@ -259,7 +271,12 @@ export const VodCard = ({ vod, playback }: any) => {
               </div>
             )}
 
-            <Text mt={5} lineClamp={2} weight={500}>
+            <Text
+              mt={5}
+              lineClamp={2}
+              weight={500}
+              className={classes.titleText}
+            >
               <Tooltip
                 inline
                 openDelay={500}
@@ -309,7 +326,7 @@ export const VodCard = ({ vod, playback }: any) => {
         </Link>
       ) : (
         <Card className={classes.card} p="0" radius={0}>
-          <Card.Section>
+          <Card.Section className={classes.cardSection}>
             {!imageLoaded && (
               <img
                 src="/images/ganymede-thumbnail.webp"

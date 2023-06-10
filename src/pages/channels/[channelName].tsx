@@ -25,7 +25,7 @@ import { useApi } from "../../hooks/useApi";
 
 const useStyles = createStyles((theme) => ({
   filter: {
-    width: "15rem",
+    width: "16rem",
     marginTop: "-1rem",
     marginBottom: "1rem",
   },
@@ -120,13 +120,13 @@ const ChannelPage = (props: any) => {
           {data.data.length > 0 ? (
             <Container size="xl" px="xl" fluid={true}>
               <div>
-                <Grid>
+                <Grid mt={5}>
                   {data.data.map(
                     (vod: any) =>
                       // If vod type is in selected array, render it or if selected is empty render all
                       (selected.length === 0 ||
                         selected.includes(vod.type)) && (
-                        <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
+                        <Grid.Col key={vod.id} md={6} lg={2} xl={2} mb={10}>
                           <VodCard vod={vod} playback={playbackData}></VodCard>
                         </Grid.Col>
                       )

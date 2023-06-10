@@ -181,7 +181,7 @@ const AdminNotificationsDrawer = ({ handleClose }) => {
           </Title>
           <div className={classes.notificationRow}>
             <Switch
-              mb={5}
+              mt={5}
               checked={videoSuccessEnabled}
               onChange={(event) =>
                 setVideoSuccessEnabled(event.currentTarget.checked)
@@ -255,7 +255,7 @@ const AdminNotificationsDrawer = ({ handleClose }) => {
           </Title>
           <div className={classes.notificationRow}>
             <Switch
-              mb={5}
+              mt={5}
               checked={liveSuccessEnabled}
               onChange={(event) =>
                 setLiveSuccessEnabled(event.currentTarget.checked)
@@ -329,7 +329,7 @@ const AdminNotificationsDrawer = ({ handleClose }) => {
           </Title>
           <div className={classes.notificationRow}>
             <Switch
-              mb={5}
+              mt={5}
               checked={isLiveEnabled}
               onChange={(event) =>
                 setIsLiveCollapse(event.currentTarget.checked)
@@ -404,7 +404,7 @@ const AdminNotificationsDrawer = ({ handleClose }) => {
           </Text>
           <div className={classes.notificationRow}>
             <Switch
-              mb={5}
+              mt={5}
               checked={errorEnabled}
               onChange={(event) => setErrorEnabled(event.currentTarget.checked)}
               label="Enabled"

@@ -1,4 +1,4 @@
-import { createStyles, Title, Center } from "@mantine/core";
+import { createStyles, Title, Center, rem } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -7,8 +7,8 @@ const useStyles = createStyles((theme) => ({
     backgroundPosition: "center",
     backgroundImage:
       "linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #120643 70%), url(/images/landing-hero.webp)",
-    paddingTop: theme.spacing.xl * 1,
-    paddingBottom: theme.spacing.xl * 1.5,
+    paddingTop: rem(30),
+    paddingBottom: rem(30),
   },
 
   image: {

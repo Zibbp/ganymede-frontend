@@ -1,4 +1,4 @@
-import { Button, Code, Switch, Text } from "@mantine/core";
+import { Button, Code, Switch, Text, rem } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import getConfig from "next/config";
@@ -42,7 +42,7 @@ const AdminVodDelete = ({ handleClose, vod }) => {
   });
 
   return (
-    <div>
+    <div style={{ marginBottom: "3rem" }}>
       <Text weight={600} size="lg">
         Are you sure you want to delete this video?
       </Text>

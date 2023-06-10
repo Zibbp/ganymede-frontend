@@ -1,4 +1,4 @@
-import { Button, Center, createStyles, Title } from "@mantine/core";
+import { Button, Center, createStyles, rem, Title } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import getConfig from "next/config";
 import Head from "next/head";
@@ -19,6 +19,7 @@ const useStyles = createStyles((theme) => ({
   continueWatchingSection: {
     paddingLeft: theme.spacing.md,
     paddingRight: theme.spacing.md,
+    marginBottom: rem(-20),
   },
   title: {
     color: [theme.colorScheme === "dark" ? "white" : theme.black],
@@ -27,8 +28,7 @@ const useStyles = createStyles((theme) => ({
     lineHeight: 1.05,
     maxWidth: 500,
     fontSize: 36,
-    marginTop: theme.spacing.lg,
-
+    marginTop: rem(15),
     [theme.fn.smallerThan("md")]: {
       maxWidth: "100%",
       fontSize: 34,

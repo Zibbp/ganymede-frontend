@@ -6,6 +6,7 @@ import {
   Button,
   ActionIcon,
   Tooltip,
+  rem,
 } from "@mantine/core";
 import { IconBrandGithub } from "@tabler/icons";
 import Link from "next/link";
@@ -18,8 +19,8 @@ const useStyles = createStyles((theme) => ({
     backgroundPosition: "center",
     backgroundImage:
       "linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #120643 70%), url(/images/landing-hero.webp)",
-    paddingTop: theme.spacing.xl * 1,
-    paddingBottom: theme.spacing.xl * 1,
+    paddingTop: rem(50),
+    paddingBottom: rem(50),
   },
 
   inner: {
@@ -121,7 +122,7 @@ export function LandingHero() {
             </Title>
 
             <Text className={classes.description} mt={30}>
-              Seamlessy archive live streams and vods. Each archive includes a
+              Seamlessly archive live streams and vods. Each archive includes a
               chat replay and rendered chat.
             </Text>
 
