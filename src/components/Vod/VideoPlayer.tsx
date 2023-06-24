@@ -1,6 +1,6 @@
 import getConfig from "next/config";
 import React, { useEffect, useRef, useState } from "react";
-import { createStyles } from "@mantine/core";
+import { ActionIcon, createStyles } from "@mantine/core";
 import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
@@ -12,11 +12,20 @@ import "vidstack/styles/community-skin/video.css";
 
 import {
   MediaCommunitySkin,
+  MediaGesture,
   MediaOutlet,
   MediaPlayer,
   MediaPoster,
+  MediaToggleButton,
   useMediaRemote,
 } from "@vidstack/react";
+import { IconDotsVertical, IconMaximize, IconMinimize } from "@tabler/icons";
+import {
+  FullscreenArrowExitIcon,
+  FullscreenArrowIcon,
+} from "@vidstack/react/icons";
+import ReactDOM from "react-dom";
+import TheaterModeIcon from "./TheaterModeIcon";
 
 const useStyles = createStyles((theme) => ({
   playerContainer: {
@@ -110,6 +119,18 @@ const NewVideoPlayer = ({ vod }: any) => {
     if (data.time) {
       player.current!.currentTime = data.time;
     }
+
+    const mediaFullscreenButton = document.querySelector("media-menu");
+    const buttonContainer = document.createElement("div");
+
+    if (mediaFullscreenButton) {
+      mediaFullscreenButton.parentNode.insertBefore(
+        buttonContainer,
+        mediaFullscreenButton.nextSibling
+      );
+      // Render the button component inside the container
+      ReactDOM.render(<TheaterModeIcon />, buttonContainer);
+    }
   }, [data, player]);
 
   // Tick for chat
@@ -185,6 +206,10 @@ const NewVideoPlayer = ({ vod }: any) => {
       >
         <MediaOutlet className={classes.playerMediaOutlet}>
           <MediaPoster alt={videoTitle} />
+          <MediaGesture event="pointerup" action="toggle:paused" />
+          <MediaGesture event="dblpointerup" action="toggle:fullscreen" />
+          <MediaGesture event="dblpointerup" action="seek:-10" />
+          <MediaGesture event="dblpointerup" action="seek:10" />
         </MediaOutlet>
         <MediaCommunitySkin />
       </MediaPlayer>
