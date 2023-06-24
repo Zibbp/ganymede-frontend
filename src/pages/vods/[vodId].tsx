@@ -80,7 +80,11 @@ const VodPage = (props: any) => {
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
       if (isSmallDevice.current) {
-        toggle();
+        try {
+          toggle();
+        } catch (error) {
+          console.error(`Error toggling fullscreen: ${error}`);
+        }
       }
     });
   }, []);
