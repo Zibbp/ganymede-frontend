@@ -30,3 +30,8 @@ a {
   max-height: 100%;
   --plyr-color-main: #6d28d9;
 }
+
+media-community-skin[data-video] {
+  /* remove the gray overlay when mousing over video */
+  --video-scrim-bg: none;
+}
