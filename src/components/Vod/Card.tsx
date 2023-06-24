@@ -73,7 +73,7 @@ const useStyles = createStyles((theme) => ({
     color: theme.white,
   },
   progressBar: {
-    marginTop: rem(-11),
+    marginTop: rem(-10),
     marginBottom: rem(5),
   },
   watchedIcon: {
