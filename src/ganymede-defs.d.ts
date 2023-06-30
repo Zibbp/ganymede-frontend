@@ -9,6 +9,7 @@ export interface Video {
   resolution: string;
   processing: boolean;
   thumbnail_path: string;
+  web_thumbnail_path: string;
   video_path: string;
   chat_path: string;
   chat_video_path: string;
@@ -19,6 +20,21 @@ export interface Video {
   updated_at: Date;
   folder_name: string;
   file_name: string;
+  edges: Edge;
+}
+
+export interface Edge {
+  channel: Channel;
+}
+
+export interface Channel {
+  id: string;
+  ext_id: string;
+  name: string;
+  display_name: string;
+  image_path: string;
+  updated_at: Date;
+  created_at: Date;
 }
 
 export interface GanymedeEmote {
@@ -135,4 +151,14 @@ export interface BadgeVersion {
   title: string;
   click_action: string;
   click_url: string;
+}
+
+export interface PlaybackData {
+  id: string;
+  vod_id: string;
+  user_id: string;
+  status: string;
+  time: number;
+  updated_at: Date;
+  created_at: Date;
 }
