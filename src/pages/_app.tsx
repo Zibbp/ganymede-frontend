@@ -17,6 +17,8 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Notifications } from "@mantine/notifications";
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -44,6 +46,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       >
         <MantineProvider
           theme={{
+            fontFamily: inter.style.fontFamily,
             colorScheme,
             components: {
               Container: {
@@ -59,13 +62,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 },
               },
             },
-            globalStyles: (theme) => ({
-              "@font-face": {
-                fontFamily: "Inter",
-                src: 'url("/fonts/Inter-Variable.ttf") format("truetype")',
-                fontStyle: "normal",
-              },
-            }),
           }}
           withGlobalStyles
           withNormalizeCSS

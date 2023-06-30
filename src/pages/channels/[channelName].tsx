@@ -12,6 +12,7 @@ import {
   Image,
   MultiSelect,
   createStyles,
+  SimpleGrid,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +23,8 @@ import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
+import VideoCard from "../../components/Vod/Card";
+import { Video } from "../../ganymede-defs";
 
 const useStyles = createStyles((theme) => ({
   filter: {
@@ -120,18 +123,21 @@ const ChannelPage = (props: any) => {
           {data.data.length > 0 ? (
             <Container size="xl" px="xl" fluid={true}>
               <div>
-                <Grid mt={5}>
-                  {data.data.map(
-                    (vod: any) =>
-                      // If vod type is in selected array, render it or if selected is empty render all
-                      (selected.length === 0 ||
-                        selected.includes(vod.type)) && (
-                        <Grid.Col key={vod.id} md={6} lg={2} xl={2} mb={10}>
-                          <VodCard vod={vod} playback={playbackData}></VodCard>
-                        </Grid.Col>
-                      )
-                  )}
-                </Grid>
+                <SimpleGrid
+                  cols={6}
+                  spacing="xs"
+                  verticalSpacing="xs"
+                  breakpoints={[
+                    { maxWidth: "80rem", cols: 4, spacing: "sm" },
+                    { maxWidth: "64rem", cols: 3, spacing: "sm" },
+                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
+                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
+                  ]}
+                >
+                  {data.data.map((video: Video) => {
+                    return <VideoCard video={video} playback={playbackData} />;
+                  })}
+                </SimpleGrid>
               </div>
               <Center mt={5}>
                 <div>

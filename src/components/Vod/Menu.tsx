@@ -1,4 +1,12 @@
-import { Menu, Button, Text, ActionIcon, Modal } from "@mantine/core";
+import {
+  Menu,
+  Button,
+  Text,
+  ActionIcon,
+  Modal,
+  createStyles,
+  Switch,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import {
   IconMenu2,
@@ -19,7 +27,23 @@ import { VodPlaylistModalContent } from "./PlaylistModalContent";
 import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import AdminVodDelete from "../Admin/Vods/Delete";
 
+const useStyles = createStyles((theme) => ({
+  action: {
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[6]
+        : theme.colors.gray[0],
+    ...theme.fn.hover({
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[5]
+          : theme.colors.gray[1],
+    }),
+  },
+}));
+
 export const VodMenu = ({ vod, style }: any) => {
+  const { classes, cx, theme } = useStyles();
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
   const [deletedOpened, setDeletedOpened] = useState(false);
@@ -113,11 +137,11 @@ export const VodMenu = ({ vod, style }: any) => {
 
   return (
     <div>
-      <Menu shadow="md" width={200} position="top-end">
+      <Menu shadow="md" width={200} position="top-end" withinPortal>
         {style == "card" && (
           <Menu.Target>
-            <ActionIcon>
-              <IconDotsVertical size={18} />
+            <ActionIcon className={classes.action} color="dark">
+              <IconMenu2 size="1rem" />
             </ActionIcon>
           </Menu.Target>
         )}
@@ -130,7 +154,6 @@ export const VodMenu = ({ vod, style }: any) => {
         )}
 
         <Menu.Dropdown>
-          <Menu.Label>Video Menu</Menu.Label>
           <Menu.Item
             onClick={() => setPlaylistModalOpened(true)}
             icon={<IconPlaylistAdd size={14} />}

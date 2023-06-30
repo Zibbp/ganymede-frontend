@@ -8,8 +8,6 @@ import { createStyles, Text, Image, Tooltip } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   chatMessage: {
-    // Inter
-    fontFamily: `Inter, ${theme.fontFamily}`,
     fontStyle: "normal",
     fontWeight: "normal",
     fontSize: "14px",
@@ -22,13 +20,11 @@ const useStyles = createStyles((theme) => ({
         : theme.colors.dark[9],
   },
   username: {
-    fontFamily: "Inter",
     fontWeight: 700,
     lineHeight: "20px",
     fontSize: "14px",
   },
   message: {
-    fontFamily: "Inter",
     fontWeight: 400,
     lineHeight: "20px",
     fontSize: "14px",
