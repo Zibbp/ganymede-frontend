@@ -4,6 +4,7 @@ import React from "react";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
 import { VodCard } from "../Vod/Card";
+import VideoCard from "../Vod/Card";
 
 const useStyles = createStyles((theme) => ({
   vodSection: {
@@ -47,7 +48,7 @@ const LandingRecentlyArchived = () => {
         <div className={classes.vodSection}>
           {data?.data?.map((vod: any) => (
             <div className={classes.vodItem} key={vod.id}>
-              <VodCard vod={vod}></VodCard>
+              <VideoCard video={vod} showChannel={true}></VideoCard>
             </div>
           ))}
           {[...Array(4 - data?.data?.length)].map((_, index) => (
