@@ -15,8 +15,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
-import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
+import VideoCard from "../../components/Vod/Card";
 
 interface SearchPageProps {
   q: string;
@@ -96,7 +96,11 @@ const SearchPage = (props: SearchPageProps) => {
               <Grid mt={10}>
                 {data.data.map((vod: any) => (
                   <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
-                    <VodCard vod={vod} playback={playbackData}></VodCard>
+                    <VideoCard
+                      video={vod}
+                      playback={playbackData}
+                      showChannel={true}
+                    ></VideoCard>
                   </Grid.Col>
                 ))}
               </Grid>

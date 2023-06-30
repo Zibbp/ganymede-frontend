@@ -8,7 +8,7 @@ import DeletePlaylistModal from "../../components/Playlist/DeletePlaylistModal";
 import EditPlaylistModal from "../../components/Playlist/EditPlaylistModal";
 import PlaylistHeader from "../../components/Playlist/Header";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
-import { VodCard } from "../../components/Vod/Card";
+import VideoCard from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
 
 const PlaylistPage = (props: any) => {
@@ -79,7 +79,7 @@ const PlaylistPage = (props: any) => {
             <Grid>
               {data.edges.vods.map((vod: any) => (
                 <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
-                  <VodCard vod={vod} playback={playbackData}></VodCard>
+                  <VideoCard video={vod} playback={playbackData}></VideoCard>
                 </Grid.Col>
               ))}
             </Grid>

@@ -4,6 +4,7 @@ import React from "react";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
 import { VodCard } from "../Vod/Card";
+import VideoCard from "../Vod/Card";
 
 const useStyles = createStyles((theme) => ({
   vodSection: {
@@ -25,7 +26,6 @@ const useStyles = createStyles((theme) => ({
   },
   title: {
     color: [theme.colorScheme === "dark" ? "white" : theme.black],
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
     fontWeight: 900,
     lineHeight: 1.05,
     maxWidth: 500,
@@ -71,7 +71,11 @@ const LandingContinueWatching = () => {
             <div className={classes.vodSection}>
               {data?.data?.map((item: any) => (
                 <div className={classes.vodItem} key={item.vod.id}>
-                  <VodCard vod={item.vod} playback={data?.playback}></VodCard>
+                  <VideoCard
+                    video={item.vod}
+                    playback={data?.playback}
+                    showChannel={true}
+                  ></VideoCard>
                 </div>
               ))}
               {[...Array(4 - data?.data?.length)].map((_, index) => (
