@@ -119,6 +119,11 @@ const VideoCard = ({
   const user: UserState = useUserStore();
   const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleError = () => {
+    setImageError(true);
+  };
 
   useEffect(() => {
     if (playback) {
@@ -172,6 +177,15 @@ const VideoCard = ({
             <Image
               className={classes.videoImage}
               src={`${publicRuntimeConfig.CDN_URL}${video.web_thumbnail_path}`}
+              onError={handleError}
+              width={imageError ? "100%" : "100%"}
+              height={imageError ? "5rem" : "100%"}
+              withPlaceholder
+              placeholder={
+                <Text style={{ height: "5rem !important" }} align="center">
+                  This image could not be loaded
+                </Text>
+              }
             />
           </a>
           {Math.round(progress) > 0 && !watched && (
