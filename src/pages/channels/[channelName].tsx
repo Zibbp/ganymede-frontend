@@ -135,17 +135,24 @@ const ChannelPage = (props: any) => {
                   ]}
                 >
                   {data.data.map((video: Video) => {
-                    return <VideoCard video={video} playback={playbackData} />;
+                    return (
+                      <VideoCard
+                        key={video.id}
+                        video={video}
+                        playback={playbackData}
+                      />
+                    );
                   })}
                 </SimpleGrid>
               </div>
               <Center mt={5}>
                 <div>
                   <Pagination
-                    page={activePage}
+                    value={activePage}
                     onChange={setPage}
                     total={data.pages}
                     color="violet"
+                    withEdges
                   />
                   <Center mt={5} mb={20}>
                     <Group spacing={5}>
