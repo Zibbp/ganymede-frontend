@@ -20,12 +20,10 @@ const useStyles = createStyles((theme) => ({
     },
   },
   queueHeaderTitle: {
-    fontFamily: "Inter",
     fontWeight: 600,
     fontSize: "24px",
   },
   queueHeaderHoverText: {
-    fontFamily: "Inter",
     fontWeight: 600,
     fontSize: "18px",
   },
@@ -33,7 +31,6 @@ const useStyles = createStyles((theme) => ({
     paddingLeft: "10px",
   },
   liveArchive: {
-    fontFamily: "Inter",
     fontWeight: 600,
     fontSize: "18px",
     backgroundColor: theme.colors.red[8],
@@ -43,7 +40,6 @@ const useStyles = createStyles((theme) => ({
     marginRight: "7px",
   },
   onHold: {
-    fontFamily: "Inter",
     fontWeight: 600,
     fontSize: "18px",
     backgroundColor: theme.colors.indigo[8],
