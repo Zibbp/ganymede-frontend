@@ -26,6 +26,7 @@ import {
 } from "@vidstack/react/icons";
 import ReactDOM from "react-dom";
 import TheaterModeIcon from "./TheaterModeIcon";
+import { escapeURL } from "../../util/util";
 
 const useStyles = createStyles((theme) => ({
   playerContainer: {
@@ -90,13 +91,17 @@ const NewVideoPlayer = ({ vod }: any) => {
       type = "application/x-mpegURL";
     }
 
-    setVideoSource(`${publicRuntimeConfig.CDN_URL}${vod.video_path}`);
+    setVideoSource(
+      `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`
+    );
     setVideoType(type);
     setVideoTitle(vod.title);
 
     // If thumbnail
     if (vod.thumbnail_path) {
-      setVideoPoster(`${publicRuntimeConfig.CDN_URL}${vod.thumbnail_path}`);
+      setVideoPoster(
+        `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`
+      );
     }
 
     // If captions

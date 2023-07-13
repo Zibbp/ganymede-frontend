@@ -4,6 +4,7 @@ import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef } from "react";
 import vodDataBus from "./EventBus";
 import getConfig from "next/config";
+import { escapeURL } from "../../util/util";
 
 const useStyles = createStyles((theme) => ({
   chatPlayer: {
@@ -75,7 +76,7 @@ export const VodChatPlayer = ({ vod }: any) => {
       title: vod.title,
       sources: [
         {
-          src: `${publicRuntimeConfig.CDN_URL}${vod.chat_video_path}`,
+          src: `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.chat_video_path)}`,
           type: "video/mp4",
         },
       ],
