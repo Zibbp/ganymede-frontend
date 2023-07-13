@@ -27,6 +27,7 @@ import { IconCircleCheck, IconMenu2 } from "@tabler/icons";
 import { ROLES } from "../../hooks/useJsxAuth";
 import { VodMenu } from "./Menu";
 import Link from "next/link";
+import { escapeURL } from "../../util/util";
 dayjs.extend(duration);
 dayjs.extend(localizedFormat);
 
@@ -176,7 +177,9 @@ const VideoCard = ({
           <a>
             <Image
               className={classes.videoImage}
-              src={`${publicRuntimeConfig.CDN_URL}${video.web_thumbnail_path}`}
+              src={`${publicRuntimeConfig.CDN_URL}${escapeURL(
+                video.web_thumbnail_path
+              )}`}
               onError={handleError}
               width={imageError ? "100%" : "100%"}
               height={imageError ? "5rem" : "100%"}

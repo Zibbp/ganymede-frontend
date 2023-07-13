@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import getConfig from "next/config";
 import { useState } from "react";
 import { useApi } from "../../../hooks/useApi";
+import { escapeURL } from "../../../util/util";
 
 const AdminVodDelete = ({ handleClose, vod }) => {
   const { publicRuntimeConfig } = getConfig();
@@ -54,7 +55,9 @@ const AdminVodDelete = ({ handleClose, vod }) => {
 
       <img
         style={{ width: "100%" }}
-        src={`${publicRuntimeConfig.CDN_URL}${vod.web_thumbnail_path}`}
+        src={`${publicRuntimeConfig.CDN_URL}${escapeURL(
+          vod.web_thumbnail_path
+        )}`}
       />
       <div style={{ float: "right", marginTop: "1rem" }}>
         <div style={{ display: "flex" }}>

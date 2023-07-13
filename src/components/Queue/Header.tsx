@@ -1,6 +1,7 @@
 import { Container, createStyles, Image, Text, Tooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import getConfig from "next/config";
+import { escapeURL } from "../../util/util";
 
 const useStyles = createStyles((theme) => ({
   queueHeader: {
@@ -60,7 +61,8 @@ const QueueHeader = ({ queue }: Object) => {
           <div>
             <Image
               src={
-                publicRuntimeConfig.CDN_URL + queue.edges.vod.web_thumbnail_path
+                publicRuntimeConfig.CDN_URL +
+                escapeURL(queue.edges.vod.thumbnail_path)
               }
               width={160}
             />
