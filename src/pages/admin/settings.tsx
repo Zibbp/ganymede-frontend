@@ -7,16 +7,21 @@ import {
   Title,
   Switch,
   TextInput,
+  Group,
+  ActionIcon,
+  MultiSelect,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AdminNotificationsDrawer from "../../components/Admin/Settings/NotificationsDrawer";
 import AdminStorageSettingsDrawer from "../../components/Admin/Settings/StorageSettingsDrawer";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
+import { ProxyItem } from "../../ganymede-defs";
+import { IconPlus, IconTrash } from "@tabler/icons";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -50,6 +55,15 @@ const useStyles = createStyles((theme) => ({
   notificationDrawer: {
     overflowY: "scroll",
   },
+  proxyList: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  proxyInput: {
+    width: "100%",
+    marginRight: "1rem",
+  },
 }));
 
 const AdminSettingsPage = () => {
@@ -64,6 +78,10 @@ const AdminSettingsPage = () => {
     useState(false);
   const [saveAsHls, setSaveAsHls] = useState(false);
   const [twitchToken, setTwitchToken] = useState("");
+  const [proxyEnabled, setProxyEnabled] = useState(false);
+  const [proxyList, setProxyList] = useState<ProxyItem[]>([]);
+  const [proxyWhitelist, setProxyWhitelist] = useState<string[]>([]);
+  const [channelData, setChannelData] = useState<any[]>([]);
 
   useDocumentTitle("Ganymede - Admin - Settings");
 
@@ -78,13 +96,44 @@ const AdminSettingsPage = () => {
       ).then((res) => {
         setRegistrationEnabled(res?.data.registration_enabled);
         setPostVideoFFmpegArgs(res?.data.parameters.video_convert);
-        setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
         setChatRenderArgs(res?.data.parameters.chat_render);
         setSaveAsHls(res?.data.archive.save_as_hls);
         setTwitchToken(res?.data.parameters.twitch_token);
+        setProxyEnabled(res?.data.livestream.proxy_enabled);
+        setProxyList(res?.data.livestream.proxies);
+        setProxyWhitelist(res?.data.livestream.proxy_whitelist);
         return res?.data;
       }),
   });
+
+  // Fetch channels
+  const { data: channels } = useQuery({
+    queryKey: ["admin-channels"],
+    queryFn: () => {
+      return useApi(
+        {
+          method: "GET",
+          url: `/api/v1/channel`,
+          withCredentials: true,
+        },
+        false
+      ).then((res) => {
+        const tmpArr = [];
+        res?.data.forEach((channel) => {
+          tmpArr.push({
+            label: channel.name,
+            value: channel.name,
+          });
+        });
+        setChannelData(tmpArr);
+        return res?.data;
+      });
+    },
+  });
+
+  // useEffect(() => {
+  //   // a
+  // }, [channelData]);
 
   const saveSettings = useMutation({
     mutationKey: ["save-settings"],
@@ -98,12 +147,16 @@ const AdminSettingsPage = () => {
             registration_enabled: registrationEnabled,
             parameters: {
               video_convert: postVideoFFmpegArgs,
-              streamlink_live: streamlinkLiveArgs,
               chat_render: chatRenderArgs,
               twitch_token: twitchToken,
             },
             archive: {
               save_as_hls: saveAsHls,
+            },
+            livestream: {
+              proxy_enabled: proxyEnabled,
+              proxies: proxyList,
+              proxy_whitelist: proxyWhitelist,
             },
           },
           withCredentials: true,
@@ -221,17 +274,7 @@ const AdminSettingsPage = () => {
                 onChange={(event) => setTwitchToken(event.currentTarget.value)}
                 placeholder="abcdefg1234567890"
                 label="Twitch Token"
-                description="Supply your Twitch token for downloading subscriber only videos."
-              />
-              <TextInput
-                mt={5}
-                value={streamlinkLiveArgs}
-                onChange={(event) =>
-                  setStreamlinkLiveArgs(event.currentTarget.value)
-                }
-                placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
-                label="Streamlink Args"
-                description="Streamlink arguments for live streams. Must be comma separated."
+                description="Supply your Twitch token for downloading ad-free livestreams and subscriber only videos."
               />
               <TextInput
                 mt={5}
@@ -242,6 +285,81 @@ const AdminSettingsPage = () => {
                 placeholder="-c:v copy -c:a copy"
                 label="Video Convert FFmpeg Args"
                 description="Post video download ffmpeg args."
+              />
+            </div>
+            <div>
+              <Title mt={15} order={3}>
+                Livestream
+              </Title>
+
+              <Text mt={5} mb={5}>
+                Proxies
+              </Text>
+              <Switch
+                label="Enable proxy"
+                color="violet"
+                checked={proxyEnabled}
+                onChange={(event) =>
+                  setProxyEnabled(event.currentTarget.checked)
+                }
+              />
+              {proxyList.map((proxy, index) => (
+                <div key={index} className={classes.proxyList}>
+                  <TextInput
+                    className={classes.proxyInput}
+                    placeholder="https://proxy.url"
+                    value={proxy.url}
+                    onChange={(event) => {
+                      const newProxyList = [...proxyList];
+                      newProxyList[index].url = event.currentTarget.value;
+                      setProxyList(newProxyList);
+                    }}
+                    label="Proxy URL"
+                  />
+                  <TextInput
+                    className={classes.proxyInput}
+                    value={proxy.header}
+                    onChange={(event) => {
+                      const newProxyList = [...proxyList];
+                      newProxyList[index].header = event.currentTarget.value;
+                      setProxyList(newProxyList);
+                    }}
+                    label="Header"
+                  />
+                  <ActionIcon
+                    color="red"
+                    size="lg"
+                    mt={20}
+                    onClick={() => {
+                      const newProxyList = [...proxyList];
+                      newProxyList.splice(index, 1);
+                      setProxyList(newProxyList);
+                    }}
+                  >
+                    <IconTrash size="1.125rem" />
+                  </ActionIcon>
+                </div>
+              ))}
+              <Button
+                onClick={() => {
+                  const newProxyList = [...proxyList];
+                  newProxyList.push({ url: "", header: "" });
+                  setProxyList(newProxyList);
+                }}
+                mt={10}
+                leftIcon={<IconPlus size="1rem" />}
+                color="violet"
+              >
+                Add
+              </Button>
+              {/* proxy whitelist */}
+              <MultiSelect
+                data={channelData}
+                value={proxyWhitelist}
+                onChange={setProxyWhitelist}
+                label="Whitelist Channels"
+                description="These channels will not use the proxy if enabled. Select channels that you are subscribed to."
+                placeholder="Select channels"
               />
             </div>
             <div>
