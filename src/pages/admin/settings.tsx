@@ -295,6 +295,10 @@ const AdminSettingsPage = () => {
               <Text mt={5} mb={5}>
                 Proxies
               </Text>
+              <Text size="sm">
+                Archive livestreams through a proxy to prevent ads. Your Twitch
+                token will <b>not</b> be sent to the proxy.
+              </Text>
               <Switch
                 label="Enable proxy"
                 color="violet"
