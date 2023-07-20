@@ -96,6 +96,7 @@ const AdminSettingsPage = () => {
       ).then((res) => {
         setRegistrationEnabled(res?.data.registration_enabled);
         setPostVideoFFmpegArgs(res?.data.parameters.video_convert);
+        setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
         setChatRenderArgs(res?.data.parameters.chat_render);
         setSaveAsHls(res?.data.archive.save_as_hls);
         setTwitchToken(res?.data.parameters.twitch_token);
@@ -147,6 +148,7 @@ const AdminSettingsPage = () => {
             registration_enabled: registrationEnabled,
             parameters: {
               video_convert: postVideoFFmpegArgs,
+              streamlink_live: streamlinkLiveArgs,
               chat_render: chatRenderArgs,
               twitch_token: twitchToken,
             },
@@ -291,6 +293,16 @@ const AdminSettingsPage = () => {
               <Title mt={15} order={3}>
                 Livestream
               </Title>
+              <TextInput
+                mt={5}
+                value={streamlinkLiveArgs}
+                onChange={(event) =>
+                  setStreamlinkLiveArgs(event.currentTarget.value)
+                }
+                placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
+                label="Streamlink Parameters"
+                description="For live streams. Must be comma separated."
+              />
 
               <Text mt={5} mb={5}>
                 Proxies
@@ -362,7 +374,7 @@ const AdminSettingsPage = () => {
                 value={proxyWhitelist}
                 onChange={setProxyWhitelist}
                 label="Whitelist Channels"
-                description="These channels will not use the proxy if enabled. Select channels that you are subscribed to."
+                description="These channels will not use the proxy if enabled, instead your Twitch token will be used. Select channels that you are subscribed to."
                 placeholder="Select channels"
               />
             </div>

@@ -125,10 +125,6 @@ const AdminInfoPage = () => {
                 <Text mr={5}>Streamlink:</Text>
                 <Code>{data.program_versions.streamlink}</Code>
               </div>
-              <div className={classes.settingItem}>
-                <Text mr={5}>YT-DLP:</Text>
-                <Code>{data.program_versions.yt_dlp}</Code>
-              </div>
             </div>
           </div>
         </Container>

@@ -71,9 +71,9 @@ const ArchivePage = () => {
   const qualityOptions = [
     { label: "Best", value: "best" },
     { label: "720p60", value: "720p60" },
-    { label: "480p", value: "480p" },
-    { label: "360p", value: "360p" },
-    { label: "160p", value: "160p" },
+    { label: "480p", value: "480p30" },
+    { label: "360p", value: "360p30" },
+    { label: "160p", value: "160p30" },
   ];
 
   const archiveVodSubmit = useMutation({
