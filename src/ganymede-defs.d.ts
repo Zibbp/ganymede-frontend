@@ -162,3 +162,8 @@ export interface PlaybackData {
   updated_at: Date;
   created_at: Date;
 }
+
+export interface ProxyItem {
+  url: string;
+  header: string;
+}
