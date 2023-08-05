@@ -59,13 +59,15 @@ const QueueChatTimeline = ({ queue }: Object) => {
             >
               logs
             </span>
-            <span>{" - "}</span>
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("chat_download")}
-            >
-              restart
-            </span>
+            {!queue.live_archive && (
+              <span><span>{" - "}</span>
+                <span
+                  className={classes.restartText}
+                  onClick={() => restartTask("chat_download")}
+                >
+                  restart
+                </span></span>
+            )}
           </Text>
         </Timeline.Item>
 
