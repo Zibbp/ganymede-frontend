@@ -48,6 +48,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   const player = useRef<MediaPlayerElement>(null);
   const playerRemote = useMediaRemote(player);
 
+  const [videoSource, setVideoSource] = useState<string>("");
   const [videoType, setVideoType] = useState<string>("");
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
@@ -90,6 +91,9 @@ const NewVideoPlayer = ({ vod }: any) => {
       type = "application/x-mpegURL";
     }
 
+    setVideoSource(
+      `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`
+    );
     setVideoType(type);
     setVideoTitle(vod.title);
 
@@ -200,7 +204,7 @@ const NewVideoPlayer = ({ vod }: any) => {
     <div className={classes.playerContainer}>
       <MediaPlayer
         className={classes.playerContainer}
-        src={`${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`}
+        src={videoSource}
         poster={videoPoster}
         aspect-ratio={16 / 9}
         ref={player}
