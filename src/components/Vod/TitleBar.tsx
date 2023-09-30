@@ -7,7 +7,7 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
-import { IconCalendarEvent, IconUsers } from "@tabler/icons";
+import { IconCalendarEvent, IconUser, IconUsers } from "@tabler/icons";
 import dayjs from "dayjs";
 import getConfig from "next/config";
 import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
@@ -75,10 +75,10 @@ export const VodTitleBar = ({ vod }: any) => {
         </div>
         <div className={classes.titleBarRight}>
           <div className={classes.titleBarBadge}>
-            {vod.views ? (
+            {vod.views && (
               <Group mr={15}>
                 <Tooltip
-                  label={`${vod.views.toLocaleString()} views`}
+                  label={`${vod.views.toLocaleString()} source views`}
                   openDelay={250}
                 >
                   <div className={classes.titleBarBadge}>
@@ -87,12 +87,16 @@ export const VodTitleBar = ({ vod }: any) => {
                   </div>
                 </Tooltip>
               </Group>
-            ) : (
+            )}
+            {vod.local_views && (
               <Group mr={15}>
-                <Tooltip label={`0 views`} openDelay={250}>
+                <Tooltip
+                  label={`${vod.local_views.toLocaleString()} local views`}
+                  openDelay={250}
+                >
                   <div className={classes.titleBarBadge}>
-                    <Text mr={3}>0</Text>
-                    <IconUsers size={20} />
+                    <Text mr={3}>{vod.local_views.toLocaleString()}</Text>
+                    <IconUser size={20} />
                   </div>
                 </Tooltip>
               </Group>
