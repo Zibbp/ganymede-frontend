@@ -28,6 +28,7 @@ import ReactDOM from "react-dom";
 import TheaterModeIcon from "./TheaterModeIcon";
 import { escapeURL } from "../../util/util";
 import { useSearchParams } from 'next/navigation'
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   playerContainer: {
@@ -53,6 +54,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [videoType, setVideoType] = useState<string>("");
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
+  const startedPlayback = useRef(false);
 
   const searchParams = useSearchParams()
 
@@ -82,6 +84,31 @@ const NewVideoPlayer = ({ vod }: any) => {
         }
       }),
   });
+
+  // start playback
+  useEffect(() => {
+    if (!data) return;
+    if (startedPlayback.current) return;
+    try {
+      useApi(
+        {
+          method: "POST",
+          url: `/api/v1/playback/start?video_id=${vod.id}`,
+          withCredentials: false,
+        },
+        false
+      ).then(() => {
+        startedPlayback.current = true;
+      })
+    } catch (error) {
+      console.error(error);
+      showNotification({
+        title: "Error",
+        message: "Failed to start playback",
+        color: "red",
+      });
+    }
+  }, [data])
 
   useEffect(() => {
     if (!data) return;
