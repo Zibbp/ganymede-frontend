@@ -6,7 +6,7 @@ const LoginPage = () => {
   useDocumentTitle("Ganymede - Login");
   return (
     <div>
-      <Container mt={50} size="xs">
+      <Container mt={50} size="sm">
         <LoginForm />
       </Container>
     </div>

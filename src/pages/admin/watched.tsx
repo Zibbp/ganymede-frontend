@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -14,24 +13,9 @@ import AdminChannelTwitchChannelDrawer from "../../components/Admin/Channels/Twi
 import AdminWatchedDrawer from "../../components/Admin/Watched/Drawer";
 import AdminWatchedTable from "../../components/Admin/Watched/Table";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  watchedDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./watched.module.css"
 
 const AdminWatchedPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [twitchDrawerOpened, setTwitchDrawerOpened] = useState(false);
 

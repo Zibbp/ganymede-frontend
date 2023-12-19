@@ -1,4 +1,4 @@
-import { Center, createStyles } from "@mantine/core";
+import { Center } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -9,31 +9,17 @@ import QueueVideoTimeline from "../../components/Queue/VideoTimeline";
 import QueueVodTimeline from "../../components/Queue/VodTimeline";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  timelineBottom: {
-    display: "flex",
-    // Space between the video and chat
-    gap: "25rem",
-    [theme.fn.smallerThan("sm")]: {
-      display: "block",
-    },
-    videoTimeline: {
-      // Space inbetween
-    },
-  },
-}));
+import classes from "./QueueId.module.css"
 
 const QueueItemPage = (props: any) => {
-  const { classes, cx, theme } = useStyles();
 
   const [intervalMs, setIntervalMs] = useState(1000);
 
   useDocumentTitle(`Queue ${props.queueId} - Ganymede`);
 
-  const { error, isLoading, data } = useQuery(
-    ["queue-item", props.queueId],
-    async () => {
+  const { error, isLoading, data } = useQuery({
+    queryKey: ["queue-item", props.queueId],
+    queryFn: async () => {
       const res = await useApi(
         {
           method: "GET",
@@ -44,10 +30,8 @@ const QueueItemPage = (props: any) => {
       );
       return res?.data;
     },
-    {
-      refetchInterval: intervalMs,
-    }
-  );
+    refetchInterval: intervalMs,
+  });
 
   if (error) return <div>Failed to load</div>;
   if (isLoading) return <GanymedeLoader />;

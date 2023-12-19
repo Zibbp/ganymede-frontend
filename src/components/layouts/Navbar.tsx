@@ -1,6 +1,4 @@
 import {
-  createStyles,
-  Header,
   HoverCard,
   Group,
   Button,
@@ -16,13 +14,11 @@ import {
   Drawer,
   Collapse,
   ScrollArea,
-  useMantineColorScheme,
-  ActionIcon,
+  rem,
+  useMantineTheme,
   TextInput,
-  Image,
-} from "@mantine/core";
-import { MantineLogo } from "@mantine/ds";
-import { useDisclosure } from "@mantine/hooks";
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import {
   IconNotification,
   IconCode,
@@ -31,104 +27,24 @@ import {
   IconFingerprint,
   IconCoin,
   IconChevronDown,
-  IconSun,
-  IconMoonStars,
   IconUsers,
   IconVideo,
   IconUser,
   IconListDetails,
-  IconSettings,
   IconCalendarTime,
+  IconSettings,
   IconInfoCircle,
   IconSubtask,
   IconSearch,
-} from "@tabler/icons";
-import getConfig from "next/config";
-import Link from "next/link";
-import router from "next/router";
-import { useState } from "react";
-import { useJsxAuth } from "../../hooks/useJsxAuth";
-import useUserStore from "../../store/user";
-import { ROLES } from "../ProtectedRoute";
-
-const useStyles = createStyles((theme) => ({
-  link: {
-    display: "flex",
-    alignItems: "center",
-    height: "100%",
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    textDecoration: "none",
-    color: theme.colorScheme === "dark" ? theme.white : theme.black,
-    fontWeight: 500,
-    fontSize: theme.fontSizes.sm,
-
-    [theme.fn.smallerThan("sm")]: {
-      height: 42,
-      display: "flex",
-      alignItems: "center",
-      width: "100%",
-    },
-
-    ...theme.fn.hover({
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
-    }),
-  },
-
-  subLink: {
-    width: "100%",
-    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-    borderRadius: theme.radius.md,
-
-    ...theme.fn.hover({
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[7]
-          : theme.colors.gray[0],
-    }),
-
-    "&:active": theme.activeStyles,
-  },
-
-  dropdownFooter: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[7]
-        : theme.colors.gray[0],
-    margin: -theme.spacing.md,
-    marginTop: theme.spacing.sm,
-    padding: `${theme.spacing.md}px ${theme.spacing.md * 2}px`,
-    paddingBottom: theme.spacing.xl,
-    borderTop: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
-  },
-
-  hiddenMobile: {
-    [theme.fn.smallerThan("sm")]: {
-      display: "none",
-    },
-  },
-
-  hiddenDesktop: {
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
-  },
-  search: {
-    [theme.fn.smallerThan("xs")]: {
-      display: "none",
-    },
-  },
-  rightNav: {
-    position: "absolute",
-    right: 0,
-    marginRight: "1rem",
-  },
-}));
+} from '@tabler/icons-react';
+import classes from './Navbar.module.css';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ROLES, useJsxAuth } from '../../hooks/useJsxAuth';
+import getConfig from 'next/config';
+import useUserStore from '../../store/user';
+import router from 'next/router';
+import { useState } from 'react';
 
 const adminLinks = [
   {
@@ -189,16 +105,12 @@ const adminLinks = [
   },
 ];
 
-export function HeaderMenu() {
+export function HeaderMegaMenu() {
   const { publicRuntimeConfig } = getConfig();
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
-    useDisclosure(false);
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
-  const { classes, theme } = useStyles();
   const [search, setSearch] = useState("");
-
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const dark = colorScheme === "dark";
+  const theme = useMantineTheme();
 
   const user = useUserStore((state) => state);
 
@@ -207,20 +119,20 @@ export function HeaderMenu() {
       router.push(`/search?q=${search}`);
       setSearch("");
     }
-  };
+  }
 
   const links = adminLinks.map((item) => (
     <Link key={item.id} href={`${item.link}`}>
-      <UnstyledButton className={classes.subLink}>
-        <Group noWrap align="flex-start">
+      <UnstyledButton className={classes.subLink} key={item.title}>
+        <Group wrap="nowrap" align="flex-start">
           <ThemeIcon size={34} variant="default" radius="md">
-            <item.icon size={22} color={theme.fn.primaryColor()} />
+            <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
           </ThemeIcon>
           <div>
-            <Text size="sm" weight={500}>
+            <Text size="sm" fw={500}>
               {item.title}
             </Text>
-            <Text size="xs" color="dimmed">
+            <Text size="xs" c="dimmed">
               {item.description}
             </Text>
           </div>
@@ -231,15 +143,11 @@ export function HeaderMenu() {
 
   return (
     <Box>
-      <Header height={60} px="md">
-        <Group sx={{ height: "100%" }}>
-          <Image src={"/images/ganymede_logo.png"} height={32} width={32} />
+      <header className={classes.header}>
+        <Group h="100%">
+          <Image src="/images/ganymede_logo.png" height={32} width={32} alt="Ganymede logo" />
+          <Group h="100%" gap={0} visibleFrom="sm">
 
-          <Group
-            sx={{ height: "100%" }}
-            spacing={0}
-            className={classes.hiddenMobile}
-          >
             <Link href="/" className={classes.link}>
               Home
             </Link>
@@ -253,61 +161,62 @@ export function HeaderMenu() {
               loggedIn: true,
               roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
             }) && (
-              <Link href="/archive" className={classes.link}>
-                Archive
-              </Link>
-            )}
+                <Link href="/archive" className={classes.link}>
+                  Archive
+                </Link>
+              )}
             {useJsxAuth({
               loggedIn: true,
               roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
             }) && (
-              <Link href="/queue" className={classes.link}>
-                Queue
-              </Link>
-            )}
+                <Link href="/workflows" className={classes.link}>
+                  Workflows
+                </Link>
+              )}
+            {useJsxAuth({
+              loggedIn: true,
+              roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
+            }) && (
+                <Link href="/queue" className={classes.link}>
+                  Queue
+                </Link>
+              )}
             {useJsxAuth({ loggedIn: true, roles: [] }) && (
               <Link href="/profile" className={classes.link}>
                 Profile
               </Link>
             )}
+
             {useJsxAuth({
               loggedIn: true,
               roles: [ROLES.EDITOR, ROLES.ADMIN],
             }) && (
-              <HoverCard
-                width={600}
-                position="bottom"
-                radius="md"
-                shadow="md"
-                withinPortal
-              >
-                <HoverCard.Target>
-                  <a href="#" className={classes.link}>
-                    <Center inline>
-                      <Box component="span" mr={5}>
-                        Admin
-                      </Box>
-                      <IconChevronDown
-                        size={16}
-                        color={theme.fn.primaryColor()}
-                      />
-                    </Center>
-                  </a>
-                </HoverCard.Target>
+                <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
+                  <HoverCard.Target>
+                    <a href="#" className={classes.link}>
+                      <Center inline>
+                        <Box component="span" mr={5}>
+                          Admin
+                        </Box>
+                        <IconChevronDown
+                          style={{ width: rem(16), height: rem(16) }}
+                          color={theme.colors.blue[6]}
+                        />
+                      </Center>
+                    </a>
+                  </HoverCard.Target>
 
-                <HoverCard.Dropdown sx={{ overflow: "hidden" }}>
-                  <SimpleGrid cols={2} spacing={0}>
-                    {links}
-                  </SimpleGrid>
-                </HoverCard.Dropdown>
-              </HoverCard>
-            )}
+                  <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
+                    <SimpleGrid cols={2} spacing={0}>
+                      {links}
+                    </SimpleGrid>
+                  </HoverCard.Dropdown>
+                </HoverCard>
+              )}
+
           </Group>
 
-          <Group
-            position="right"
-            className={[classes.hiddenMobile, classes.rightNav]}
-          >
+          <Group visibleFrom="sm" className={classes.groupRight}>
             <TextInput
               className={classes.search}
               value={search}
@@ -318,7 +227,7 @@ export function HeaderMenu() {
                 }
               }}
               placeholder="Search"
-              icon={<IconSearch size={16} stroke={1.5} />}
+              leftSection={<IconSearch size={16} stroke={1.5} />}
             />
             {!user.isLoggedIn && (
               <div>
@@ -340,23 +249,11 @@ export function HeaderMenu() {
                 </Link>
               </div>
             )}
-            <ActionIcon
-              variant="outline"
-              color={dark ? "yellow" : "blue"}
-              onClick={() => toggleColorScheme()}
-              title="Toggle color scheme"
-            >
-              {dark ? <IconSun size={18} /> : <IconMoonStars size={18} />}
-            </ActionIcon>
           </Group>
 
-          <Burger
-            opened={drawerOpened}
-            onClick={toggleDrawer}
-            className={[classes.hiddenDesktop, classes.rightNav]}
-          />
+          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
-      </Header>
+      </header>
 
       <Drawer
         opened={drawerOpened}
@@ -364,96 +261,39 @@ export function HeaderMenu() {
         size="100%"
         padding="md"
         title="Navigation"
-        className={classes.hiddenDesktop}
+        hiddenFrom="sm"
         zIndex={1000000}
       >
-        <ScrollArea sx={{ height: "calc(100vh - 60px)" }} mx="-md">
-          <Divider
-            my="sm"
-            color={theme.colorScheme === "dark" ? "dark.5" : "gray.1"}
-          />
+        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
+          <Divider my="sm" />
 
-          <Link href="/" className={classes.link}>
+          <a href="#" className={classes.link}>
             Home
-          </Link>
-          <Link href="/channels" className={classes.link}>
-            Channels
-          </Link>
-          <Link href="/playlists" className={classes.link}>
-            Playlists
-          </Link>
-          {useJsxAuth({
-            loggedIn: true,
-            roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
-          }) && (
-            <Link href="/archive" className={classes.link}>
-              Archive
-            </Link>
-          )}
-          {useJsxAuth({
-            loggedIn: true,
-            roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
-          }) && (
-            <Link href="/queue" className={classes.link}>
-              Queue
-            </Link>
-          )}
-          {useJsxAuth({ loggedIn: true, roles: [] }) && (
-            <Link href="/profile" className={classes.link}>
-              Profile
-            </Link>
-          )}
-          {useJsxAuth({
-            loggedIn: true,
-            roles: [ROLES.EDITOR, ROLES.ADMIN],
-          }) && (
-            <div>
-              <UnstyledButton className={classes.link} onClick={toggleLinks}>
-                <Center inline>
-                  <Box component="span" mr={5}>
-                    Admin
-                  </Box>
-                  <IconChevronDown size={16} color={theme.fn.primaryColor()} />
-                </Center>
-              </UnstyledButton>
-              <Collapse in={linksOpened}>{links}</Collapse>
-            </div>
-          )}
+          </a>
+          <UnstyledButton className={classes.link} onClick={toggleLinks}>
+            <Center inline>
+              <Box component="span" mr={5}>
+                Features
+              </Box>
+              <IconChevronDown
+                style={{ width: rem(16), height: rem(16) }}
+                color={theme.colors.blue[6]}
+              />
+            </Center>
+          </UnstyledButton>
+          <Collapse in={linksOpened}>{links}</Collapse>
+          <a href="#" className={classes.link}>
+            Learn
+          </a>
+          <a href="#" className={classes.link}>
+            Academy
+          </a>
 
-          <Divider
-            my="sm"
-            color={theme.colorScheme === "dark" ? "dark.5" : "gray.1"}
-          />
+          <Divider my="sm" />
 
-          <Group position="center" grow pb="xl" px="md">
-            {!user.isLoggedIn && (
-              <div>
-                {publicRuntimeConfig.FORCE_SSO_AUTH == "true" ? (
-                  <Link
-                    href={`${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/login`}
-                    style={{ marginRight: "0.75rem" }}
-                  >
-                    <Button variant="default">Log in</Button>
-                  </Link>
-                ) : (
-                  <Link href="/login" style={{ marginRight: "0.75rem" }}>
-                    <Button variant="default">Log in</Button>
-                  </Link>
-                )}
-
-                <Link href="/register">
-                  <Button color="violet">Sign up</Button>
-                </Link>
-              </div>
-            )}
-            <ActionIcon
-              variant="outline"
-              color={dark ? "yellow" : "blue"}
-              onClick={() => toggleColorScheme()}
-              title="Toggle color scheme"
-            >
-              {dark ? <IconSun size={18} /> : <IconMoonStars size={18} />}
-            </ActionIcon>
+          <Group justify="center" grow pb="xl" px="md">
+            <Button variant="default">Log in</Button>
+            <Button>Sign up</Button>
           </Group>
         </ScrollArea>
       </Drawer>

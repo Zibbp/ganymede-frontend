@@ -1,20 +1,10 @@
-import { ActionIcon, Tooltip, createStyles } from "@mantine/core";
-import { IconMaximize } from "@tabler/icons";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import { IconMaximize } from "@tabler/icons-react";
 import React, { useRef } from "react";
 import eventBus from "../../util/eventBus";
-
-const useStyles = createStyles((theme) => ({
-  customFullScreenButton: {
-    color: "#f5f5f5",
-    ":hover": {
-      color: "#f5f5f5",
-      backgroundColor: "rgb(255 255 255 / 0.2)",
-    },
-  },
-}));
+import classes from "./TheaterModeIcon.module.css";
 
 const TheaterModeIcon = () => {
-  const { classes, cx, theme } = useStyles();
   const isFullscreen = useRef(false);
 
   const toggleTheaterMode = () => {
@@ -23,7 +13,7 @@ const TheaterModeIcon = () => {
     console.log("Emitted: ", isFullscreen.current);
   };
   return (
-    <div>
+    <div className={classes.theaterIcon}>
       <Tooltip label="Theater Mode" position="bottom">
         <ActionIcon
           size="xl"

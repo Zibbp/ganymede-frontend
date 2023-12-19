@@ -1,33 +1,19 @@
-import { createStyles } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import GanymedeLoader from "../../../components/Utils/GanymedeLoader";
 import { useApi } from "../../../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  logPage: {
-    backgroundColor: "black",
-    color: "white",
-    height: "calc(100vh - 60px)",
-    maxHeight: "calc(100vh - 60px)",
-    overflowY: "scroll",
-  },
-  logLine: {
-    whiteSpace: "pre-line",
-  },
-}));
+import classes from "./queueId.module.css"
 
 const QueueLogsPage = (props: any) => {
-  const { classes, cx, theme } = useStyles();
   const [intervalMs, setIntervalMs] = useState(1000);
   const logEndRef = useRef(null);
 
   useDocumentTitle("Ganymede - Logs");
 
-  const { error, isLoading, data } = useQuery(
-    ["queue-item", props.queueId],
-    async () => {
+  const { error, isLoading, data } = useQuery({
+    queryKey: ["queue-item", props.queueId],
+    queryFn: async () => {
       const res = await useApi(
         {
           method: "GET",
@@ -38,10 +24,9 @@ const QueueLogsPage = (props: any) => {
       );
       return { __html: res?.data };
     },
-    {
-      refetchInterval: intervalMs,
-    }
-  );
+    refetchInterval: intervalMs,
+  });
+
 
   useEffect(() => {
     const logScrollInterval = setInterval(() => {

@@ -1,21 +1,10 @@
-import { Center, createStyles, Title } from "@mantine/core";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    width: "100%",
-    height: 75,
-  },
-  center: {
-    width: "100%",
-    height: 75,
-  },
-}));
+import { Center, Title } from "@mantine/core";
+import classes from "./Header.module.css"
 
 export const ChannelHeader = ({ channel }: any) => {
-  const { classes, cx, theme } = useStyles();
   return (
     <div className={classes.header}>
-      <Center className={classes.center}>
+      <Center >
         <Title order={1}>{channel.display_name}</Title>
       </Center>
     </div>

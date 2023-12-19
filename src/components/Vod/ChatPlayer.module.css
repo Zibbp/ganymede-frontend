@@ -1,0 +1,7 @@
+.chatPlayer {
+  video {
+    bottom: 0;
+    position: absolute;
+    height: auto !important;
+  }
+}

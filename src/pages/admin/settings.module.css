@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.right {
+  margin-left: auto;
+  order: 2
+}
+.settingsSections {
+  background-color: var(--mantine-color-dark-6);
+  border-radius: var(--mantine-radius-md);
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+  padding-bottom: var(--mantine-spacing-xs);
+  margin-top: var(--mantine-spacing-md);
+  margin-bottom: var(--mantine-spacing-md);
+  border: 1px solid var(--mantine-color-dark-5);
+  box-shadow: var(--mantine-shadow-sm);
+}
+.link {
+  color: var(--mantine-color-blue-6);
+}
+.notificationDrawer {
+  overflow-y: scroll;
+}
+.proxyList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.proxyInput {
+  width: 100%;
+  margin-right: 1rem;
+}

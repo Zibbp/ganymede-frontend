@@ -1,24 +1,18 @@
-import { Timeline, Text, Modal, createStyles } from "@mantine/core";
+import { Timeline, Text, Modal } from "@mantine/core";
 import {
   IconGitBranch,
   IconGitPullRequest,
   IconGitCommit,
   IconMessageDots,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import QueueLog from "./Log";
 import QueueRestartTaskModalContent from "./RestartTaskModal";
 import QueueTimelineBullet from "./TimelineBullet";
-
-const useStyles = createStyles((theme) => ({
-  restartText: {
-    cursor: "pointer",
-  },
-}));
+import classes from "./Timeline.module.css"
 
 const QueueChatTimeline = ({ queue }: Object) => {
-  const { classes, cx, theme } = useStyles();
   const [opened, setOpened] = useState(false);
   const [restartTaskName, setRestartTaskName] = useState("");
   const [logName, setLogName] = useState("");

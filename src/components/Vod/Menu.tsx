@@ -4,7 +4,6 @@ import {
   Text,
   ActionIcon,
   Modal,
-  createStyles,
   Switch,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -19,7 +18,7 @@ import {
   IconLock,
   IconLockOpen,
   IconShare,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useApi } from "../../hooks/useApi";
@@ -29,23 +28,7 @@ import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import AdminVodDelete from "../Admin/Vods/Delete";
 import vodDataBus from "./EventBus";
 
-const useStyles = createStyles((theme) => ({
-  action: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    ...theme.fn.hover({
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[5]
-          : theme.colors.gray[1],
-    }),
-  },
-}));
-
 export const VodMenu = ({ vod, style }: any) => {
-  const { classes, cx, theme } = useStyles();
   const [playlistModalOpened, setPlaylistModalOpened] = useState(false);
   const [infoModalOpened, setInfoModalOpended] = useState(false);
   const [deletedOpened, setDeletedOpened] = useState(false);
@@ -182,14 +165,14 @@ export const VodMenu = ({ vod, style }: any) => {
       <Menu shadow="md" width={200} position="top-end" withinPortal>
         {style == "card" && (
           <Menu.Target>
-            <ActionIcon className={classes.action} color="dark">
+            <ActionIcon color="gray" variant="subtle">
               <IconMenu2 size="1rem" />
             </ActionIcon>
           </Menu.Target>
         )}
         {style == "header" && (
           <Menu.Target>
-            <ActionIcon size="xl">
+            <ActionIcon size="xl" color="gray" variant="subtle">
               <IconMenu2 />
             </ActionIcon>
           </Menu.Target>
@@ -198,39 +181,39 @@ export const VodMenu = ({ vod, style }: any) => {
         <Menu.Dropdown>
           <Menu.Item
             onClick={() => setPlaylistModalOpened(true)}
-            icon={<IconPlaylistAdd size={14} />}
+            leftSection={<IconPlaylistAdd size={14} />}
           >
             Playlists
           </Menu.Item>
           <Menu.Item
             onClick={() => setInfoModalOpended(true)}
-            icon={<IconInfoCircle size={14} />}
+            leftSection={<IconInfoCircle size={14} />}
           >
             Info
           </Menu.Item>
           <Menu.Item
             onClick={() => markAsWatched.mutate()}
-            icon={<IconHourglassHigh size={14} />}
+            leftSection={<IconHourglassHigh size={14} />}
           >
             Mark as Watched
           </Menu.Item>
           <Menu.Item
             onClick={() => markAsUnWatched.mutate()}
-            icon={<IconHourglassEmpty size={14} />}
+            leftSection={<IconHourglassEmpty size={14} />}
           >
             Mark as Unwatched
           </Menu.Item>
           {isLocked.current ? (
             <Menu.Item
               onClick={() => lockVod.mutate(false)}
-              icon={<IconLockOpen size={14} />}
+              leftSection={<IconLockOpen size={14} />}
             >
               Unlock
             </Menu.Item>
           ) : (
             <Menu.Item
               onClick={() => lockVod.mutate(true)}
-              icon={<IconLock size={14} />}
+              leftSection={<IconLock size={14} />}
             >
               Lock
             </Menu.Item>
@@ -244,14 +227,14 @@ export const VodMenu = ({ vod, style }: any) => {
                 onClick={() => {
                   openDeleteModal();
                 }}
-                icon={<IconTrashX size={14} />}
+                leftSection={<IconTrashX size={14} />}
               >
                 Delete
               </Menu.Item>
             )}
           <Menu.Item
             onClick={() => shareVideo()}
-            icon={<IconShare size={14} />}
+            leftSection={<IconShare size={14} />}
           >
             Share
           </Menu.Item>

@@ -1,23 +1,12 @@
 import { usePlyr } from "plyr-react";
 import "plyr-react/plyr.css";
-import { createStyles } from "@mantine/core";
 import React, { useEffect, useRef } from "react";
 import vodDataBus from "./EventBus";
 import getConfig from "next/config";
 import { escapeURL } from "../../util/util";
-
-const useStyles = createStyles((theme) => ({
-  chatPlayer: {
-    video: {
-      bottom: 0,
-      position: "absolute",
-      height: "auto !important",
-    },
-  },
-}));
+import classes from "./ChatPlayer.module.css"
 
 const Plyr = React.forwardRef((props, ref) => {
-  const { classes, cx, theme } = useStyles();
   const { source, options = null, ...rest } = props;
   const chatPlayerRef = usePlyr(ref, {
     source,
@@ -34,7 +23,6 @@ const Plyr = React.forwardRef((props, ref) => {
 
 export const VodChatPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
-  const { classes, cx, theme } = useStyles();
   const chatRef = useRef();
   let player = null;
   let lastTime = 0;

@@ -10,18 +10,18 @@ import {
   TextInput,
   Container,
   Select,
-  createStyles,
   Switch,
   Divider,
 } from "@mantine/core";
 import { useDocumentTitle, useInputState } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconPlus } from "@tabler/icons";
+import { IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { VodPreview } from "../../components/Archive/VodPreview";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import { useApi } from "../../hooks/useApi";
+import classes from "./archive.module.css"
 
 export interface TwitchVODResponse {
   id: string;
@@ -43,17 +43,7 @@ export interface TwitchVODResponse {
   muted_segments: null;
 }
 
-const useStyles = createStyles((theme) => ({
-  card: {
-    overflow: "visible",
-  },
-  qualitySelect: {
-    width: "7rem",
-  },
-}));
-
 const ArchivePage = () => {
-  const { classes, cx, theme } = useStyles();
   const [archiveInput, setArchiveInput] = useInputState("");
   const [archiveSubmitLoading, setArchiveSubmitLoading] = useState(false);
   const [twitchVodInfo, setTwitchVodInfo] = useState<TwitchVODResponse | null>(
@@ -208,7 +198,7 @@ const ArchivePage = () => {
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
-        <Container size="xs" mt={20}>
+        <Container size="md" mt={20}>
           <Center>
             <div style={{ width: "100%" }}>
               <Card

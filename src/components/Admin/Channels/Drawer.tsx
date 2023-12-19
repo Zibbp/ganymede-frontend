@@ -13,7 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
-import { IconQuestionCircle } from "@tabler/icons";
+import { IconHelpCircle, IconQuestionMark } from "@tabler/icons-react";
 
 const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const { handleSubmit } = useForm();
@@ -167,8 +167,8 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           certain amount of time. 'Lock' a video to prevent it from being
           deleted."
           >
-            <ActionIcon color="dark">
-              <IconQuestionCircle size="1.125rem" />
+            <ActionIcon variant="transparent">
+              <IconHelpCircle size="1.125rem" />
             </ActionIcon>
           </Tooltip>
         </div>

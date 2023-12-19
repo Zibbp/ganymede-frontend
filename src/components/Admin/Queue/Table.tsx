@@ -8,13 +8,12 @@ import sortBy from "lodash/sortBy";
 import {
   ActionIcon,
   Button,
-  createStyles,
   Drawer,
   Group,
   Modal,
   TextInput,
 } from "@mantine/core";
-import { IconEye, IconPencil, IconSearch, IconTrash } from "@tabler/icons";
+import { IconEye, IconPencil, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useDebouncedValue } from "@mantine/hooks";
 
 import AdminMultiUserDelete from "../Users/MultiDelete";
@@ -22,21 +21,9 @@ import AdminQueueDrawer from "./Drawer";
 import AdminQueueDelete from "./Delete";
 import AdminMultiQueueDelete from "./MultiDelete";
 import Link from "next/link";
-
-const useStyles = createStyles((theme) => ({
-  actionButton: {
-    cursor: "pointer",
-  },
-  actionButtons: {
-    display: "flex",
-  },
-  queueDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./Queue.module.css";
 
 const AdminQueueTable = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -142,11 +129,10 @@ const AdminQueueTable = () => {
             }}
           >
             {selectedRecords.length
-              ? `Delete ${
-                  selectedRecords.length === 1
-                    ? "one selected queue"
-                    : `${selectedRecords.length} selected queues`
-                }`
+              ? `Delete ${selectedRecords.length === 1
+                ? "one selected queue"
+                : `${selectedRecords.length} selected queues`
+              }`
               : "Select queues to delete"}
           </Button>
         )}
@@ -213,19 +199,22 @@ const AdminQueueTable = () => {
             render: (queue) => (
               <Group spacing={4} position="right" noWrap>
                 <Link href={"/queue/" + queue.id}>
-                  <ActionIcon className={classes.actionButton}>
+                  <ActionIcon className={classes.actionButton}
+                    variant="light" >
                     <IconEye size={18} />
                   </ActionIcon>
                 </Link>
                 <ActionIcon
                   onClick={() => openDrawer(queue)}
                   className={classes.actionButton}
+                  variant="light"
                 >
                   <IconPencil size={18} />
                 </ActionIcon>
                 <ActionIcon
                   onClick={() => openDeleteModal(queue)}
                   className={classes.actionButton}
+                  variant="light" color="red"
                 >
                   <IconTrash size={18} />
                 </ActionIcon>

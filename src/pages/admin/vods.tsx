@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -11,24 +10,9 @@ import React, { useState } from "react";
 import AdminVodDrawer from "../../components/Admin/Vods/Drawer";
 import AdminVodsTable from "../../components/Admin/Vods/Table";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  vodDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./vods.module.css"
 
 const AdminVodsPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - VODs");

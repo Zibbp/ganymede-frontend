@@ -9,13 +9,14 @@ import {
   Group,
   Center,
   Avatar,
-  createStyles,
   rem,
   Tooltip,
   ThemeIcon,
   Progress,
   Overlay,
   Loader,
+  Flex,
+  LoadingOverlay,
 } from "@mantine/core";
 import { PlaybackData, Video } from "../../ganymede-defs";
 import getConfig from "next/config";
@@ -23,76 +24,15 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import useUserStore, { UserState } from "../../store/user";
-import { IconCircleCheck, IconMenu2 } from "@tabler/icons";
+import { IconCircleCheck, IconMenu2 } from "@tabler/icons-react";
 import { ROLES } from "../../hooks/useJsxAuth";
 import { VodMenu } from "./Menu";
 import Link from "next/link";
 import { escapeURL } from "../../util/util";
 dayjs.extend(duration);
 dayjs.extend(localizedFormat);
+import classes from "./Card.module.css";
 
-const useStyles = createStyles((theme) => ({
-  card: {
-    position: "relative",
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-  },
-
-  processingOverlay: {
-    position: "absolute",
-    top: "35%",
-    transform: "translateY(-50%)",
-    zIndex: 50,
-    marginLeft: "auto",
-    marginRight: "auto",
-    left: 0,
-    right: 0,
-    width: "100%",
-    textAlign: "center",
-    opacity: 2,
-  },
-
-  videoImage: {
-    pointerEvents: "none",
-    cursor: "default",
-  },
-
-  durationBadge: {
-    position: "absolute",
-    top: theme.spacing.sm,
-    left: rem(12),
-    pointerEvents: "none",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-  },
-
-  watchedIcon: {
-    position: "absolute",
-    top: theme.spacing.sm,
-    right: rem(12),
-    pointerEvents: "none",
-  },
-
-  title: {
-    marginTop: theme.spacing.xs,
-    marginBottom: rem(2),
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.gray[0]
-        : theme.colors.gray[9],
-  },
-
-  progressBar: {
-    marginTop: rem(-5),
-  },
-
-  footer: {
-    marginTop: rem(5),
-  },
-
-  channelFooter: {
-    marginTop: rem(5),
-  },
-}));
 
 const formatDuration = (duration: number) => {
   const hours = Math.floor(duration / 3600);
@@ -115,7 +55,6 @@ const VideoCard = ({
   playback?: PlaybackData[];
   showChannel?: boolean;
 }) => {
-  const { classes, cx, theme } = useStyles();
   const { publicRuntimeConfig } = getConfig();
   const user: UserState = useUserStore();
   const [progress, setProgress] = useState(0);
@@ -161,16 +100,9 @@ const VideoCard = ({
   };
 
   return (
-    <Card radius="md" className={cx(classes.card)} padding={5}>
+    <Card radius="md" className={classes.card} padding={5}>
       {video.processing && (
-        <Overlay color="#000" opacity={0.55}>
-          <div className={classes.processingOverlay}>
-            <Text fw={700} size="xl">
-              Processing
-            </Text>
-            <Loader color="violet" size="lg" />;
-          </div>
-        </Overlay>
+        <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 1 }} loaderProps={{ children: <div><Text>Processing</Text><Center><Loader color="violet" /></Center></div> }} />
       )}
       <Link href={video.processing ? `#` : `/vods/${video.id}`}>
         <Card.Section>
@@ -183,12 +115,7 @@ const VideoCard = ({
               onError={handleError}
               width={imageError ? "100%" : "100%"}
               height={imageError ? "5rem" : "100%"}
-              withPlaceholder
-              placeholder={
-                <Text style={{ height: "5rem !important" }} align="center">
-                  This image could not be loaded
-                </Text>
-              }
+              fallbackSrc="/images/ganymede-thumbnail.webp"
             />
           </a>
           {Math.round(progress) > 0 && !watched && (
@@ -205,8 +132,12 @@ const VideoCard = ({
         </Card.Section>
       </Link>
 
-      <Badge className={classes.durationBadge} py={0} px={5}>
-        <Text color="gray.2">{formatDuration(video.duration)}</Text>
+      <Badge py={0} px={5} className={classes.durationBadge} radius="xs">
+        <Text mt={1}>
+          {dayjs
+            .duration(video.duration, "seconds")
+            .format("HH:mm:ss")}
+        </Text>
       </Badge>
 
       {watched && (
@@ -223,7 +154,7 @@ const VideoCard = ({
       </Link>
 
       {showChannel && (
-        <Group position="apart" className={classes.channelFooter}>
+        <Group className={classes.channelFooter}>
           <Center>
             <Avatar
               src={`${publicRuntimeConfig.CDN_URL}${video.edges.channel.image_path}`}
@@ -240,41 +171,41 @@ const VideoCard = ({
         </Group>
       )}
 
-      <Group position="apart" className={classes.footer}>
-        <Center>
-          <Tooltip
-            label={`Streamed on ${new Date(
-              video.streamed_at
-            ).toLocaleString()}`}
-          >
-            <Badge color={theme.colorScheme === "dark" ? "gray" : "dark"}>
-              <Text>
-                {dayjs(video.streamed_at).format("YYYY/MM/DD")}{" "}
-                {user.settings.moreUIDetails && (
-                  <span>{dayjs(video.streamed_at).format("LT")}</span>
-                )}
-              </Text>
-            </Badge>
-          </Tooltip>
-        </Center>
+      <Flex gap="xs" justify="flex-start"
+        align="center" pt={2}>
 
-        <Group spacing={8} mr={0}>
-          <Badge color={theme.colorScheme === "dark" ? "gray" : "dark"}>
+        <Tooltip
+          label={`Streamed on ${new Date(
+            video.streamed_at
+          ).toLocaleString()}`}
+        >
+
+          <Text size="sm">
+            {dayjs(video.streamed_at).format("YYYY/MM/DD")}{" "}
+            {user.settings.moreUIDetails && (
+              <span>{dayjs(video.streamed_at).format("LT")}</span>
+            )}
+          </Text>
+
+        </Tooltip>
+
+
+
+        <div className={classes.vodMenu}>
+          <Badge variant="default" color="rgba(0, 0, 0, 1)" mt={4}>
             {video.type.toUpperCase()}
           </Badge>
-          {/* <ActionIcon className={classes.action}>
-            <IconHeart size="1rem" color={theme.colors.red[6]} />
-          </ActionIcon> */}
-          {/* <ActionIcon className={classes.action}>
-            <IconBookmark size="1rem" color={theme.colors.yellow[7]} />
-          </ActionIcon> */}
+
           {menuPermissions() && (
-            <div>
-              <VodMenu vod={video} style="card" />
-            </div>
+            <VodMenu vod={video} style="card" />
           )}
-        </Group>
-      </Group>
+        </div>
+
+
+      </Flex>
+
+
+
     </Card>
   );
 };

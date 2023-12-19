@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -14,50 +13,15 @@ import {
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconRefresh } from "@tabler/icons";
+import { IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  settingsSections: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    borderRadius: theme.radius.md,
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    border: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-      }`,
-    boxShadow: theme.shadows.sm,
-  },
-  taskItem: {
-    display: "flex",
-    marginBottom: "0.25rem",
-  },
-  sectionHeader: {
-    marginTop: "0.3rem",
-    marginBottom: "0.3rem",
-  },
-}));
+import classes from "./tasks.module.css"
 
 const AdminTasksPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [loading, setLoading] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - Tasks");
@@ -91,7 +55,7 @@ const AdminTasksPage = () => {
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
-        <Container className={classes.settingsSections} size="md">
+        <Container className={classes.settingsSections} size="xl">
           <div className={classes.header}>
             <div>
               <Title order={2}>Tasks</Title>

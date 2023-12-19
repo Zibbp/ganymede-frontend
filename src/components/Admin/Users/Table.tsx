@@ -8,29 +8,19 @@ import sortBy from "lodash/sortBy";
 import {
   ActionIcon,
   Button,
-  createStyles,
   Drawer,
   Group,
   Modal,
   TextInput,
 } from "@mantine/core";
-import { IconPencil, IconSearch, IconTrash } from "@tabler/icons";
+import { IconPencil, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useDebouncedValue } from "@mantine/hooks";
 import AdminUserDrawer from "./Drawer";
 import AdminUserDelete from "./Delete";
 import AdminMultiUserDelete from "./MultiDelete";
-
-const useStyles = createStyles((theme) => ({
-  actionButton: {
-    cursor: "pointer",
-  },
-  actionButtons: {
-    display: "flex",
-  },
-}));
+import classes from "./Users.module.css"
 
 const AdminUsersTable = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -118,7 +108,6 @@ const AdminUsersTable = () => {
       <div>
         {selectedRecords.length > 0 && (
           <Button
-            uppercase
             mb={5}
             leftIcon={<IconTrash size={16} />}
             color="red"
@@ -128,11 +117,10 @@ const AdminUsersTable = () => {
             }}
           >
             {selectedRecords.length
-              ? `Delete ${
-                  selectedRecords.length === 1
-                    ? "one selected user"
-                    : `${selectedRecords.length} selected users`
-                }`
+              ? `Delete ${selectedRecords.length === 1
+                ? "one selected user"
+                : `${selectedRecords.length} selected users`
+              }`
               : "Select users to delete"}
           </Button>
         )}
@@ -146,7 +134,7 @@ const AdminUsersTable = () => {
         />
       </div>
       <DataTable
-        withBorder
+        withTableBorder
         borderRadius="sm"
         withColumnBorders
         striped
@@ -175,18 +163,19 @@ const AdminUsersTable = () => {
           {
             accessor: "actions",
             title: "Actions",
-            textAlignment: "right",
             render: (user) => (
               <Group spacing={4} position="right" noWrap>
                 <ActionIcon
                   onClick={() => openDrawer(user)}
                   className={classes.actionButton}
+                  variant="light"
                 >
                   <IconPencil size={18} />
                 </ActionIcon>
                 <ActionIcon
                   onClick={() => openDeleteModal(user)}
                   className={classes.actionButton}
+                  variant="light" color="red"
                 >
                   <IconTrash size={18} />
                 </ActionIcon>

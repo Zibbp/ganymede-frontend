@@ -1,5 +1,5 @@
-import { createStyles, Grid } from "@mantine/core";
-import { useDocumentTitle, useFullscreen, useMediaQuery } from "@mantine/hooks";
+import { Box, Grid, em } from "@mantine/core";
+import { useDocumentTitle, useFullscreen, useInterval, useMediaQuery } from "@mantine/hooks";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import { VodChatPlayer } from "../../components/Vod/ChatPlayer";
 import ExperimentalChatPlayer from "../../components/Vod/ExperimentalChatPlayer";
@@ -13,19 +13,7 @@ import VodLoginRequired from "../../components/Vod/LoginRequred";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import eventBus from "../../util/eventBus";
-
-const useStyles = createStyles((theme) => ({
-  videoPlayerColumn: {
-    width: "100%",
-    height: "calc(100vh - 60px - 60px)",
-    maxHeight: "calc(100vh - 60px - 60px)",
-  },
-  videoPlayerColumnNoHeader: {
-    width: "100%",
-    height: "100vh",
-    maxHeight: "100vh",
-  },
-}));
+import classes from "./vodId.module.css"
 
 async function fetchVod(vodId: string) {
   return useApi(
@@ -48,12 +36,55 @@ export async function getServerSideProps(context: any) {
 }
 
 const VodPage = (props: any) => {
-  const { classes, cx, theme } = useStyles();
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { ref, toggle, fullscreen } = useFullscreen();
   const isSmallDevice = useRef(false);
+
+  const leftColumnRef = useRef(null);
+  const rightColumnRef = useRef<HTMLDivElement>(null);
+  const liveChatPlayer = useRef<HTMLDivElement>(null);
+
+  const [leftColumnHeight, setLeftColumnHeight] = useState(0);
+  const isMobile = useMediaQuery(`(max-width: ${em(1000)})`);
+
+
+  // Mobile screen / devices smaller than 1000px
+  // Calculate the height of the left column
+  // and set the height of the right column to the remaining height
+  // which is 100vh - 120px - leftColumnHeight
+  const handleResize = () => {
+    if (isMobile && leftColumnRef.current) {
+      setLeftColumnHeight(leftColumnRef.current.offsetHeight);
+    }
+  };
+  useEffect(() => {
+    if (!isMobile) {
+      return
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    // set 1 second interval to check if the user is on a mobile device
+    const interval = setInterval(() => {
+      if (rightColumnRef.current?.offsetHeight == 0) {
+        handleResize();
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(interval);
+    };
+
+  }, [leftColumnRef, rightColumnRef, isMobile])
+
 
   useDocumentTitle(`Ganymede - VOD ${props.vodId}`);
 
@@ -62,30 +93,21 @@ const VodPage = (props: any) => {
     queryFn: () => fetchVod(props.vodId),
   });
 
-  const getDevice = () => {
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      )
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+
+
+
 
   // Theater mode support
   useEffect(() => {
-    isSmallDevice.current = getDevice();
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
-      if (isSmallDevice.current) {
-        try {
-          toggle();
-        } catch (error) {
-          console.error(`Error toggling fullscreen: ${error}`);
-        }
-      }
+      // if (isMobile) {
+      //   try {
+      //     toggle();
+      //   } catch (error) {
+      //     console.error(`Error toggling fullscreen: ${error}`);
+      //   }
+      // }
     });
   }, []);
 
@@ -111,9 +133,9 @@ const VodPage = (props: any) => {
       </Head>
       {checkLoginRequired() && <VodLoginRequired {...data} />}
       {!checkLoginRequired() && (
-        <div ref={ref}>
-          <Grid columns={12} gutter={0}>
-            <Grid.Col
+        <Box className={classes.container} >
+          <div className={classes.leftColumn} ref={leftColumnRef}>
+            <div
               className={
                 // isFullscreen is for desktop theater mode
                 // fullscreen is for mobile theater mode
@@ -121,39 +143,73 @@ const VodPage = (props: any) => {
                 isFullscreen || fullscreen
                   ? classes.videoPlayerColumnNoHeader
                   : classes.videoPlayerColumn
-              }
-              span="auto"
-            >
+              }>
               <NewVideoPlayer vod={data} />
-            </Grid.Col>
+            </div>
+          </div>
+          <div className={classes.rightColumn} style={{ height: isMobile ? `calc(100vh - 120px - ${leftColumnHeight}px)` : 'auto', maxHeight: isMobile ? `calc(100vh - 120px - ${leftColumnHeight}px)` : 'auto' }}>
+
             {data.chat_video_path &&
               !useUserStore.getState().settings.useNewChatPlayer && (
-                <Grid.Col
-                  className={
-                    isFullscreen || fullscreen
-                      ? classes.videoPlayerColumnNoHeader
-                      : classes.videoPlayerColumn
-                  }
-                  span={getDevice() ? 3 : 2}
-                >
-                  <VodChatPlayer vod={data} />
-                </Grid.Col>
+                <div>
+                  {isMobile ? (
+                    <div
+                      ref={rightColumnRef}
+                      style={{
+                        height: `calc(100vh - 120px - ${leftColumnHeight}px)`,
+                        maxHeight: `calc(100vh - 120px - ${leftColumnHeight}px)`
+                      }}
+
+                    >
+                      <VodChatPlayer ref={liveChatPlayer} vod={data} />
+                    </div>
+                  ) : (
+                    <div
+                      ref={rightColumnRef}
+                      className={
+                        isFullscreen || fullscreen
+                          ? classes.chatColumnNoHeader
+                          : classes.chatColumn
+                      }
+                    >
+                      <VodChatPlayer vod={data} />
+                    </div>
+                  )}
+                </div>
+
               )}
             {data.chat_path &&
               useUserStore.getState().settings.useNewChatPlayer && (
-                <Grid.Col
-                  className={
-                    isFullscreen || fullscreen
-                      ? classes.videoPlayerColumnNoHeader
-                      : classes.videoPlayerColumn
-                  }
-                  span={getDevice() ? 3 : 2}
-                >
-                  <ExperimentalChatPlayer vod={data} />
-                </Grid.Col>
+                <div>
+                  {isMobile ? (
+                    <div
+                      ref={rightColumnRef}
+                      style={{
+                        height: `calc(100vh - 120px - ${leftColumnHeight}px)`,
+                        maxHeight: `calc(100vh - 120px - ${leftColumnHeight}px)`
+                      }}
+
+                    >
+                      <ExperimentalChatPlayer ref={liveChatPlayer} vod={data} />
+                    </div>
+                  ) : (
+                    <div
+                      ref={rightColumnRef}
+                      className={
+                        isFullscreen || fullscreen
+                          ? classes.chatColumnNoHeader
+                          : classes.chatColumn
+                      }
+                    >
+                      <ExperimentalChatPlayer vod={data} />
+                    </div>
+                  )}
+                </div>
               )}
-          </Grid>
-        </div>
+
+          </div>
+
+        </Box>
       )}
       {!isFullscreen && <VodTitleBar vod={data} />}
     </div>

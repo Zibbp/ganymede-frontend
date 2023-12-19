@@ -1,60 +1,22 @@
 import {
   Avatar,
   Badge,
-  createStyles,
   Divider,
   Group,
   Text,
   Tooltip,
 } from "@mantine/core";
-import { IconCalendarEvent, IconUser, IconUsers } from "@tabler/icons";
+import { IconCalendarEvent, IconUser, IconUsers } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import getConfig from "next/config";
 import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import useUserStore from "../../store/user";
 import { VodMenu } from "./Menu";
-
-const useStyles = createStyles((theme) => ({
-  titleBarContainer: {
-    width: "100%",
-    height: "60px",
-    position: "relative",
-  },
-  titleBar: {
-    display: "flex",
-    position: "absolute",
-    margin: 0,
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: "100%",
-    paddingLeft: "10px",
-    paddingRight: "10px",
-  },
-  titleBarRight: {
-    marginLeft: "auto",
-    float: "right",
-    display: "flex",
-  },
-  titleBarBadge: {
-    display: "flex",
-    alignItems: "center",
-    marginRight: "5px",
-  },
-  typeBadge: {
-    backgroundColor: theme.colors.gray[8],
-    color: theme.white,
-    paddingLeft: "5px",
-    paddingRight: "5px",
-    paddingTop: "2px",
-    paddingBottom: "2px",
-    borderRadius: "5px",
-  },
-}));
+import classes from "./TitleBar.module.css"
 
 export const VodTitleBar = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
-  const { classes, cx, theme } = useStyles();
   return (
     <div className={classes.titleBarContainer}>
       <div className={classes.titleBar}>
@@ -117,7 +79,7 @@ export const VodTitleBar = ({ vod }: any) => {
             <Group>
               <Tooltip label={`Video Type`} openDelay={250}>
                 <div className={classes.titleBarBadge}>
-                  <Badge color="red" color="violet" size="lg">
+                  <Badge variant="default">
                     {vod.type}
                   </Badge>
                 </div>

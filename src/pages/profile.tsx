@@ -5,7 +5,6 @@ import useUserStore from "../store/user";
 import { roleCheck } from "../hooks/useAuthorization";
 import { deleteCookie } from "cookies-next";
 import {
-  createStyles,
   Card,
   Avatar,
   Text,
@@ -20,19 +19,7 @@ import {
 import { useDocumentTitle, useInputState } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useApi } from "../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-  },
-
-  avatar: {
-    border: `2px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white
-    }`,
-  },
-}));
+import classes from "./profile.module.css"
 
 const ProfilePage = () => {
   const user = useUserStore((state) => state);
@@ -44,7 +31,6 @@ const ProfilePage = () => {
   const [useNewChatPlayer, setUseNewChatPlayer] = useState(false);
   const [showMoreUIDetails, setShowMoreUIDetails] = useState(false);
 
-  const { classes, theme } = useStyles();
 
   useDocumentTitle("Profile - Ganymede");
 

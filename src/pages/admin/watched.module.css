@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.right {
+  margin-left: auto;
+  order: 2
+}
+.watchedDrawer {
+  overflow-y: scroll;
+}

@@ -1,4 +1,4 @@
-import { Button, Center, createStyles, rem, Title } from "@mantine/core";
+import { Button, Center, Container, rem, Title } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import getConfig from "next/config";
 import Head from "next/head";
@@ -8,36 +8,10 @@ import LandingContinueWatching from "../components/Landing/ContinueWatching";
 import { LandingHero } from "../components/Landing/Hero";
 import LandingRecentlyArchived from "../components/Landing/Recent";
 import useUserStore from "../store/user";
-import styles from "../styles/Home.module.css";
+import classes from "./index.module.css";
 import { LandingLoggedInHero } from "../components/Landing/LoggedInHero";
 
-const useStyles = createStyles((theme) => ({
-  recentlyArchivedSection: {
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-  },
-  continueWatchingSection: {
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    marginBottom: rem(-20),
-  },
-  title: {
-    color: [theme.colorScheme === "dark" ? "white" : theme.black],
-    fontWeight: 900,
-    lineHeight: 1.05,
-    maxWidth: 500,
-    fontSize: 36,
-    marginTop: rem(15),
-    [theme.fn.smallerThan("md")]: {
-      maxWidth: "100%",
-      fontSize: 34,
-      lineHeight: 1.15,
-    },
-  },
-}));
-
 export default function Home() {
-  const { classes } = useStyles();
 
   useDocumentTitle("Ganymede");
 
@@ -47,20 +21,21 @@ export default function Home() {
     <div>
       {user.isLoggedIn ? <LandingLoggedInHero /> : <LandingHero />}
       {user.isLoggedIn && (
-        <div className={classes.continueWatchingSection}>
+        <div>
           <Center>
-            <LandingContinueWatching />
+            <div className={classes.title}>Continue Watching</div>
           </Center>
+          <Container size="7xl" >
+            <LandingContinueWatching />
+          </Container>
         </div>
       )}
-      <div className={classes.recentlyArchivedSection}>
-        <Center>
-          <Title className={classes.title}>Recently Archived</Title>
-        </Center>
-        <Center>
-          <LandingRecentlyArchived />
-        </Center>
-      </div>
+      <Center>
+        <div className={classes.title}>Recently Archived</div>
+      </Center>
+      <Container size="7xl" >
+        <LandingRecentlyArchived />
+      </Container>
     </div>
   );
 }

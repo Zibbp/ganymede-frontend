@@ -1,0 +1,6 @@
+.card {
+  background-color: var(--mantine-color-dark-7);
+}
+.avatar {
+  border: 2px solid var(--mantine-color-dark-7);
+}

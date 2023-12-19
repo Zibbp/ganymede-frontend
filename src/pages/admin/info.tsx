@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -17,41 +16,9 @@ import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  settingsSections: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    borderRadius: theme.radius.md,
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    border: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
-    boxShadow: theme.shadows.sm,
-  },
-  settingItem: {
-    display: "flex",
-    marginBottom: "0.25rem",
-  },
-}));
+import classes from "./info.module.css"
 
 const AdminInfoPage = () => {
-  const { classes, cx, theme } = useStyles();
   const { publicRuntimeConfig } = getConfig();
 
   useDocumentTitle("Ganymede - Admin - Info");
@@ -73,7 +40,7 @@ const AdminInfoPage = () => {
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
-        <Container className={classes.settingsSections} size="md">
+        <Container className={classes.settingsSections} size="xl">
           <div className={classes.header}>
             <div>
               <Title order={2}>Frontend</Title>

@@ -3,7 +3,6 @@ import {
   Button,
   Code,
   Collapse,
-  createStyles,
   Switch,
   Text,
   Textarea,
@@ -11,31 +10,15 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronUp } from "@tabler/icons";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
 import GanymedeLoader from "../../Utils/GanymedeLoader";
-
-const useStyles = createStyles((theme) => ({
-  notificationRow: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  notificationRight: {
-    marginTop: "0.5rem",
-    marginLeft: "auto",
-    order: 2,
-  },
-  link: {
-    color: theme.colors.blue[6],
-  },
-}));
+import classes from "./Settings.module.css"
 
 const AdminNotificationsDrawer = ({ handleClose }) => {
-  const { classes, cx, theme } = useStyles();
 
   const { handleSubmit } = useForm();
 

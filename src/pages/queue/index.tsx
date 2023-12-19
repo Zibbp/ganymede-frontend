@@ -8,7 +8,7 @@ const QueuePage = () => {
   useDocumentTitle("Queue - Ganymede");
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
-      <Container mt={10} size="2xl">
+      <Container mt={10} size="7xl">
         <QueueTable />
       </Container>
     </Authorization>

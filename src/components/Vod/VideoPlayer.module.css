@@ -1,0 +1,30 @@
+
+.mediaPlayer {
+  height: calc(100vh - 60px - 60px);
+
+  video {
+    height: calc(100vh - 60px - 60px);
+  }
+
+  @media (max-width: em(1000px)) {
+    height: auto !important;
+    video {
+      height: auto !important;
+    }
+  }
+}
+
+.mediaPlayerTheaterMode {
+  height: 100vh;
+
+  video {
+    height: 100vh;
+  }
+
+  @media (max-width: em(1000px)) {
+    height: auto !important;
+    video {
+      height: auto !important;
+    }
+  }
+}

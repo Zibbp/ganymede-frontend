@@ -1,4 +1,4 @@
-import { Center, Container, Grid, Image, Modal } from "@mantine/core";
+import { Center, Container, Grid, SimpleGrid, Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import Head from "next/head";
@@ -76,13 +76,17 @@ const PlaylistPage = (props: any) => {
       ) : data.edges.vods ? (
         <Container mt={5} size="xl" px="xl" fluid={true}>
           <div>
-            <Grid>
+            <SimpleGrid
+              cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }}
+              spacing="xs"
+              verticalSpacing="xs"
+            >
               {data.edges.vods.map((vod: any) => (
-                <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
-                  <VideoCard video={vod} playback={playbackData}></VideoCard>
-                </Grid.Col>
+
+                <VideoCard video={vod} playback={playbackData}></VideoCard>
+
               ))}
-            </Grid>
+            </SimpleGrid>
           </div>
         </Container>
       ) : (

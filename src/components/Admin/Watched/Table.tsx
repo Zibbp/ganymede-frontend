@@ -8,13 +8,12 @@ import sortBy from "lodash/sortBy";
 import {
   ActionIcon,
   Button,
-  createStyles,
   Drawer,
   Group,
   Modal,
   TextInput,
 } from "@mantine/core";
-import { IconPencil, IconSearch, IconTrash } from "@tabler/icons";
+import { IconPencil, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useDebouncedValue } from "@mantine/hooks";
 
 import AdminMultiUserDelete from "../Users/MultiDelete";
@@ -24,21 +23,9 @@ import AdminMultiQueueDelete from "./MultiDelete";
 import AdminWatchedDrawer from "./Drawer";
 import AdminWatchedDelete from "./Delete";
 import AdminMultiWatchedDelete from "./MultiDelete";
-
-const useStyles = createStyles((theme) => ({
-  actionButton: {
-    cursor: "pointer",
-  },
-  actionButtons: {
-    display: "flex",
-  },
-  queueDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./Watched.module.css"
 
 const AdminWatchedTable = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -129,7 +116,6 @@ const AdminWatchedTable = () => {
       <div>
         {selectedRecords.length > 0 && (
           <Button
-            uppercase
             mb={5}
             leftIcon={<IconTrash size={16} />}
             color="red"
@@ -139,11 +125,10 @@ const AdminWatchedTable = () => {
             }}
           >
             {selectedRecords.length
-              ? `Delete ${
-                  selectedRecords.length === 1
-                    ? "one selected watched channel"
-                    : `${selectedRecords.length} selected watched channels`
-                }`
+              ? `Delete ${selectedRecords.length === 1
+                ? "one selected watched channel"
+                : `${selectedRecords.length} selected watched channels`
+              }`
               : "Select watched channels to delete"}
           </Button>
         )}
@@ -157,7 +142,7 @@ const AdminWatchedTable = () => {
         />
       </div>
       <DataTable
-        withBorder
+        withTableBorder
         borderRadius="sm"
         withColumnBorders
         striped
@@ -196,12 +181,14 @@ const AdminWatchedTable = () => {
                 <ActionIcon
                   onClick={() => openDrawer(watched)}
                   className={classes.actionButton}
+                  variant="light"
                 >
                   <IconPencil size={18} />
                 </ActionIcon>
                 <ActionIcon
                   onClick={() => openDeleteModal(watched)}
                   className={classes.actionButton}
+                  variant="light" color="red"
                 >
                   <IconTrash size={18} />
                 </ActionIcon>

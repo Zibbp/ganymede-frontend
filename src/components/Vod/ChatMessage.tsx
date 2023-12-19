@@ -4,41 +4,11 @@ import {
   GanymedeFormattedBadge,
   GanymedeFormattedMessageFragments,
 } from "../../ganymede-defs";
-import { createStyles, Text, Image, Tooltip } from "@mantine/core";
+import { Text, Image, Tooltip } from "@mantine/core";
+import classes from "./ChatMessage.module.css"
 
-const useStyles = createStyles((theme) => ({
-  chatMessage: {
-    fontStyle: "normal",
-    fontWeight: "normal",
-    fontSize: "14px",
-    marginTop: "6px",
-    marginBottom: "6px",
-
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.gray[2]
-        : theme.colors.dark[9],
-  },
-  username: {
-    fontWeight: 700,
-    lineHeight: "20px",
-    fontSize: "14px",
-  },
-  message: {
-    fontWeight: 400,
-    lineHeight: "20px",
-    fontSize: "14px",
-  },
-  badge: {
-    paddingRight: "2px",
-  },
-  emoteImage: {
-    paddingRight: "2px",
-  },
-}));
 
 const ChatMessage = ({ comment }: Comment) => {
-  const { classes, cx, theme } = useStyles();
 
   return (
     <div key={comment._id} className={classes.chatMessage}>
@@ -56,7 +26,10 @@ const ChatMessage = ({ comment }: Comment) => {
           )}
       </span>
       <Text
-        className={classes.username}
+        // className={classes.username}
+        fw={700}
+        lh={1}
+        size="sm"
         style={{ color: comment.message.user_color }}
         span
       >

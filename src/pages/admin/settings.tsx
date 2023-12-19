@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -21,53 +20,10 @@ import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
 import { ProxyItem } from "../../ganymede-defs";
-import { IconPlus, IconTrash } from "@tabler/icons";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  settingsSections: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    borderRadius: theme.radius.md,
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    border: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
-    boxShadow: theme.shadows.sm,
-  },
-  link: {
-    color: theme.colors.blue[6],
-  },
-  notificationDrawer: {
-    overflowY: "scroll",
-  },
-  proxyList: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  proxyInput: {
-    width: "100%",
-    marginRight: "1rem",
-  },
-}));
+import { IconPlus, IconTrash } from "@tabler/icons-react";
+import classes from "./settings.module.css"
 
 const AdminSettingsPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
   const [postVideoFFmpegArgs, setPostVideoFFmpegArgs] = useState("");
   const [streamlinkLiveArgs, setStreamlinkLiveArgs] = useState("");
@@ -201,7 +157,7 @@ const AdminSettingsPage = () => {
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
-        <Container className={classes.settingsSections} size="md">
+        <Container className={classes.settingsSections} size="xl">
           <div className={classes.header}>
             <div>
               <Title order={2}>Settings</Title>

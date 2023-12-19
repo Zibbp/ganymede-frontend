@@ -1,5 +1,5 @@
 import { Loader, ThemeIcon } from "@mantine/core";
-import { IconCircleCheck, IconCircleX, IconHourglass } from "@tabler/icons";
+import { IconCircleCheck, IconCircleX, IconHourglass } from "@tabler/icons-react";
 
 const QueueTimelineBullet = ({ status }: any) => {
   if (status == "running") {

@@ -1,4 +1,4 @@
-import { HeaderMenu } from "./Navbar";
+import { HeaderMegaMenu } from "./Navbar";
 import eventBus from "../../util/eventBus";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@mantine/hooks";
@@ -21,7 +21,7 @@ export default function MainLayout({ children }) {
 
   return (
     <>
-      {!fullscreen && <HeaderMenu />}
+      {!fullscreen && <HeaderMegaMenu />}
       <main>{children}</main>
     </>
   );

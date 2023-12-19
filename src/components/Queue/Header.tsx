@@ -1,62 +1,14 @@
-import { Container, createStyles, Image, Text, Tooltip } from "@mantine/core";
+import { Container, Image, Text, Tooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import getConfig from "next/config";
 import { escapeURL } from "../../util/util";
-
-const useStyles = createStyles((theme) => ({
-  queueHeader: {
-    height: "auto",
-    paddingBottom: "10px",
-    paddingTop: "10px",
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-  },
-  queueHeaderContents: {
-    display: "flex",
-    // Screen size
-    [theme.fn.smallerThan("sm")]: {
-      flexDirection: "column",
-    },
-  },
-  queueHeaderTitle: {
-    fontWeight: 600,
-    fontSize: "24px",
-  },
-  queueHeaderHoverText: {
-    fontWeight: 600,
-    fontSize: "18px",
-  },
-  queueHeaderRight: {
-    paddingLeft: "10px",
-  },
-  liveArchive: {
-    fontWeight: 600,
-    fontSize: "18px",
-    backgroundColor: theme.colors.red[8],
-    color: theme.colors.gray[0],
-    padding: "2px",
-    borderRadius: "4px",
-    marginRight: "7px",
-  },
-  onHold: {
-    fontWeight: 600,
-    fontSize: "18px",
-    backgroundColor: theme.colors.indigo[8],
-    color: theme.colors.gray[0],
-    padding: "2px",
-    borderRadius: "4px",
-    marginRight: "7px",
-  },
-}));
+import classes from "./Header.module.css"
 
 const QueueHeader = ({ queue }: Object) => {
-  const { classes, cx, theme } = useStyles();
   const { publicRuntimeConfig } = getConfig();
   return (
     <div className={classes.queueHeader}>
-      <Container size="2xl">
+      <Container >
         <div className={classes.queueHeaderContents}>
           <div>
             <Image
@@ -64,7 +16,7 @@ const QueueHeader = ({ queue }: Object) => {
                 publicRuntimeConfig.CDN_URL +
                 escapeURL(queue.edges.vod.thumbnail_path)
               }
-              width={160}
+              w={160}
             />
           </div>
           <div className={classes.queueHeaderRight}>
