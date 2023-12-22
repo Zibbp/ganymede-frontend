@@ -7,6 +7,7 @@ import { Text, Container, Paper, SimpleGrid, Title } from '@mantine/core';
 import classes from "../Workflows.module.css"
 import dayjs from 'dayjs';
 import duration from "dayjs/plugin/duration";
+import WorkflowEvent from '../../../components/Workflows/Event';
 dayjs.extend(duration);
 
 type Props = {}
@@ -31,7 +32,7 @@ const WorkflowInspectPage = (props: Props) => {
   });
 
   const { isLoading: workflowHistoryLoading, error: workflowHistoryError, data: workflowHistory } = useQuery({
-    queryKey: ["workflows-closed"],
+    queryKey: ["workflows-closed-history"],
     queryFn: async () =>
       useApi(
         {
@@ -89,6 +90,11 @@ const WorkflowInspectPage = (props: Props) => {
         <div className={classes.infoBox}>
 
           <Title>Events</Title>
+
+
+          {workflowHistory.map((event: any) => (
+            <WorkflowEvent event={event} />
+          ))}
 
 
 

@@ -8,6 +8,7 @@ import WorkflowStatusRunning from './Status/Running';
 import dayjs from 'dayjs';
 import WorkflowStatusCancelled from './Status/Cancelled';
 import WorkflowStatusTerminated from './Status/Terminated';
+import Link from 'next/link';
 
 type Props = {}
 
@@ -42,8 +43,11 @@ const WorkflowsActiveTable = (props: Props) => {
         {workflow.status == 5 && <WorkflowStatusTerminated />}
       </Table.Td>
       <Table.Td>{workflow.execution.workflow_id}</Table.Td>
-      <Table.Td>{workflow.execution.run_id}</Table.Td>
-      <Table.Td>{workflow.type.name}</Table.Td>
+      <Link href={`/workflows/${workflow.execution.workflow_id}/${workflow.execution.run_id}`}>
+        <span>
+          {workflow.execution.run_id}
+        </span>
+      </Link>      <Table.Td>{workflow.type.name}</Table.Td>
       <Table.Td>{dayjs(workflow.start_time).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
     </Table.Tr>
   ));
