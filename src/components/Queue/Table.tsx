@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  createStyles,
   Loader,
   Text,
   ThemeIcon,
@@ -16,24 +15,13 @@ import {
   IconPlayerStop,
   IconSquareX,
   IconX,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { showNotification } from "@mantine/notifications";
-
-const useStyles = createStyles((theme) => ({
-  errBadge: {
-    backgroundColor: theme.colors.red[6],
-    width: "auto",
-    padding: "0.25rem",
-    color: theme.white,
-    borderRadius: "0.25rem",
-    textAlign: "center",
-  },
-}));
+import classes from "./Table.module.css"
 
 const QueueTable = () => {
-  const { classes } = useStyles();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [records, setRecords] = useState(null);
@@ -113,7 +101,7 @@ const QueueTable = () => {
   return (
     <div>
       <DataTable
-        withBorder
+        withTableBorder
         borderRadius="sm"
         withColumnBorders
         striped

@@ -1,5 +1,5 @@
-import { useToggle, upperFirst } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
+import { useToggle, upperFirst } from '@mantine/hooks';
+import { useForm } from '@mantine/form';
 import {
   TextInput,
   PasswordInput,
@@ -12,22 +12,21 @@ import {
   Checkbox,
   Anchor,
   Stack,
-  ButtonProps,
-} from "@mantine/core";
-import { IconLock } from "@tabler/icons";
-import { useState } from "react";
-import router from "next/router";
-import Link from "next/link";
-import { useRegister } from "../../hooks/useRegister";
+} from '@mantine/core';
+import Link from 'next/link';
+import getConfig from 'next/config';
+import { useState } from 'react';
+import router from 'next/router';
+import { useRegister } from '../../hooks/useRegister';
 
 export function RegisterForm(props: PaperProps) {
+  const { publicRuntimeConfig } = getConfig();
   const { register } = useRegister();
   const [loading, setLoading] = useState(false);
-
   const form = useForm({
     initialValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
 
     validate: {
@@ -40,15 +39,13 @@ export function RegisterForm(props: PaperProps) {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // validate form
     form.validate();
-
     setLoading(true);
     try {
       const err = await register(form.values.username, form.values.password);
       setLoading(false);
       if (err) {
-        return;
+        throw new Error(err);
       }
       router.push("/login");
     } catch (error) {
@@ -58,70 +55,50 @@ export function RegisterForm(props: PaperProps) {
 
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
-      <Text size="lg" weight={500}>
+      <Text size="lg" fw={500}>
         Welcome to Ganymede, sign up below
       </Text>
 
-      <div style={{ marginBottom: "0.5rem" }}></div>
-
       <form onSubmit={handleSubmit}>
         <Stack>
+
           <TextInput
             required
             label="Username"
-            placeholder="username"
+            placeholder="Your username"
             value={form.values.username}
-            onChange={(event) =>
-              form.setFieldValue("username", event.currentTarget.value)
-            }
+            onChange={(event) => form.setFieldValue('username', event.currentTarget.value)}
+            radius="md"
             error={form.errors.user && "Invalid username"}
           />
 
           <PasswordInput
             required
             label="Password"
-            placeholder="password"
+            placeholder="Your password"
             value={form.values.password}
-            onChange={(event) =>
-              form.setFieldValue("password", event.currentTarget.value)
-            }
+            onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
+            radius="md"
             error={
               form.errors.password &&
               "Password should include at least 8 characters"
             }
           />
+
+
         </Stack>
 
-        <Group position="apart" mt="xl">
+        <Group justify="space-between" mt="xl">
           <Link href="/login">
-            <Anchor component="button" type="button" color="dimmed" size="xs">
+            <Anchor component="button" type="button" c="dimmed" size="xs">
               Have an account? Login
             </Anchor>
           </Link>
-          <Button color="violet" type="submit" loading={loading}>
-            Sign up
+          <Button type="submit" radius="xl" loading={loading}>
+            Register
           </Button>
         </Group>
       </form>
     </Paper>
-  );
-}
-
-export function SSOButton(props: ButtonProps) {
-  return (
-    <Button
-      {...props}
-      leftIcon={<IconLock size={16} />}
-      style={{ width: "100%" }}
-      sx={(theme) => ({
-        backgroundColor:
-          theme.colors.dark[theme.colorScheme === "dark" ? 9 : 6],
-        color: "#fff",
-        "&:hover": {
-          backgroundColor:
-            theme.colors.dark[theme.colorScheme === "dark" ? 9 : 6],
-        },
-      })}
-    />
   );
 }

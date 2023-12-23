@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -14,51 +13,18 @@ import {
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconRefresh } from "@tabler/icons";
+import { IconPlayerPlay, IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  settingsSections: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    borderRadius: theme.radius.md,
-    paddingLeft: theme.spacing.md,
-    paddingRight: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    border: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-      }`,
-    boxShadow: theme.shadows.sm,
-  },
-  taskItem: {
-    display: "flex",
-    marginBottom: "0.25rem",
-  },
-  sectionHeader: {
-    marginTop: "0.3rem",
-    marginBottom: "0.3rem",
-  },
-}));
+import classes from "./tasks.module.css"
 
 const AdminTasksPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [loading, setLoading] = useState(false);
+  const [workflowLoading, setWorkflowLoading] = useState(false);
+
 
   useDocumentTitle("Ganymede - Admin - Tasks");
 
@@ -88,10 +54,35 @@ const AdminTasksPage = () => {
     },
   });
 
+  const startWorkflow = useMutation({
+    mutationFn: (workflowName: string) => {
+      setWorkflowLoading(true);
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/workflows/start`,
+          data: { "workflow_name": workflowName },
+          withCredentials: true,
+        },
+        false
+      )
+        .then(() => {
+          setWorkflowLoading(false);
+          showNotification({
+            title: "Workflow Started",
+            message: "Visit the Workflows page to view the status of the workflow",
+          });
+        })
+        .catch((err) => {
+          setWorkflowLoading(false);
+        });
+    },
+  });
+
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
-        <Container className={classes.settingsSections} size="md">
+        <Container className={classes.settingsSections} size="xl">
           <div className={classes.header}>
             <div>
               <Title order={2}>Tasks</Title>
@@ -316,6 +307,32 @@ const AdminTasksPage = () => {
               </Grid.Col>
             </Grid>
           </div>
+        </Container>
+        <Container className={classes.settingsSections} size="xl">
+          <div className={classes.header}>
+            <div>
+              <Title order={2}>Workflows</Title>
+            </div>
+          </div>
+          <Grid className={classes.taskItem}>
+            <Grid.Col span={10}>
+              <div>
+                <span>
+                  <Text>Save Chapters for Twitch Videos</Text>
+                  <Text size="xs">
+                    Save chapters for already archived Twitch videos.
+                  </Text>
+                </span>
+              </div>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Tooltip label="Start Workflow">
+                <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={workflowLoading} onClick={() => startWorkflow.mutate("SaveTwitchVideoChapters")}>
+                  <IconPlayerPlay stroke={2} />
+                </ActionIcon>
+              </Tooltip>
+            </Grid.Col>
+          </Grid>
         </Container>
       </div>
     </Authorization>

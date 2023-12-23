@@ -5,14 +5,14 @@ import {
   LoadingOverlay,
   MultiSelect,
   Select,
-  SelectItem,
   Text,
 } from "@mantine/core";
-import { IconPlus, IconX } from "@tabler/icons";
+import { IconPlus, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
+import classes from "./PlaylistModalContent.module.css"
 
 async function fetchVodPlaylists(vodId: string) {
   return useApi(
@@ -85,7 +85,7 @@ export const VodPlaylistModalContent = ({ vod }: any) => {
   if (isLoading)
     return (
       <div>
-        <LoadingOverlay visible={true} overlayBlur={0} />
+        <LoadingOverlay visible={true} />
       </div>
     );
 
@@ -98,38 +98,36 @@ export const VodPlaylistModalContent = ({ vod }: any) => {
   });
 
   return (
-    <div style={{ minHeight: "10rem" }}>
-      <Text size="lg" weight={500}>
-        Add to Playlist
-      </Text>
-      <Group spacing={0}>
+    <div>
+      <div className={classes.container}>
         <Select
+          className={classes.selectPlaylist}
           data={playlists}
           value={value}
           onChange={setValue}
           searchable
           placeholder="Select a Playlist"
-          dropdownPosition="bottom"
+          w="100%"
         />
         <Button
           color="green"
-          leftIcon={<IconPlus size={14} />}
+          leftSection={<IconPlus size={14} />}
           onClick={() => addVodToPlaylistMutation.mutate()}
           loading={addVodToPlaylistMutation.isLoading}
         >
           Add
         </Button>
-      </Group>
-      <Text size="lg" weight={500} pt={5}>
-        Current Playlists:
-      </Text>
+      </div>
+
       {dataVP &&
         dataVP.map((playlist: any) => (
-          <div style={{ display: "flex" }} key={playlist.id}>
+          <div style={{ display: "flex", marginBottom: "0.5rem" }} key={playlist.id}>
             <ActionIcon
               onClick={() => deleteVodFromPlaylistMutation.mutate(playlist.id)}
-              color="red"
-              loading={deleteVodFromPlaylistMutation.isLoading}
+              variant="light" color="red"
+              loading={deleteVodFromPlaylistMutation.isPending}
+              aria-label="Filled loading"
+              mr={4}
             >
               <IconX size={18} />
             </ActionIcon>

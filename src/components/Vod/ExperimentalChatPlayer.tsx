@@ -1,6 +1,5 @@
 import {
   Center,
-  createStyles,
   Divider,
   Loader,
   LoadingOverlay,
@@ -19,24 +18,10 @@ import {
 } from "../../ganymede-defs";
 import ChatMessage from "./ChatMessage";
 import vodDataBus from "./EventBus";
-
-const useStyles = createStyles((theme) => ({
-  chatContainer: {
-    height: "100%",
-    overflowY: "scroll",
-    paddingLeft: 2,
-    paddingRight: 2,
-    msOverflowStyle: "none",
-    scrollbarWidth: "none",
-    "&::-webkit-scrollbar": {
-      display: "none",
-    },
-  },
-}));
+import classes from "./ExperimentalChatPlayer.module.css"
 
 const ExperimentalChatPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
-  const { classes, cx, theme } = useStyles();
   const [ready, setReady] = useState(false);
   let internalReady = false;
   let lastCheckTime = 0;

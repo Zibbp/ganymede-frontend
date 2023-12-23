@@ -224,10 +224,12 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           // Format Twitch categories
           const tmpArr = [];
           res?.data.forEach((category) => {
-            tmpArr.push({
-              label: category.name,
-              value: category.name,
-            });
+            if (!tmpArr.some((e) => e.label === category.name)) {
+              tmpArr.push({
+                label: category.name,
+                value: category.name,
+              });
+            }
           });
           setFormattedTwitchCategories(tmpArr);
           setTwitchCategoriesLoading(false);

@@ -7,10 +7,11 @@ import {
   NumberInput,
   NumberInputHandlers,
   Pagination,
+  SimpleGrid,
   TextInput,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons";
+import { IconSearch } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
@@ -45,9 +46,8 @@ const SearchPage = (props: SearchPageProps) => {
         return useApi(
           {
             method: "GET",
-            url: `/api/v1/vod/search?q=${searchTerm}&limit=${limit}&offset=${
-              (page - 1) * limit
-            }`,
+            url: `/api/v1/vod/search?q=${searchTerm}&limit=${limit}&offset=${(page - 1) * limit
+              }`,
           },
           false
         ).then((res) => {
@@ -93,17 +93,19 @@ const SearchPage = (props: SearchPageProps) => {
         {!isLoading && data && data.data.length > 0 ? (
           <div>
             <div>
-              <Grid mt={10}>
+              <SimpleGrid
+                cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }}
+                spacing="xs"
+                verticalSpacing="xs"
+              >
                 {data.data.map((vod: any) => (
-                  <Grid.Col key={vod.id} md={6} lg={2} xl={2}>
-                    <VideoCard
-                      video={vod}
-                      playback={playbackData}
-                      showChannel={true}
-                    ></VideoCard>
-                  </Grid.Col>
+                  <VideoCard
+                    video={vod}
+                    playback={playbackData}
+                    showChannel={true}
+                  ></VideoCard>
                 ))}
-              </Grid>
+              </SimpleGrid>
             </div>
             <Center mt={5}>
               <div>

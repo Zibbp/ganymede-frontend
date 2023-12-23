@@ -1,47 +1,16 @@
-import { Center, Container, Title, createStyles } from "@mantine/core";
+import { Container, SimpleGrid, rem, useMantineTheme } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
-import { VodCard } from "../Vod/Card";
 import VideoCard from "../Vod/Card";
-
-const useStyles = createStyles((theme) => ({
-  vodSection: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: theme.spacing.xl,
-    marginBottom: theme.spacing.xl,
-    // small screen wrap
-    [theme.fn.smallerThan("lg")]: {
-      flexDirection: "column",
-    },
-  },
-  vodItem: {
-    margin: theme.spacing.md,
-    width: "640px",
-    [theme.fn.smallerThan("lg")]: {
-      width: "100%",
-    },
-  },
-  title: {
-    color: [theme.colorScheme === "dark" ? "white" : theme.black],
-    fontWeight: 900,
-    lineHeight: 1.05,
-    maxWidth: 500,
-    fontSize: 36,
-    marginTop: theme.spacing.lg,
-
-    [theme.fn.smallerThan("md")]: {
-      maxWidth: "100%",
-      fontSize: 34,
-      lineHeight: 1.15,
-    },
-  },
-}));
+import { useMediaQuery } from "@mantine/hooks";
+import { Carousel } from "@mantine/carousel";
 
 const LandingContinueWatching = () => {
-  const { classes } = useStyles();
+  const theme = useMantineTheme();
+  const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+
   const { isLoading, error, data } = useQuery({
     queryKey: ["landing-continue-watching"],
     queryFn: async () =>
@@ -62,30 +31,30 @@ const LandingContinueWatching = () => {
 
   return (
     <div>
-      {data?.data?.length > 0 && (
-        <div>
-          <Center>
-            <Title className={classes.title}>Continue Watching</Title>
-          </Center>
-          <Container size="2xl">
-            <div className={classes.vodSection}>
-              {data?.data?.map((item: any) => (
-                <div className={classes.vodItem} key={item.vod.id}>
-                  <VideoCard
-                    video={item.vod}
-                    playback={data?.playback}
-                    showChannel={true}
-                  ></VideoCard>
-                </div>
-              ))}
-              {[...Array(4 - data?.data?.length)].map((_, index) => (
-                <div className={classes.vodItem} key={index} />
-              ))}
-            </div>
-          </Container>
-        </div>
+      {mobile ? (
+        // use a carousel for mobile view
+        <Carousel
+          slideSize={{ base: '100%', sm: '50%' }}
+          slideGap={{ base: rem(4), sm: 'xl' }}
+          align="start"
+          slidesToScroll={mobile ? 1 : 2}
+          withIndicators
+        >
+          {data?.data?.map((item: any) => (
+            <Carousel.Slide key={item.vod.id}>
+              <VideoCard video={item.vod} playback={data?.playback} showChannel={true} />
+            </Carousel.Slide>
+          ))}
+        </Carousel>
+      ) : (
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="xs" verticalSpacing="xs">
+          {data?.data?.map((item: any) => (
+            <VideoCard video={item.vod} playback={data?.playback} showChannel={true} />
+          ))}
+        </SimpleGrid>
       )}
     </div>
+
   );
 };
 

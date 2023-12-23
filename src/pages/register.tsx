@@ -7,7 +7,7 @@ const RegisterPage = () => {
   useDocumentTitle("Ganymede - Register");
   return (
     <div>
-      <Container mt={50} size="xs">
+      <Container mt={50} size="sm">
         <RegisterForm />
       </Container>
     </div>

@@ -1,0 +1,7 @@
+.playlistHeader {
+  height: auto;
+  padding: 0.5rem;
+}
+.nameContainer {
+  display: flex;
+}

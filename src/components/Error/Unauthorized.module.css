@@ -1,0 +1,26 @@
+.root {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.label {
+  text-align: center;
+  font-weight: 900;
+  font-size: 220;
+  line-height: 1;
+  margin-bottom: var(--mantine-spacing-xl);
+  color: var(--mantine-color-white);
+}
+
+.title {
+  text-align: center;
+  font-weight: 900;
+  font-size: 38px;
+}
+
+.description {
+  max-width: 500px;
+  margin: auto;
+  margin-top: var(--mantine-spacing-xl);
+  margin-bottom: var(--mantine-spacing-xl);
+}

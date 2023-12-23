@@ -1,15 +1,17 @@
 import {
-  createStyles,
   Card,
   Image,
   Title,
   Badge,
   Button,
-  Group,
+  Text,
+  AspectRatio,
+  Center,
 } from "@mantine/core";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import classes from "./Card.module.css";
 
 interface Channel {
   id: string;
@@ -24,26 +26,9 @@ interface ChannelCardProps {
   channel: Channel;
 }
 
-const useStyles = createStyles((theme) => ({
-  card: {
-    transition: "transform 150ms ease, box-shadow 150ms ease",
-
-    "&:hover": {
-      boxShadow: theme.shadows.md,
-      transform: "scale(1.05)",
-    },
-  },
-  imageSection: {},
-  image: {
-    width: "100%",
-    height: "200px",
-    objectFit: "cover",
-  },
-}));
 
 export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const { classes, theme } = useStyles();
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const preloadImage = (url) => {
@@ -63,30 +48,19 @@ export const ChannelCard = ({ channel, ...props }: ChannelCardProps) => {
 
   return (
     <Link href={"/channels/" + channel.name}>
-      <Card p="md" radius="md" className={classes.card}>
-        <Card.Section className={classes.imageSection}>
-          {!imageLoaded && (
-            <img
-              src="/images/ganymede-channel.webp"
-              height={200}
-              className={classes.image}
-              alt={channel.display_name}
-            />
-          )}
-          <img
-            src={`${publicRuntimeConfig.CDN_URL}${channel.image_path}`}
-            onLoad={() => {
-              handleImageLoaded();
-            }}
-            className={classes.image}
-            style={imageStyle}
-            alt={channel.display_name}
-          />
-        </Card.Section>
-        <Title mt="xs" order={2} align="center">
-          {channel.display_name}
-        </Title>
+
+      <Card key={channel.id} p="md" radius="md" component="a" href="#" className={classes.card}>
+        <AspectRatio ratio={300 / 300}>
+          <Image src={`${publicRuntimeConfig.CDN_URL}${channel.image_path}`} alt={`${channel.name}`} />
+        </AspectRatio>
+        <Center mt={5}>
+          <Title order={3} className={classes.title} mt={5}>
+            {channel.name}
+          </Title>
+        </Center>
       </Card>
+
+
     </Link>
   );
 };

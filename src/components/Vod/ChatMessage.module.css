@@ -1,0 +1,29 @@
+.chatMessage {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.username {
+  font-weight: 700;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.message {
+  font-weight: 400;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.badge {
+  padding-right: 2px;
+  vertical-align: middle;
+}
+
+.emoteImage {
+  padding-right: 2px;
+  vertical-align: middle;
+}

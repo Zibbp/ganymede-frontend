@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -12,21 +11,9 @@ import AdminChannelDrawer from "../../components/Admin/Channels/Drawer";
 import AdminChannelsTable from "../../components/Admin/Channels/Table";
 import AdminChannelTwitchChannelDrawer from "../../components/Admin/Channels/TwitchChannelDrawer";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-}));
+import classes from "./channels.module.css"
 
 const AdminChannelsPage = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [twitchDrawerOpened, setTwitchDrawerOpened] = useState(false);
 

@@ -1,62 +1,70 @@
 import getConfig from "next/config";
 import React, { useEffect, useRef, useState } from "react";
-import { ActionIcon, createStyles } from "@mantine/core";
+import { ActionIcon } from "@mantine/core";
 import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
 import { useQuery } from "@tanstack/react-query";
-import { type MediaPlayerElement } from "vidstack";
 
-import "vidstack/styles/defaults.css";
-import "vidstack/styles/community-skin/video.css";
+import '@vidstack/react/player/styles/default/theme.css';
+import '@vidstack/react/player/styles/default/layouts/video.css';
 
-import {
-  MediaCommunitySkin,
-  MediaGesture,
-  MediaOutlet,
-  MediaPlayer,
-  MediaPoster,
-  MediaToggleButton,
-  useMediaRemote,
-} from "@vidstack/react";
-import { IconDotsVertical, IconMaximize, IconMinimize } from "@tabler/icons";
-import {
-  FullscreenArrowExitIcon,
-  FullscreenArrowIcon,
-} from "@vidstack/react/icons";
+import { MediaPlayer, MediaPlayerInstance, MediaProvider, Poster, Track } from '@vidstack/react';
+import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
+import { IconDotsVertical, IconMaximize, IconMinimize } from "@tabler/icons-react";
 import ReactDOM from "react-dom";
 import TheaterModeIcon from "./TheaterModeIcon";
 import { escapeURL } from "../../util/util";
 import { useSearchParams } from 'next/navigation'
 import { showNotification } from "@mantine/notifications";
-
-const useStyles = createStyles((theme) => ({
-  playerContainer: {
-    width: "100%",
-    height: "100%",
-  },
-  playerMediaOutlet: {
-    paddingBottom: "0",
-    height: "100%",
-  },
-}));
+import classes from "./VideoPlayer.module.css"
+import eventBus from "../../util/eventBus";
+// const useStyles = createStyles((theme) => ({
+//   playerContainer: {
+//     "--media-max-height": "87vh"
+//   },
+//   playerMediaOutlet: {
+//     paddingBottom: "0",
+//     height: "100%",
+//   },
+// }));
 
 const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
-  const { classes, cx, theme } = useStyles();
   const user = useUserStore((state) => state);
   const handleKeyRef = useRef<any>(null);
 
-  const player = useRef<MediaPlayerElement>(null);
-  const playerRemote = useMediaRemote(player);
+  const player = useRef<MediaPlayerInstance>(null)
 
   const [videoSource, setVideoSource] = useState([{ src: "", type: "" }]);
   const [videoType, setVideoType] = useState<string>("");
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
   const startedPlayback = useRef(false);
+  const [playerIsHovered, setPlayerIsHovered] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const searchParams = useSearchParams()
+
+  const handleHover = () => {
+    setPlayerIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setPlayerIsHovered(false);
+  };
+
+  const handleTouch = () => {
+    setPlayerIsHovered(!playerIsHovered);
+  };
+
+  useEffect(() => {
+    eventBus.on("theaterMode", (data) => {
+      setIsFullscreen(data);
+    });
+  }, []);
+
+
 
   // Fetch playback data
   const { data } = useQuery({
@@ -164,18 +172,22 @@ const NewVideoPlayer = ({ vod }: any) => {
       player.current!.currentTime = parseInt(time);
     }
 
-    const mediaFullscreenButton = document.querySelector("media-menu");
-    const buttonContainer = document.createElement("div");
+    // const mediaFullscreenButton = document.querySelector("#media-menu-2");
+    // console.log(mediaFullscreenButton)
+    // const buttonContainer = document.createElement("div");
 
-    if (mediaFullscreenButton) {
-      mediaFullscreenButton.parentNode.insertBefore(
-        buttonContainer,
-        mediaFullscreenButton.nextSibling
-      );
-      // Render the button component inside the container
-      ReactDOM.render(<TheaterModeIcon />, buttonContainer);
-    }
+    // if (mediaFullscreenButton) {
+    //   mediaFullscreenButton.parentNode.insertBefore(
+    //     buttonContainer,
+    //     mediaFullscreenButton.nextSibling
+    //   );
+    //   // Render the button component inside the container
+    //   ReactDOM.render(<TheaterModeIcon />, buttonContainer);
+    // }
+
+
   }, [data, player]);
+
 
   // Tick for chat
   useEffect(() => {
@@ -240,22 +252,35 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   return (
-    <div className={classes.playerContainer}>
+    <div>
       <MediaPlayer
-        className={classes.playerContainer}
+        className={
+          isFullscreen
+            ? classes.mediaPlayerTheaterMode
+            : classes.mediaPlayer
+        }
         src={videoSource}
-        poster={videoPoster}
         aspect-ratio={16 / 9}
         ref={player}
+        crossorigin
+        onMouseEnter={handleHover}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouch}
       >
-        <MediaOutlet className={classes.playerMediaOutlet}>
-          <MediaPoster alt={videoTitle} />
-          <MediaGesture event="pointerup" action="toggle:paused" />
-          <MediaGesture event="dblpointerup" action="toggle:fullscreen" />
-          <MediaGesture event="dblpointerup" action="seek:-10" />
-          <MediaGesture event="dblpointerup" action="seek:10" />
-        </MediaOutlet>
-        <MediaCommunitySkin />
+
+        <MediaProvider >
+          <Poster className="vds-poster" src={videoPoster} alt={vod.title} />
+          {playerIsHovered && (
+            <TheaterModeIcon />
+          )}
+          <Track
+            src={`${publicRuntimeConfig.API_URL}/api/v1/chapter/video/${vod.id}/webvtt`}
+            kind="chapters"
+            default={true}
+          />
+        </MediaProvider>
+
+        <DefaultVideoLayout icons={defaultLayoutIcons} > </DefaultVideoLayout>
       </MediaPlayer>
     </div>
   );

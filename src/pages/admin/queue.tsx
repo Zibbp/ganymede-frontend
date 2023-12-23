@@ -1,6 +1,5 @@
 import {
   Container,
-  createStyles,
   Text,
   Button,
   Drawer,
@@ -12,24 +11,9 @@ import AdminQueueTable from "../../components/Admin/Queue/Table";
 import AdminUsersTable from "../../components/Admin/Users/Table";
 import AdminVodDrawer from "../../components/Admin/Vods/Drawer";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    display: "flex",
-    marginTop: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  right: {
-    marginLeft: "auto",
-    order: 2,
-  },
-  vodDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./queue.module.css"
 
 const AdminQueuePage = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
 
   useDocumentTitle("Ganymede - Admin - Queue");

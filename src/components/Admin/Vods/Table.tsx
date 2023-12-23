@@ -7,7 +7,6 @@ import GanymedeLoader from "../../Utils/GanymedeLoader";
 import sortBy from "lodash/sortBy";
 import {
   ActionIcon,
-  createStyles,
   Drawer,
   Group,
   Modal,
@@ -16,26 +15,14 @@ import {
   Tooltip,
   Button,
 } from "@mantine/core";
-import { IconPencil, IconSearch, IconTrash } from "@tabler/icons";
+import { IconPencil, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useDebouncedValue } from "@mantine/hooks";
 import AdminVodDrawer from "./Drawer";
 import AdminVodDelete from "./Delete";
 import AdminMultiVodDelete from "./MutliDelete";
-
-const useStyles = createStyles((theme) => ({
-  actionButton: {
-    cursor: "pointer",
-  },
-  actionButtons: {
-    display: "flex",
-  },
-  vodDrawer: {
-    overflowY: "scroll",
-  },
-}));
+import classes from "./Vods.module.css"
 
 const AdminVodsTable = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -147,11 +134,10 @@ const AdminVodsTable = () => {
             }}
           >
             {selectedRecords.length
-              ? `Delete ${
-                  selectedRecords.length === 1
-                    ? "one selected vod"
-                    : `${selectedRecords.length} selected vods`
-                }`
+              ? `Delete ${selectedRecords.length === 1
+                ? "one selected vod"
+                : `${selectedRecords.length} selected vods`
+              }`
               : "Select vods to delete"}
           </Button>
         )}
@@ -221,12 +207,14 @@ const AdminVodsTable = () => {
                 <ActionIcon
                   onClick={() => openDrawer(vod)}
                   className={classes.actionButton}
+                  variant="light"
                 >
                   <IconPencil size={18} />
                 </ActionIcon>
                 <ActionIcon
                   onClick={() => openDeleteModal(vod)}
                   className={classes.actionButton}
+                  variant="light" color="red"
                 >
                   <IconTrash size={18} />
                 </ActionIcon>

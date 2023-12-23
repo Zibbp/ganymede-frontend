@@ -11,7 +11,6 @@ import {
   Center,
   Image,
   MultiSelect,
-  createStyles,
   SimpleGrid,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
@@ -21,18 +20,10 @@ import { useEffect, useRef, useState } from "react";
 import { ChannelHeader } from "../../components/Channel/Header";
 import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
-import { VodCard } from "../../components/Vod/Card";
 import { useApi } from "../../hooks/useApi";
 import VideoCard from "../../components/Vod/Card";
 import { Video } from "../../ganymede-defs";
-
-const useStyles = createStyles((theme) => ({
-  filter: {
-    width: "16rem",
-    marginTop: "-1rem",
-    marginBottom: "1rem",
-  },
-}));
+import classes from "./channelName.module.css"
 
 async function fetchVods(
   channelId: string,
@@ -43,16 +34,14 @@ async function fetchVods(
   return useApi(
     {
       method: "GET",
-      url: `/api/v1/vod/paginate?limit=${limit}&offset=${
-        (page - 1) * limit
-      }&channel_id=${channelId}&types=${types}`,
+      url: `/api/v1/vod/paginate?limit=${limit}&offset=${(page - 1) * limit
+        }&channel_id=${channelId}&types=${types}`,
     },
     false
   ).then((res) => res?.data);
 }
 
 const ChannelPage = (props: any) => {
-  const { classes, cx, theme } = useStyles();
   const [activePage, setPage] = useState(1);
   const [limit, setLimit] = useState(24);
   const handlers = useRef<NumberInputHandlers>();
@@ -124,15 +113,9 @@ const ChannelPage = (props: any) => {
             <Container size="xl" px="xl" fluid={true}>
               <div>
                 <SimpleGrid
-                  cols={6}
+                  cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }}
                   spacing="xs"
                   verticalSpacing="xs"
-                  breakpoints={[
-                    { maxWidth: "80rem", cols: 4, spacing: "sm" },
-                    { maxWidth: "64rem", cols: 3, spacing: "sm" },
-                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
-                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
-                  ]}
                 >
                   {data.data.map((video: Video) => {
                     return (

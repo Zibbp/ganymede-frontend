@@ -32,10 +32,9 @@ const PlaylistTable = () => {
   return (
     <div>
       <DataTable
-        withBorder
+        withTableBorder
         borderRadius="sm"
         withColumnBorders
-        striped
         highlightOnHover
         // provide data
         records={data}
@@ -48,7 +47,7 @@ const PlaylistTable = () => {
             // right-align column
             // textAlignment: "right",
             render: ({ name, id }) => (
-              <Link href={`/playlist/${id}`}>{name}</Link>
+              <Link href={`/playlists/${id}`}>{name}</Link>
             ),
           },
           {
@@ -59,7 +58,7 @@ const PlaylistTable = () => {
             ),
           },
         ]}
-        onRowClick={({ id }) =>
+        onRowClick={({ record: { id } }) =>
           router.push({
             pathname: `/playlists/${id}`,
           })

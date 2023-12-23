@@ -7,28 +7,18 @@ import GanymedeLoader from "../../Utils/GanymedeLoader";
 import sortBy from "lodash/sortBy";
 import {
   ActionIcon,
-  createStyles,
   Drawer,
   Group,
   Modal,
   TextInput,
 } from "@mantine/core";
-import { IconPencil, IconSearch, IconTrash } from "@tabler/icons";
+import { IconPencil, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useDebouncedValue } from "@mantine/hooks";
 import AdminChannelDrawer from "./Drawer";
 import AdminChannelsDelete from "./Delete";
-
-const useStyles = createStyles((theme) => ({
-  actionButton: {
-    cursor: "pointer",
-  },
-  actionButtons: {
-    display: "flex",
-  },
-}));
+import classes from "./Channels.module.css"
 
 const AdminChannelsTable = () => {
-  const { classes, cx, theme } = useStyles();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -116,7 +106,7 @@ const AdminChannelsTable = () => {
         />
       </div>
       <DataTable
-        withBorder
+        withTableBorder
         borderRadius="sm"
         withColumnBorders
         striped
@@ -140,16 +130,18 @@ const AdminChannelsTable = () => {
             title: "Actions",
             textAlignment: "right",
             render: (channel) => (
-              <Group spacing={4} position="right" noWrap>
+              <Group position="right" noWrap>
                 <ActionIcon
                   onClick={() => openDrawer(channel)}
                   className={classes.actionButton}
+                  variant="light"
                 >
                   <IconPencil size={18} />
                 </ActionIcon>
                 <ActionIcon
                   onClick={() => openDeleteModal(channel)}
                   className={classes.actionButton}
+                  variant="light" color="red"
                 >
                   <IconTrash size={18} />
                 </ActionIcon>

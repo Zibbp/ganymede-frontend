@@ -1,0 +1,56 @@
+.heartRate{
+  width: 30px;
+  height: 18px;
+  position: relative;
+  padding-top:2px;
+  margin-left: 2px;
+}
+
+.fadeIn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #dbeafe;
+  top: 0;
+  right: 0;
+  animation: heartRateIn 2s linear infinite;
+}
+
+.fadeOut {
+  position: absolute;
+  width: 120%;
+  height: 100%;
+  top: 0;
+  left: -120%;
+  animation: heartRateOut 2s linear infinite;
+  background: rgba(219, 234, 254, 1);
+  background: -moz-linear-gradient(left, rgba(219, 234, 254, 1) 0%, rgba(219, 234, 254, 1) 50%, rgba(219, 234, 254, 0) 100%);
+  background: -webkit-linear-gradient(left, rgba(219, 234, 254, 1) 0%, rgba(219, 234, 254, 1) 50%, rgba(219, 234, 254, 0) 100%);
+  background: -o-linear-gradient(left, rgba(219, 234, 254, 1) 0%, rgba(219, 234, 254, 1) 50%, rgba(219, 234, 254, 0) 100%);
+  background: -ms-linear-gradient(left, rgba(219, 234, 254, 1) 0%, rgba(219, 234, 254, 1) 50%, rgba(219, 234, 254, 0) 100%);
+  background: linear-gradient(to right, rgba(219, 234, 254, 1) 0%, rgba(219, 234, 254, 1) 80%, rgba(219, 234, 254, 0) 100%);
+}
+
+@keyframes heartRateIn {
+  0% {
+    width: 100%;
+  }
+  50% {
+    width: 0;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes heartRateOut {
+  0% {
+    left: -120%;
+  }
+  30% {
+    left: -120%;
+  }
+  100% {
+    left: 0;
+  }
+}

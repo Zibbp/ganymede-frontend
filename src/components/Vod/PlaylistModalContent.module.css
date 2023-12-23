@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.selectPlaylist {
+  flex: 1;
+  margin-right: 10px;
+}

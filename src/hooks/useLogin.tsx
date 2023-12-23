@@ -53,7 +53,7 @@ export const useLogin = () => {
           },
         }),
       });
-      return error;
+      throw new Error(error)
     }
   };
   return { login, error, isLoading };

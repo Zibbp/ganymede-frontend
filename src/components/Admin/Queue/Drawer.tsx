@@ -113,30 +113,35 @@ const AdminQueueDrawer = ({ handleClose, queue, mode }) => {
           label="Is Processing"
           checked={processing}
           onChange={(e) => setProcessing(e.currentTarget.checked)}
+          mb={5}
         />
 
         <Switch
           label="On Hold"
           checked={onHold}
           onChange={(e) => setOnHold(e.currentTarget.checked)}
+          mb={5}
         />
 
         <Switch
           label="Video Processing"
           checked={videoProcessing}
           onChange={(e) => setVideoProcessing(e.currentTarget.checked)}
+          mb={5}
         />
 
         <Switch
           label="Chat Processing"
           checked={chatProcessing}
           onChange={(e) => setChatProcessing(e.currentTarget.checked)}
+          mb={5}
         />
 
         <Switch
           label="Live Archive"
           checked={liveArchive}
           onChange={(e) => setLiveArchive(e.currentTarget.checked)}
+          mb={5}
         />
 
         <Select
