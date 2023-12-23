@@ -267,33 +267,103 @@ export function HeaderMegaMenu() {
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
 
-          <a href="#" className={classes.link}>
+          <Link href="/" className={classes.link}>
             Home
-          </a>
-          <UnstyledButton className={classes.link} onClick={toggleLinks}>
-            <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown
-                style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
-              />
-            </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="#" className={classes.link}>
-            Learn
-          </a>
-          <a href="#" className={classes.link}>
-            Academy
-          </a>
+          </Link>
+          <Link href="/channels" className={classes.link}>
+            Channels
+          </Link>
+          <Link href="/playlists" className={classes.link}>
+            Playlists
+          </Link>
+          {useJsxAuth({
+            loggedIn: true,
+            roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
+          }) && (
+              <Link href="/archive" className={classes.link}>
+                Archive
+              </Link>
+            )}
+          {useJsxAuth({
+            loggedIn: true,
+            roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
+          }) && (
+              <Link href="/workflows" className={classes.link}>
+                Workflows
+              </Link>
+            )}
+          {useJsxAuth({
+            loggedIn: true,
+            roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
+          }) && (
+              <Link href="/queue" className={classes.link}>
+                Queue
+              </Link>
+            )}
+          {useJsxAuth({ loggedIn: true, roles: [] }) && (
+            <Link href="/profile" className={classes.link}>
+              Profile
+            </Link>
+          )}
+
+
+
+
+          {useJsxAuth({
+            loggedIn: true,
+            roles: [ROLES.EDITOR, ROLES.ADMIN],
+          }) && (
+              <div>
+                <UnstyledButton className={classes.link} onClick={toggleLinks}>
+                  <Center inline>
+                    <Box component="span" mr={5}>
+                      Admin
+                    </Box>
+                    <IconChevronDown
+                      style={{ width: rem(16), height: rem(16) }}
+                      color={theme.colors.blue[6]}
+                    />
+                  </Center>
+                </UnstyledButton>
+                <Collapse in={linksOpened}>{links}</Collapse>
+              </div>
+            )}
 
           <Divider my="sm" />
 
           <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+            <TextInput
+              className={classes.search}
+              value={search}
+              onChange={(e) => setSearch(e.currentTarget.value)}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  submitSearch();
+                }
+              }}
+              placeholder="Search"
+              leftSection={<IconSearch size={16} stroke={1.5} />}
+            />
+            {!user.isLoggedIn && (
+              <div>
+                {publicRuntimeConfig.FORCE_SSO_AUTH == "true" ? (
+                  <Link
+                    href={`${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/login`}
+                    style={{ marginRight: "0.75rem" }}
+                  >
+                    <Button variant="default">Log in</Button>
+                  </Link>
+                ) : (
+                  <Link href="/login" style={{ marginRight: "0.75rem" }}>
+                    <Button variant="default">Log in</Button>
+                  </Link>
+                )}
+
+                <Link href="/register">
+                  <Button color="violet">Sign up</Button>
+                </Link>
+              </div>
+            )}
           </Group>
         </ScrollArea>
       </Drawer>

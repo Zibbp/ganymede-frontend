@@ -11,14 +11,6 @@ import QueueTimelineBullet from "./TimelineBullet";
 import classes from "./Timeline.module.css";
 
 const QueueVodTimeline = ({ queue }: Object) => {
-  const [opened, setOpened] = useState(false);
-  const [restartTaskName, setRestartTaskName] = useState("");
-
-  const restartTask = (task: string) => {
-    console.log(task);
-    setRestartTaskName(task);
-    setOpened(true);
-  };
 
   return (
     <div>
@@ -27,14 +19,6 @@ const QueueVodTimeline = ({ queue }: Object) => {
           bullet={<QueueTimelineBullet status={queue.task_vod_create_folder} />}
           title="Create Folder"
         >
-          <Text color="dimmed" size="sm">
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("vod_create_folder")}
-            >
-              restart
-            </span>
-          </Text>
         </Timeline.Item>
 
         <Timeline.Item
@@ -43,37 +27,14 @@ const QueueVodTimeline = ({ queue }: Object) => {
           }
           title="Download Thumbnail"
         >
-          <Text color="dimmed" size="sm">
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("vod_download_thumbnail")}
-            >
-              restart
-            </span>
-          </Text>
         </Timeline.Item>
 
         <Timeline.Item
           bullet={<QueueTimelineBullet status={queue.task_vod_save_info} />}
           title="Save Info"
         >
-          <Text color="dimmed" size="sm">
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("vod_save_info")}
-            >
-              restart
-            </span>
-          </Text>
         </Timeline.Item>
       </Timeline>
-      <Modal
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="Restart Task"
-      >
-        <QueueRestartTaskModalContent queue={queue} task={restartTaskName} />
-      </Modal>
     </div>
   );
 };

@@ -3,3 +3,9 @@
   padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
   background-color: #19191d;
 }
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mantine-spacing-sm);
+}

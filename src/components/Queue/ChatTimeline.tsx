@@ -7,24 +7,14 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import QueueLog from "./Log";
 import QueueRestartTaskModalContent from "./RestartTaskModal";
 import QueueTimelineBullet from "./TimelineBullet";
 import classes from "./Timeline.module.css"
 
 const QueueChatTimeline = ({ queue }: Object) => {
-  const [opened, setOpened] = useState(false);
-  const [restartTaskName, setRestartTaskName] = useState("");
   const [logName, setLogName] = useState("");
 
-  const restartTask = (task: string) => {
-    console.log(task);
-    setRestartTaskName(task);
-    setOpened(true);
-  };
-
   const openLog = (log: string) => {
-    console.log(log);
     setLogName(log);
     window.open(
       `/queue/logs/${queue.id}?log=${log}`,
@@ -53,15 +43,6 @@ const QueueChatTimeline = ({ queue }: Object) => {
             >
               logs
             </span>
-            {!queue.live_archive && (
-              <span><span>{" - "}</span>
-                <span
-                  className={classes.restartText}
-                  onClick={() => restartTask("chat_download")}
-                >
-                  restart
-                </span></span>
-            )}
           </Text>
         </Timeline.Item>
 
@@ -76,13 +57,6 @@ const QueueChatTimeline = ({ queue }: Object) => {
                 onClick={() => openLog("chat-convert")}
               >
                 logs
-              </span>
-              <span>{" - "}</span>
-              <span
-                className={classes.restartText}
-                onClick={() => restartTask("chat_convert")}
-              >
-                restart
               </span>
             </Text>
           </Timeline.Item>
@@ -99,13 +73,6 @@ const QueueChatTimeline = ({ queue }: Object) => {
             >
               logs
             </span>
-            <span>{" - "}</span>
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("chat_render")}
-            >
-              restart
-            </span>
           </Text>
         </Timeline.Item>
 
@@ -113,23 +80,8 @@ const QueueChatTimeline = ({ queue }: Object) => {
           bullet={<QueueTimelineBullet status={queue.task_chat_move} />}
           title="Chat Move"
         >
-          <Text color="dimmed" size="sm">
-            <span
-              className={classes.restartText}
-              onClick={() => restartTask("chat_move")}
-            >
-              restart
-            </span>
-          </Text>
         </Timeline.Item>
       </Timeline>
-      <Modal
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="Restart Task"
-      >
-        <QueueRestartTaskModalContent queue={queue} task={restartTaskName} />
-      </Modal>
     </div>
   );
 };

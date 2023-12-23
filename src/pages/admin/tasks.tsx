@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconRefresh } from "@tabler/icons-react";
+import { IconPlayerPlay, IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
@@ -23,6 +23,8 @@ import classes from "./tasks.module.css"
 
 const AdminTasksPage = () => {
   const [loading, setLoading] = useState(false);
+  const [workflowLoading, setWorkflowLoading] = useState(false);
+
 
   useDocumentTitle("Ganymede - Admin - Tasks");
 
@@ -48,6 +50,31 @@ const AdminTasksPage = () => {
         })
         .catch((err) => {
           setLoading(false);
+        });
+    },
+  });
+
+  const startWorkflow = useMutation({
+    mutationFn: (workflowName: string) => {
+      setWorkflowLoading(true);
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/workflows/start`,
+          data: { "workflow_name": workflowName },
+          withCredentials: true,
+        },
+        false
+      )
+        .then(() => {
+          setWorkflowLoading(false);
+          showNotification({
+            title: "Workflow Started",
+            message: "Visit the Workflows page to view the status of the workflow",
+          });
+        })
+        .catch((err) => {
+          setWorkflowLoading(false);
         });
     },
   });
@@ -280,6 +307,32 @@ const AdminTasksPage = () => {
               </Grid.Col>
             </Grid>
           </div>
+        </Container>
+        <Container className={classes.settingsSections} size="xl">
+          <div className={classes.header}>
+            <div>
+              <Title order={2}>Workflows</Title>
+            </div>
+          </div>
+          <Grid className={classes.taskItem}>
+            <Grid.Col span={10}>
+              <div>
+                <span>
+                  <Text>Save Chapters for Twitch Videos</Text>
+                  <Text size="xs">
+                    Save chapters for already archived Twitch videos.
+                  </Text>
+                </span>
+              </div>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Tooltip label="Start Workflow">
+                <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={workflowLoading} onClick={() => startWorkflow.mutate("SaveTwitchVideoChapters")}>
+                  <IconPlayerPlay stroke={2} />
+                </ActionIcon>
+              </Tooltip>
+            </Grid.Col>
+          </Grid>
         </Container>
       </div>
     </Authorization>
