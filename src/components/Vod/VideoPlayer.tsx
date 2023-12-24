@@ -266,6 +266,7 @@ const NewVideoPlayer = ({ vod }: any) => {
         onMouseEnter={handleHover}
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouch}
+        playsinline
       >
 
         <MediaProvider >

@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import WorkflowStatusCancelled from './Status/Cancelled';
 import WorkflowStatusTerminated from './Status/Terminated';
 import Link from 'next/link';
+import WorkflowStatusFailed from './Status/Failed';
 
 type Props = {}
 
@@ -25,6 +26,7 @@ const WorkflowsActiveTable = (props: Props) => {
         },
         false
       ).then((res) => res?.data),
+    refetchInterval: 2000,
   });
 
   if (error) return <div>Failed to load</div>;
@@ -39,15 +41,31 @@ const WorkflowsActiveTable = (props: Props) => {
       <Table.Td>
         {workflow.status == 1 && <WorkflowStatusRunning />}
         {workflow.status == 2 && <WorkflowStatusCompleted />}
+        {workflow.status == 3 && <WorkflowStatusFailed />}
         {workflow.status == 4 && <WorkflowStatusCancelled />}
         {workflow.status == 5 && <WorkflowStatusTerminated />}
       </Table.Td>
-      <Table.Td>{workflow.execution.workflow_id}</Table.Td>
-      <Link href={`/workflows/${workflow.execution.workflow_id}/${workflow.execution.run_id}`}>
-        <span>
-          {workflow.execution.run_id}
-        </span>
-      </Link>      <Table.Td>{workflow.type.name}</Table.Td>
+      <Table.Td>
+        <Link href={`/workflows/${workflow.execution.workflow_id}/${workflow.execution.run_id}`}>
+          <span>
+            {workflow.execution.workflow_id}
+          </span>
+        </Link>
+      </Table.Td>
+      <Table.Td>
+        <Link href={`/workflows/${workflow.execution.workflow_id}/${workflow.execution.run_id}`}>
+          <span>
+            {workflow.execution.run_id}
+          </span>
+        </Link>
+      </Table.Td>
+      <Table.Td>
+        <Link href={`/workflows/${workflow.execution.workflow_id}/${workflow.execution.run_id}`}>
+          <span>
+            {workflow.type.name}
+          </span>
+        </Link>
+      </Table.Td>
       <Table.Td>{dayjs(workflow.start_time).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
     </Table.Tr>
   ));

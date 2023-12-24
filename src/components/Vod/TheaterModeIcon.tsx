@@ -19,6 +19,7 @@ const TheaterModeIcon = () => {
           size="xl"
           variant="transparent"
           onClick={toggleTheaterMode}
+          onTouchStart={toggleTheaterMode}
           className={classes.customFullScreenButton}
         >
           <IconMaximize size="1.8rem" />

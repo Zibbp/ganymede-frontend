@@ -11,6 +11,7 @@ export default function MainLayout({ children }) {
   // Theater mode support
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
+      console.log("toggling theater mode")
       setFullscreen(data);
     });
   }, []);
