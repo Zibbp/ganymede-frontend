@@ -47,7 +47,8 @@ const VodPage = (props: any) => {
   const liveChatPlayer = useRef<HTMLDivElement>(null);
 
   const [leftColumnHeight, setLeftColumnHeight] = useState(0);
-  const isMobile = useMediaQuery(`(max-width: ${em(1000)})`);
+  const isMobile = useMediaQuery(`(max-width: 1000px)`);
+  const [isMobileLandScape, setIsMobileLandScape] = useState(false);
 
 
   // Mobile screen / devices smaller than 1000px
@@ -55,8 +56,17 @@ const VodPage = (props: any) => {
   // and set the height of the right column to the remaining height
   // which is 100vh - 120px - leftColumnHeight
   const handleResize = () => {
-    if (isMobile && leftColumnRef.current) {
+    console.debug("hi")
+    if (leftColumnRef.current) {
+      console.debug(`leftColumnRef.current.offsetHeight: ${leftColumnRef.current.offsetHeight}`)
       setLeftColumnHeight(leftColumnRef.current.offsetHeight);
+    }
+
+    if (isMobile && window.innerWidth > window.innerHeight) {
+      console.debug("mobile landscape")
+      setIsMobileLandScape(true);
+    } else {
+      setIsMobileLandScape(false);
     }
   };
   useEffect(() => {
@@ -70,6 +80,7 @@ const VodPage = (props: any) => {
 
     // set 1 second interval to check if the user is on a mobile device
     const interval = setInterval(() => {
+      handleResize();
       if (rightColumnRef.current?.offsetHeight == 0) {
         handleResize();
       } else {
@@ -100,14 +111,23 @@ const VodPage = (props: any) => {
   // Theater mode support
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
-      setIsFullscreen(data);
-      // if (isMobile) {
-      //   try {
-      //     toggle();
-      //   } catch (error) {
-      //     console.error(`Error toggling fullscreen: ${error}`);
-      //   }
-      // }
+      console.debug(`vodId: toggling theater mode: ${data}`)
+      console.debug(`theaterMode: is mobile: ${isMobile} is fullscreen: ${isFullscreen} is landscape ${isMobileLandScape}`)
+      setIsFullscreen(!isFullscreen);
+      handleResize()
+      if (window.innerWidth < 1000) {
+        try {
+          toggle();
+        } catch (error) {
+          console.error(`Error toggling fullscreen: ${error}`);
+        }
+      }
+      // sleep 1 second to wait for the video player to resize
+      setTimeout(() => {
+        handleResize();
+      }, 1000);
+
+
     });
   }, []);
 
@@ -133,83 +153,68 @@ const VodPage = (props: any) => {
       </Head>
       {checkLoginRequired() && <VodLoginRequired {...data} />}
       {!checkLoginRequired() && (
-        <Box className={classes.container} >
-          <div className={classes.leftColumn} ref={leftColumnRef}>
-            <div
-              className={
-                // isFullscreen is for desktop theater mode
-                // fullscreen is for mobile theater mode
-                // need to be seperated as desktop doesn't get toggled into fullscreen
-                isFullscreen || fullscreen
-                  ? classes.videoPlayerColumnNoHeader
-                  : classes.videoPlayerColumn
-              }>
-              <NewVideoPlayer vod={data} />
-            </div>
-          </div>
-          <div className={classes.rightColumn} style={{ height: isMobile ? `calc(100vh - 120px - ${leftColumnHeight}px)` : 'auto', maxHeight: isMobile ? `calc(100vh - 120px - ${leftColumnHeight}px)` : 'auto' }}>
-
-            {data.chat_video_path &&
-              !useUserStore.getState().settings.useNewChatPlayer && (
-                <div>
-                  {isMobile ? (
-                    <div
-                      ref={rightColumnRef}
-                      style={{
-                        height: `calc(100vh - 120px - ${leftColumnHeight}px)`,
-                        maxHeight: `calc(100vh - 120px - ${leftColumnHeight}px)`
-                      }}
-
-                    >
-                      <VodChatPlayer ref={liveChatPlayer} vod={data} />
-                    </div>
-                  ) : (
-                    <div
-                      ref={rightColumnRef}
-                      className={
-                        isFullscreen || fullscreen
-                          ? classes.chatColumnNoHeader
-                          : classes.chatColumn
-                      }
-                    >
-                      <VodChatPlayer vod={data} />
+        <div>
+          {!isMobile && (
+            <Box className={classes.container} >
+              <div className={classes.leftColumn} ref={leftColumnRef}>
+                <div
+                  className={
+                    isFullscreen
+                      ? classes.videoPlayerColumnNoHeader
+                      : classes.videoPlayerColumn
+                  }>
+                  <NewVideoPlayer vod={data} />
+                </div>
+              </div>
+              <div className={classes.rightColumn}
+                style={{ height: "auto", maxHeight: "auto" }}>
+                {data.chat_video_path &&
+                  !useUserStore.getState().settings.useNewChatPlayer && (
+                    <div>
+                      <div
+                        ref={rightColumnRef}
+                        className={
+                          isFullscreen || fullscreen
+                            ? classes.chatColumnNoHeader
+                            : classes.chatColumn
+                        }
+                      >
+                        <VodChatPlayer vod={data} />
+                      </div>
                     </div>
                   )}
-                </div>
-
-              )}
-            {data.chat_path &&
-              useUserStore.getState().settings.useNewChatPlayer && (
-                <div>
-                  {isMobile ? (
-                    <div
-                      ref={rightColumnRef}
-                      style={{
-                        height: `calc(100vh - 120px - ${leftColumnHeight}px)`,
-                        maxHeight: `calc(100vh - 120px - ${leftColumnHeight}px)`
-                      }}
-
-                    >
-                      <ExperimentalChatPlayer ref={liveChatPlayer} vod={data} />
-                    </div>
-                  ) : (
-                    <div
-                      ref={rightColumnRef}
-                      className={
-                        isFullscreen || fullscreen
-                          ? classes.chatColumnNoHeader
-                          : classes.chatColumn
-                      }
-                    >
-                      <ExperimentalChatPlayer vod={data} />
+                {data.chat_path &&
+                  useUserStore.getState().settings.useNewChatPlayer && (
+                    <div>
+                      <div
+                        ref={rightColumnRef}
+                        className={
+                          isFullscreen || fullscreen
+                            ? classes.chatColumnNoHeader
+                            : classes.chatColumn
+                        }
+                      >
+                        <ExperimentalChatPlayer vod={data} />
+                      </div>
                     </div>
                   )}
-                </div>
-              )}
-
-          </div>
-
-        </Box>
+              </div>
+            </Box>
+          )}
+          {isMobile && (
+            <Box className={classes.containerMobile} >
+              <div className={classes.leftColumnMobile} ref={leftColumnRef}>
+                <NewVideoPlayer vod={data} />
+              </div>
+              <div className={classes.rightColumnMobile} style={{
+                height: `${leftColumnHeight}px`,
+                maxHeight: `${leftColumnHeight}px`
+              }}>
+                <ExperimentalChatPlayer vod={data} />
+              </div>
+            </Box>
+          )}
+        </div>
       )}
       {!isFullscreen && <VodTitleBar vod={data} />}
     </div>

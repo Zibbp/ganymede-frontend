@@ -2,6 +2,7 @@
   width: 100%;
   height: 60px;
   position: relative;
+  overflow: scroll;
 }
 .titleBar {
   display: flex;

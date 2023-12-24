@@ -216,7 +216,7 @@ export function HeaderMegaMenu() {
 
           </Group>
 
-          <Group visibleFrom="sm" className={classes.groupRight}>
+          <Group visibleFrom="md" className={classes.groupRight}>
             <TextInput
               className={classes.search}
               value={search}
