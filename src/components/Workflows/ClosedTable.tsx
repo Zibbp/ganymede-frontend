@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react'
 import { useApi } from '../../hooks/useApi';
 import GanymedeLoader from '../Utils/GanymedeLoader';
-import { Table } from '@mantine/core';
+import { Box, Button, Table } from '@mantine/core';
 import WorkflowStatusCompleted from './Status/Completed';
 import WorkflowStatusRunning from './Status/Running';
 import dayjs from 'dayjs';
@@ -13,30 +13,44 @@ import WorkflowStatusFailed from './Status/Failed';
 
 type Props = {}
 
+async function fetchClosedWorkflows(nextPageToken: string) {
+  return useApi(
+    {
+      method: "GET",
+      url: `/api/v1/workflows/closed?next_page_token=${nextPageToken}`,
+      withCredentials: true,
+    },
+    false
+  ).then((res) => res?.data);
+}
+
 const WorkflowsClosedTable = (props: Props) => {
+  const [nextPageToken, setNextPageToken] = React.useState<string>("");
+  const [executions, setExecutions] = React.useState<any>([])
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ["workflows-closed"],
-    queryFn: async () =>
-      useApi(
-        {
-          method: "GET",
-          url: "/api/v1/workflows/closed",
-          withCredentials: true,
-        },
-        false
-      ).then((res) => res?.data),
-    refetchInterval: 2000,
+    queryKey: ["workflows-closed", nextPageToken],
+    queryFn: async () => {
+      const data = await fetchClosedWorkflows(nextPageToken)
+      // append data.executions to executions
+      if (data.executions) {
+        setExecutions([...executions, ...data.executions])
+      }
+
+      return data
+    },
   });
 
   if (error) return <div>Failed to load</div>;
   if (isLoading) return <GanymedeLoader />;
 
-  if (!data) return <div>No data</div>
+  if (!executions) return <div>No data</div>
 
-  console.log(data)
+  const handleNextPage = (nextPageToken: string) => {
+    setNextPageToken(nextPageToken)
+  }
 
-  const rows = data.map((workflow: any) => (
+  const rows = executions.map((workflow: any) => (
     <Table.Tr key={workflow.execution.run_id}>
       <Table.Td>
         {workflow.status == 1 && <WorkflowStatusRunning />}
@@ -71,8 +85,8 @@ const WorkflowsClosedTable = (props: Props) => {
   ));
 
   return (
-    <div>
-      <Table highlightOnHover>
+    <Box pb={10}>
+      <Table highlightOnHover >
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Status</Table.Th>
@@ -84,7 +98,10 @@ const WorkflowsClosedTable = (props: Props) => {
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-    </div>
+      {data.next_page_token && (
+        <Button fullWidth variant="light" color="violet" onClick={() => handleNextPage(data.next_page_token)}>Load More</Button>
+      )}
+    </Box>
   )
 }
 
