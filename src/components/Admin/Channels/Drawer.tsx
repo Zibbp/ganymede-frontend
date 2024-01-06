@@ -18,6 +18,7 @@ import { IconHelpCircle, IconQuestionMark } from "@tabler/icons-react";
 const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
   const { handleSubmit } = useForm();
   const [id, setId] = useState(channel?.id);
+  const [externalId, setExternalId] = useState(channel?.external_id);
   const [name, setName] = useState(channel?.name);
   const [displayName, setDisplayName] = useState(channel?.display_name);
   const [imagePath, setImagePath] = useState(channel?.image_path);
@@ -70,6 +71,7 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
             method: "POST",
             url: `/api/v1/channel`,
             data: {
+              ext_id: externalId,
               name: name,
               display_name: displayName,
               image_path: imagePath,
@@ -133,6 +135,15 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
           disabled
           mb="xs"
         />
+        {mode == "create" && (
+          <TextInput
+            value={externalId}
+            onChange={(e) => setExternalId(e.currentTarget.value)}
+            placeholder="External ID (auto generated if left blank)"
+            label="External ID"
+            mb="xs"
+          />
+        )}
         <TextInput
           value={name}
           onChange={(e) => setName(e.currentTarget.value)}
