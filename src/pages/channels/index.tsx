@@ -28,7 +28,7 @@ const ChannelsPage = () => {
     <div>
       <Container fluid={true}>
         <div style={{ marginTop: "1rem" }}>
-          <SimpleGrid cols={{ base: 1, sm: 4, md: 5, lg: 6 }} spacing="xs" verticalSpacing="xs">
+          <SimpleGrid cols={{ base: 1, sm: 4, md: 5, lg: 6, xl: 7, xxl: 8, "3xl": 9, "4xl": 10, "5xl": 11, "6xl": 12 }} spacing="xs" verticalSpacing="xs">
             {data.map((channel: any) => (
               <ChannelCard channel={channel} key={channel.id}></ChannelCard>
             ))}

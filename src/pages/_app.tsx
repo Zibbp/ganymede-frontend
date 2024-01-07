@@ -75,7 +75,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       md: "64em",
       lg: "74em",
       xl: "90em",
-      xxl: "100em"
+      xxl: "100em",
+      "3xl": "116em",
+      "4xl": "130em",
+      "5xl": "146em",
+      "6xl": "160em"
     },
     components: {
       Container: Container.extend({
