@@ -28,6 +28,12 @@
 .containerMobile {
   display: flex;
   width: 100vw;
+
+  @media (max-aspect-ratio: 1/1) {
+    /* Portrait mode */
+    flex-direction: column;
+    height: calc(100vh - 60px - 60px);
+  }
 }
 .leftColumn {
   flex-grow: 1;
@@ -36,6 +42,13 @@
 .leftColumnMobile {
   flex-grow: 1;
   width: calc(100vw - 200px);
+
+  @media (max-aspect-ratio: 1/1) {
+    flex: 0;
+    /* Portrait mode */
+    flex-direction: column;
+    width: 100%;
+  }
 }
 .rightColumn {
   min-width: 340px;
@@ -46,4 +59,11 @@
   min-width: 200px;
   width: 200px;
   max-width: 200px;
+  @media (max-aspect-ratio: 1/1) {
+    /* Portrait mode */
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    height: 1px;
+  }
 }

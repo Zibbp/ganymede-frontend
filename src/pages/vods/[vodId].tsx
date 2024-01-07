@@ -46,56 +46,7 @@ const VodPage = (props: any) => {
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const liveChatPlayer = useRef<HTMLDivElement>(null);
 
-  const [leftColumnHeight, setLeftColumnHeight] = useState(0);
   const isMobile = useMediaQuery(`(max-width: 1000px)`);
-  const [isMobileLandScape, setIsMobileLandScape] = useState(false);
-
-
-  // Mobile screen / devices smaller than 1000px
-  // Calculate the height of the left column
-  // and set the height of the right column to the remaining height
-  // which is 100vh - 120px - leftColumnHeight
-  const handleResize = () => {
-    console.debug("hi")
-    if (leftColumnRef.current) {
-      console.debug(`leftColumnRef.current.offsetHeight: ${leftColumnRef.current.offsetHeight}`)
-      setLeftColumnHeight(leftColumnRef.current.offsetHeight);
-    }
-
-    if (isMobile && window.innerWidth > window.innerHeight) {
-      console.debug("mobile landscape")
-      setIsMobileLandScape(true);
-    } else {
-      setIsMobileLandScape(false);
-    }
-  };
-  useEffect(() => {
-    if (!isMobile) {
-      return
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    handleResize();
-
-    // set 1 second interval to check if the user is on a mobile device
-    const interval = setInterval(() => {
-      handleResize();
-      if (rightColumnRef.current?.offsetHeight == 0) {
-        handleResize();
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearInterval(interval);
-    };
-
-  }, [leftColumnRef, rightColumnRef, isMobile])
-
 
   useDocumentTitle(`Ganymede - VOD ${props.vodId}`);
 
@@ -112,9 +63,8 @@ const VodPage = (props: any) => {
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
       console.debug(`vodId: toggling theater mode: ${data}`)
-      console.debug(`theaterMode: is mobile: ${isMobile} is fullscreen: ${isFullscreen} is landscape ${isMobileLandScape}`)
+      console.debug(`theaterMode: is mobile: ${isMobile} is fullscreen: ${isFullscreen}`)
       setIsFullscreen(!isFullscreen);
-      handleResize()
       if (window.innerWidth < 1000) {
         try {
           toggle();
@@ -122,12 +72,6 @@ const VodPage = (props: any) => {
           console.error(`Error toggling fullscreen: ${error}`);
         }
       }
-      // sleep 1 second to wait for the video player to resize
-      setTimeout(() => {
-        handleResize();
-      }, 1000);
-
-
     });
   }, []);
 
@@ -206,10 +150,7 @@ const VodPage = (props: any) => {
               <div className={classes.leftColumnMobile} ref={leftColumnRef}>
                 <NewVideoPlayer vod={data} />
               </div>
-              <div className={classes.rightColumnMobile} style={{
-                height: `${leftColumnHeight}px`,
-                maxHeight: `${leftColumnHeight}px`
-              }}>
+              <div className={classes.rightColumnMobile}>
                 <ExperimentalChatPlayer vod={data} />
               </div>
             </Box>
