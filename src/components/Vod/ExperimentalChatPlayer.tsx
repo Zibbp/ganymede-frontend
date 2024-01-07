@@ -179,7 +179,9 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
       // Process Twitch first party emotes
       if (comment.message.fragments.length > 0) {
         comment.message.fragments.forEach((fragment) => {
-          let ganymedeMessageFragment = {} as GanymedeFormattedMessageFragments;
+          let ganymedeMessageFragment = {
+            text: fragment.text
+          } as GanymedeFormattedMessageFragments;
           if (fragment.emoticon) {
             const emote = emoteMap.get(fragment.emoticon.emoticon_id);
             if (!emote) {
