@@ -16,12 +16,13 @@ const ChatMessage = ({ comment }: Comment) => {
         {comment.ganymede_formatted_badges &&
           comment.ganymede_formatted_badges.map(
             (badge: GanymedeFormattedBadge) => (
-              <img
-                className={classes.badge}
-                src={badge.url}
-                title={badge.title}
-                height="18"
-              />
+              <Tooltip label={badge.title} position="top">
+                <img
+                  className={classes.badge}
+                  src={badge.url}
+                  height="18"
+                />
+              </Tooltip>
             )
           )}
       </span>
@@ -49,25 +50,28 @@ const ChatMessage = ({ comment }: Comment) => {
                   </Text>
                 );
               case "emote":
+                const emoteName = fragment.emote?.name || fragment.text; // If no emote name, fallback on fragment text
                 if (fragment.emote?.height != 0 && fragment.emote?.width != 0) {
                   return (
-                    <img
-                      src={fragment.url}
-                      className={classes.emoteImage}
-                      height={fragment.emote?.height}
-                      alt={fragment.emote?.name}
-                      title={fragment.emote?.name}
-                    />
+                    <Tooltip label={emoteName} position="top">
+                      <img
+                        src={fragment.url}
+                        className={classes.emoteImage}
+                        height={fragment.emote?.height}
+                        alt={emoteName}
+                      />
+                    </Tooltip>
                   );
                 } else {
                   return (
-                    <img
-                      src={fragment.url}
-                      className={classes.emoteImage}
-                      alt={fragment.emote?.name}
-                      height={28}
-                      title={fragment.emote?.name}
-                    />
+                    <Tooltip label={emoteName} position="top">
+                      <img
+                        src={fragment.url}
+                        className={classes.emoteImage}
+                        alt={emoteName}
+                        height={28}
+                      />
+                    </Tooltip>
                   );
                 }
             }
