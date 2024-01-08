@@ -1,0 +1,72 @@
+.pageWrapper {
+    height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.videosGrid {
+    flex: 1;
+    max-height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.playerTile {
+    --max-per-row: 2;
+    width: calc(100% / min(var(--players-count), var(--max-per-row)));
+    max-height: 100%;
+
+    @media (min-aspect-ratio: 1.9) {
+        --max-per-row: 3;
+    }
+    @media (max-aspect-ratio: 0.9) {
+        --max-per-row: 1;
+    }
+}
+
+.streamerOffline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.timelineGrid {
+    min-height: 5rem;
+    max-height: 5rem;
+    flex-shrink: 0;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0 1rem 1rem 1rem;
+}
+
+.timelineStreamerColumn {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.timelineBar {
+    background-color: currentColor;
+    position: relative;
+    height: 0.75rem;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.timelineBarActive {
+    pointer-events: none;
+    background-color: var(--mantine-color-violet-9);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--bar-start);
+    width: var(--bar-length);
+}
+
+.offsetInput {
+    width: 5rem;
+}
