@@ -332,6 +332,23 @@ const AdminTasksPage = () => {
                 </ActionIcon>
               </Tooltip>
             </Grid.Col>
+            <Grid.Col span={10}>
+              <div>
+                <span>
+                  <Text>Update Live Stream Archives with VOD IDs</Text>
+                  <Text size="xs">
+                    Attempt to update past live stream archives with their corresponding vod ID (automatically does this after live archive finishes).
+                  </Text>
+                </span>
+              </div>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Tooltip label="Start Workflow">
+                <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={workflowLoading} onClick={() => startWorkflow.mutate("UpdateTwitchLiveStreamArchivesWithVodIds")}>
+                  <IconPlayerPlay stroke={2} />
+                </ActionIcon>
+              </Tooltip>
+            </Grid.Col>
           </Grid>
         </Container>
       </div>
