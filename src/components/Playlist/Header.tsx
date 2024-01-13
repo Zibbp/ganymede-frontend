@@ -35,6 +35,7 @@ const PlaylistHeader = ({ playlist, handleOpen, handleDeleteOpen }: any) => {
 
             <Menu.Dropdown>
               <Menu.Label>Settings</Menu.Label>
+              <Menu.Item component="a" href={`/playlists/multistream/${playlist.id}`}>Multistream</Menu.Item>
               <Menu.Item onClick={() => handleOpen()}>Edit</Menu.Item>
               <Menu.Item onClick={() => handleDeleteOpen()} color="red">
                 Delete

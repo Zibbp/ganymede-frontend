@@ -2,10 +2,10 @@ import getConfig from "next/config";
 import useUserStore from "../../../store/user";
 import Head from "next/head";
 import VodLoginRequired from "../../../components/Vod/LoginRequred";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/useApi";
 import GanymedeLoader from "../../../components/Utils/GanymedeLoader";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import SyncedVideoPlayer from "../../../components/Vod/SyncedVideoPlayer";
 import { escapeURL } from "../../../util/util";
 import classes from "./playlistMultistream.module.css"
@@ -25,7 +25,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     const { publicRuntimeConfig } = getConfig();
     const user = useUserStore((state) => state);
     const [streamerViewState, setStreamerViewState] = useState<Record<string, boolean>>({});
-    const [streamerPlaybackOffsets, setStreamerPlaybackOffsets] = useState<Record<string, number>>({});
+    const [vodPlaybackOffsets, setVodPlaybackOffsets] = useState<Record<string, number>>({});
 
     const checkLoginRequired = () => {
         if (
@@ -50,48 +50,91 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
         ).then((res) => res?.data),
     });
 
+    const updateVodOffset = useMutation({
+        mutationKey: ["save-delay"],
+        mutationFn: async ({ playlistId, vodId, delayMs }: { playlistId: string, vodId: string, delayMs: number }) => {
+            await useApi(
+                {
+                    method: "PUT",
+                    url: `/api/v1/playlist/${playlistId}/delay`,
+                    withCredentials: true,
+                    data: {
+                        vod_id: vodId,
+                        delay_ms: delayMs,
+                    }
+                },
+                false
+            ).catch((err) => {
+                console.log("Error saving delay", err);
+            });
+        },
+      })
+
     const [playing, setPlaying] = useState<boolean>(false);
     const [globalTime, setGlobalTime] = useState<number>(0);
     const [seeked, setSeeked] = useState<boolean>(false);
+    const [startDateMs, setStartDateMs] = useState<number | null>(null);
+    const [endDateMs, setEndDateMs] = useState<number | null>(null);
+    const [streamers, setStreamers] = useState<Record<string, {
+        name: string
+        vods: Vod[]
+    }>>({});
+
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+        let _startDateMs: number | null = null;
+        let _endDateMs: number | null = null;
+        let _streamers: Record<string, {
+            name: string
+            vods: Vod[]
+        }> = {};
+        for (let i = 0; i < data.edges.vods.length; i++) {
+            const vod = data.edges.vods[i];
+            const vodStartDateMs = +new Date(vod.streamed_at)
+            if (_startDateMs == null || vodStartDateMs < _startDateMs) {
+                _startDateMs = vodStartDateMs;
+            }
+            const vodEndDateMs = vodStartDateMs + vod.duration * 1000;
+            if (_endDateMs == null || _endDateMs < vodEndDateMs) {
+                _endDateMs = vodEndDateMs;
+            }
+
+            if (!_streamers[vod.edges.channel.id]) {
+                _streamers[vod.edges.channel.id] = {
+                    name: vod.edges.channel.name,
+                    vods: []
+                }
+            }
+
+            _streamers[vod.edges.channel.id].vods.push(vod)
+        }
+        setStartDateMs(_startDateMs)
+        setEndDateMs(_endDateMs)
+        setStreamers(_streamers)
+
+        setVodPlaybackOffsets((prevState) => {
+            const newState = { ...prevState };
+            if (data.edges.multistream_info) {
+                for (let i = 0; i < data.edges.multistream_info.length; i++) {
+                    const multistreamInfo = data.edges.multistream_info[i];
+                    newState[multistreamInfo.edges.vod.id] = multistreamInfo.delay_ms;
+                }
+            }
+            return newState;
+        })
+    }, [data])
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <GanymedeLoader />;
     if (data.edges.vods.length === 0) return <div>Empty playlist, unable to start multistream.</div>;
 
-    let startDateMs: number | null = null;
-    let endDateMs: number | null = null;
-    const streamers: Record<string, {
-        name: string
-        vods: Vod[]
-    }> = {}
-
-    for (let i = 0; i < data.edges.vods.length; i++) {
-        const vod = data.edges.vods[i];
-        const vodStartDateMs = +new Date(vod.streamed_at)
-        if (startDateMs == null || vodStartDateMs < startDateMs) {
-            startDateMs = vodStartDateMs;
-        }
-        const vodEndDateMs = vodStartDateMs + vod.duration * 1000;
-        if (endDateMs == null || endDateMs < vodEndDateMs) {
-            endDateMs = vodEndDateMs;
-        }
-
-        if (!streamers[vod.edges.channel.id]) {
-            streamers[vod.edges.channel.id] = {
-                name: vod.edges.channel.name,
-                vods: []
-            }
-        }
-
-        streamers[vod.edges.channel.id].vods.push(vod)
-    }
     let timelineDurationMs: number = startDateMs != null && endDateMs != null ? endDateMs - startDateMs : 0;
-    let _seeked = false;
     if (seeked)
         setSeeked(false);
 
     const seek = (newGlobalTime: number) => {
-        _seeked = true;
         setSeeked(true);
         setGlobalTime(newGlobalTime);
     }
@@ -134,13 +177,15 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
         })
     }
 
+    const playingVodForStreamer: Record<string, Vod | null> = {};
+
     const playerTiles = Object.keys(streamers).map((streamerId) => {
         if (!streamerViewState[streamerId]) {
             return null;
         }
         const streamer = streamers[streamerId];
-        const playbackOffset = (streamerPlaybackOffsets[streamerId] || 0) / 1000;
-        const playingVod = getVodAtTime(streamer.vods, globalTime + playbackOffset);
+        const playingVod = getVodAtTime(streamer.vods, vodPlaybackOffsets, globalTime);
+        playingVodForStreamer[streamerId] = playingVod;
         if (!playingVod) {
             return <div className={`${classes.streamerOffline} ${classes.playerTile}`} key={streamer.name + "-no-playing-vod"}>
                 <Text size="xl" span>
@@ -149,6 +194,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                 </Text>
             </div>
         }
+        const playbackOffset = (vodPlaybackOffsets[playingVod.id] || 0) / 1000;
         const vodTime = (globalTime - (+new Date(playingVod?.streamed_at))) / 1000 + playbackOffset;
         const toGlobalTime = (time: number) => (time - playbackOffset) * 1000 + (+new Date(playingVod.streamed_at));
         return (
@@ -194,6 +240,8 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                                     } as React.CSSProperties}></div>) }
                                 </div>
 
+                                const playingVod = playingVodForStreamer[streamerId];
+
                                 return (
                                     <Fragment key={streamer.name + "-timeline-row"}>
                                         <div className={classes.timelineStreamerColumn}>
@@ -204,15 +252,22 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                                             <NumberInput
                                                 className={classes.offsetInput}
                                                 step={0.1}
-                                                value={(streamerPlaybackOffsets[streamerId] || 0) / 1000}
+                                                value={playingVod && vodPlaybackOffsets[playingVod.id] != null ? (vodPlaybackOffsets[playingVod.id] || 0) / 1000 : ''}
                                                 placeholder="Offset"
+                                                disabled={!playingVod}
                                                 onChange={(value) => {
-                                                    const valAsNumber = +value * 1000;
+                                                    if (!playingVod) return;
+                                                    const valAsNumber = Math.trunc(+value * 1000);
                                                     if (isNaN(valAsNumber)) return;
-                                                    setStreamerPlaybackOffsets((prevState) => {
+                                                    setVodPlaybackOffsets((prevState) => {
                                                         const newState = { ...prevState };
-                                                        newState[streamerId] = valAsNumber;
+                                                        newState[playingVod.id] = valAsNumber;
                                                         return newState;
+                                                    })
+                                                    updateVodOffset.mutate({
+                                                        playlistId: props.playlistId,
+                                                        vodId: playingVod.id,
+                                                        delayMs: valAsNumber,
                                                     })
                                                 }}
                                             />
@@ -237,12 +292,14 @@ type Vod = {
     title: string
 }
 
-function getVodAtTime(vods: Vod[], time: number): Vod | null {
+function getVodAtTime(vods: Vod[], vodPlaybackOffsets: Record<string, number>, time: number): Vod | null {
     for (let i = 0; i < vods.length; i++) {
         const vod = vods[i];
+        const playbackOffset = (vodPlaybackOffsets[vod.id] || 0) / 1000
+        const offsettedTime = time + playbackOffset;
         const vodStartDateMs = +new Date(vod.streamed_at)
         const vodEndDateMs = vodStartDateMs + vod.duration * 1000;
-        if (vodStartDateMs <= time && time <= vodEndDateMs) {
+        if (vodStartDateMs <= offsettedTime && offsettedTime <= vodEndDateMs) {
             return vod;
         }
     }
