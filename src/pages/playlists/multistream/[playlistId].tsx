@@ -160,12 +160,20 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
         setGlobalTime(currentTime);
     }
 
-    const onTimelineClick = (timelineBar: HTMLDivElement | null, event: React.MouseEvent) => {
-        if (!timelineBar) return;
+    const timeAtMousePosition = (timelineBar: HTMLDivElement | null, event: React.MouseEvent) => {
+        if (!timelineBar) return null;
         const rect = timelineBar.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const percentage = x / rect.width;
-        const newGlobalTime = startDateMs! + percentage * timelineDurationMs;
+        const globalTime = startDateMs! + percentage * timelineDurationMs;
+        return globalTime;
+    }
+
+    const onTimelineClick = (timelineBar: HTMLDivElement | null, event: React.MouseEvent) => {
+        const newGlobalTime = timeAtMousePosition(timelineBar, event);
+        if (newGlobalTime == null) {
+            return;
+        }
         seek(newGlobalTime);
     }
 
@@ -231,9 +239,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                             { Object.keys(streamers).map((streamerId) => {
                                 const streamer = streamers[streamerId]
 
-                                let timelineBarRef: HTMLDivElement | null = null;
-
-                                const timelineBar = <div className={classes.timelineBar} ref={el => timelineBarRef = el} onClick={(event) => onTimelineClick(timelineBarRef, event)}>
+                                const timelineBar = <div className={classes.timelineBar}>
                                     { streamer.vods.map(vod => <div key={vod.id + "-vod-timeline-online"} className={classes.timelineBarActive} style={{
                                         '--bar-start': `${100 * (+new Date(vod.streamed_at) - startDateMs!) / timelineDurationMs}%`,
                                         '--bar-length': `${100 * 1000 * vod.duration / timelineDurationMs}%`,
@@ -251,6 +257,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                                             </ActionIcon>
                                             <NumberInput
                                                 className={classes.offsetInput}
+                                                size="xs"
                                                 step={0.1}
                                                 value={playingVod && vodPlaybackOffsets[playingVod.id] != null ? (vodPlaybackOffsets[playingVod.id] || 0) / 1000 : ''}
                                                 placeholder="Offset"
@@ -276,6 +283,16 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                                     </Fragment>
                                 )
                             })}
+
+                            {
+                                (() => {
+                                    let timelineBarRef: HTMLDivElement | null = null;
+
+                                    return (<div className={classes.playheadContainer} ref={el => timelineBarRef = el} onClick={(event) => onTimelineClick(timelineBarRef, event)}>
+                                        <div className={classes.playhead} style={{ '--playhead-position': `${((globalTime - startDateMs) / timelineDurationMs) * 100}%` }as React.CSSProperties}></div>
+                                    </div>)
+                                })()
+                            }
                         </div>
                     }
                 </div>
