@@ -44,7 +44,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
         useApi(
           {
             method: "GET",
-            url: `/api/v1/playlist/${props.playlistId}`,
+            url: `/api/v1/playlist/${props.playlistId}?with_multistream_info=true`,
           },
           false
         ).then((res) => res?.data),
@@ -188,12 +188,12 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     const playingVodForStreamer: Record<string, Vod | null> = {};
 
     const playerTiles = Object.keys(streamers).map((streamerId) => {
-        if (!streamerViewState[streamerId]) {
-            return null;
-        }
         const streamer = streamers[streamerId];
         const playingVod = getVodAtTime(streamer.vods, vodPlaybackOffsets, globalTime);
         playingVodForStreamer[streamerId] = playingVod;
+        if (!streamerViewState[streamerId]) {
+            return null;
+        }
         if (!playingVod) {
             return <div className={`${classes.streamerOffline} ${classes.playerTile}`} key={streamer.name + "-no-playing-vod"}>
                 <Text size="xl" span>
