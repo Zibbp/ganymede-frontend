@@ -114,7 +114,7 @@ const NewVideoPlayer = ({ vod }: any) => {
     // If thumbnail
     if (vod.thumbnail_path) {
       setVideoPoster(
-        `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`
+        `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.thumbnail_path)}`
       );
     }
 
@@ -223,10 +223,12 @@ const NewVideoPlayer = ({ vod }: any) => {
         ref={player}
         crossOrigin={true}
         playsInline={true}
+        load="eager"
+        posterLoad="eager"
       >
 
         <MediaProvider >
-          <Poster className="vds-poster" src={videoPoster} alt={vod.title} />
+          <Poster className={`${classes.ganymedePoster} vds-poster`} src={videoPoster} alt={vod.title} />
           <Track
             src={`${publicRuntimeConfig.API_URL}/api/v1/chapter/video/${vod.id}/webvtt`}
             kind="chapters"

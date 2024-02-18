@@ -4,7 +4,7 @@ import {
   GanymedeFormattedBadge,
   GanymedeFormattedMessageFragments,
 } from "../../ganymede-defs";
-import { Text, Image, Tooltip } from "@mantine/core";
+import { Text, Tooltip } from "@mantine/core";
 import classes from "./ChatMessage.module.css"
 
 

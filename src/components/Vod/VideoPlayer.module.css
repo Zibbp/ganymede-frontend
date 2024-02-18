@@ -24,3 +24,7 @@
   width: 100%;
  
 }
+
+.ganymedePoster {
+  object-fit: contain;
+}
