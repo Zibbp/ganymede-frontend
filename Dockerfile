@@ -16,6 +16,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV DOCKER_BUILD 1
 
+RUN npm i sharp -y
+
 RUN npm run build
 
 
@@ -27,10 +29,13 @@ ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 
+RUN npm i sharp -y
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/ ./
+COPY --from=builder --chown=nextjs:nodejs /app/ ./
+RUN chown nextjs:nodejs /app
 
 USER nextjs
 
