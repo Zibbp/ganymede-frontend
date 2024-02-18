@@ -41,30 +41,15 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
   const startedPlayback = useRef(false);
-  const [playerIsHovered, setPlayerIsHovered] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const searchParams = useSearchParams()
-
-  const handleHover = () => {
-    setPlayerIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setPlayerIsHovered(false);
-  };
-
-  const handleTouch = () => {
-    setPlayerIsHovered(!playerIsHovered);
-  };
 
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
     });
   }, []);
-
-
 
   // Fetch playback data
   const { data } = useQuery({
@@ -172,20 +157,6 @@ const NewVideoPlayer = ({ vod }: any) => {
       player.current!.currentTime = parseInt(time);
     }
 
-    // const mediaFullscreenButton = document.querySelector("#media-menu-2");
-    // console.log(mediaFullscreenButton)
-    // const buttonContainer = document.createElement("div");
-
-    // if (mediaFullscreenButton) {
-    //   mediaFullscreenButton.parentNode.insertBefore(
-    //     buttonContainer,
-    //     mediaFullscreenButton.nextSibling
-    //   );
-    //   // Render the button component inside the container
-    //   ReactDOM.render(<TheaterModeIcon />, buttonContainer);
-    // }
-
-
   }, [data, player]);
 
 
@@ -262,18 +233,12 @@ const NewVideoPlayer = ({ vod }: any) => {
         src={videoSource}
         aspect-ratio={16 / 9}
         ref={player}
-        crossorigin
-        onMouseEnter={handleHover}
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouch}
-        playsinline
+        crossOrigin={true}
+        playsInline={true}
       >
 
         <MediaProvider >
           <Poster className="vds-poster" src={videoPoster} alt={vod.title} />
-          {playerIsHovered && (
-            <TheaterModeIcon />
-          )}
           <Track
             src={`${publicRuntimeConfig.API_URL}/api/v1/chapter/video/${vod.id}/webvtt`}
             kind="chapters"
@@ -281,7 +246,11 @@ const NewVideoPlayer = ({ vod }: any) => {
           />
         </MediaProvider>
 
-        <DefaultVideoLayout icons={defaultLayoutIcons} > </DefaultVideoLayout>
+        <DefaultVideoLayout icons={defaultLayoutIcons} noScrubGesture={false}
+          slots={{
+            beforeFullscreenButton: <TheaterModeIcon />,
+          }}
+        />
       </MediaPlayer>
     </div>
   );

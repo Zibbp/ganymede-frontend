@@ -1,14 +1,7 @@
 .theaterIcon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 100;
-  padding: 0.5rem;
   cursor: pointer;
   color: #f5f5f5;
   transition: all 0.2s ease-in-out;
-  
-
 }
 .customFullScreenButton {
   color: #f5f5f5;
