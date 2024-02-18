@@ -55,16 +55,12 @@ const VodPage = (props: any) => {
     queryFn: () => fetchVod(props.vodId),
   });
 
-
-
-
-
   // Theater mode support
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
+      setIsFullscreen(data);
       console.debug(`vodId: toggling theater mode: ${data}`)
       console.debug(`theaterMode: is mobile: ${isMobile} is fullscreen: ${isFullscreen}`)
-      setIsFullscreen(!isFullscreen);
       if (window.innerWidth < 1000) {
         try {
           toggle();

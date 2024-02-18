@@ -1,6 +1,5 @@
 import getConfig from "next/config";
 import React, { useEffect, useRef, useState } from "react";
-import { ActionIcon } from "@mantine/core";
 import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
@@ -11,23 +10,12 @@ import '@vidstack/react/player/styles/default/layouts/video.css';
 
 import { MediaPlayer, MediaPlayerInstance, MediaProvider, Poster, Track } from '@vidstack/react';
 import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
-import { IconDotsVertical, IconMaximize, IconMinimize } from "@tabler/icons-react";
-import ReactDOM from "react-dom";
 import TheaterModeIcon from "./TheaterModeIcon";
 import { escapeURL } from "../../util/util";
 import { useSearchParams } from 'next/navigation'
 import { showNotification } from "@mantine/notifications";
 import classes from "./VideoPlayer.module.css"
 import eventBus from "../../util/eventBus";
-// const useStyles = createStyles((theme) => ({
-//   playerContainer: {
-//     "--media-max-height": "87vh"
-//   },
-//   playerMediaOutlet: {
-//     paddingBottom: "0",
-//     height: "100%",
-//   },
-// }));
 
 const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
