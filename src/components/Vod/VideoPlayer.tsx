@@ -1,6 +1,5 @@
 import getConfig from "next/config";
 import React, { useEffect, useRef, useState } from "react";
-import { ActionIcon } from "@mantine/core";
 import vodDataBus from "./EventBus";
 import { useApi } from "../../hooks/useApi";
 import useUserStore from "../../store/user";
@@ -11,23 +10,12 @@ import '@vidstack/react/player/styles/default/layouts/video.css';
 
 import { MediaPlayer, MediaPlayerInstance, MediaProvider, Poster, Track } from '@vidstack/react';
 import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
-import { IconDotsVertical, IconMaximize, IconMinimize } from "@tabler/icons-react";
-import ReactDOM from "react-dom";
 import TheaterModeIcon from "./TheaterModeIcon";
 import { escapeURL } from "../../util/util";
 import { useSearchParams } from 'next/navigation'
 import { showNotification } from "@mantine/notifications";
 import classes from "./VideoPlayer.module.css"
 import eventBus from "../../util/eventBus";
-// const useStyles = createStyles((theme) => ({
-//   playerContainer: {
-//     "--media-max-height": "87vh"
-//   },
-//   playerMediaOutlet: {
-//     paddingBottom: "0",
-//     height: "100%",
-//   },
-// }));
 
 const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
@@ -41,30 +29,15 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
   const startedPlayback = useRef(false);
-  const [playerIsHovered, setPlayerIsHovered] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const searchParams = useSearchParams()
-
-  const handleHover = () => {
-    setPlayerIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setPlayerIsHovered(false);
-  };
-
-  const handleTouch = () => {
-    setPlayerIsHovered(!playerIsHovered);
-  };
 
   useEffect(() => {
     eventBus.on("theaterMode", (data) => {
       setIsFullscreen(data);
     });
   }, []);
-
-
 
   // Fetch playback data
   const { data } = useQuery({
@@ -141,7 +114,7 @@ const NewVideoPlayer = ({ vod }: any) => {
     // If thumbnail
     if (vod.thumbnail_path) {
       setVideoPoster(
-        `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`
+        `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.thumbnail_path)}`
       );
     }
 
@@ -171,20 +144,6 @@ const NewVideoPlayer = ({ vod }: any) => {
     if (time) {
       player.current!.currentTime = parseInt(time);
     }
-
-    // const mediaFullscreenButton = document.querySelector("#media-menu-2");
-    // console.log(mediaFullscreenButton)
-    // const buttonContainer = document.createElement("div");
-
-    // if (mediaFullscreenButton) {
-    //   mediaFullscreenButton.parentNode.insertBefore(
-    //     buttonContainer,
-    //     mediaFullscreenButton.nextSibling
-    //   );
-    //   // Render the button component inside the container
-    //   ReactDOM.render(<TheaterModeIcon />, buttonContainer);
-    // }
-
 
   }, [data, player]);
 
@@ -262,18 +221,14 @@ const NewVideoPlayer = ({ vod }: any) => {
         src={videoSource}
         aspect-ratio={16 / 9}
         ref={player}
-        crossorigin
-        onMouseEnter={handleHover}
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouch}
-        playsinline
+        crossOrigin={true}
+        playsInline={true}
+        load="eager"
+        posterLoad="eager"
       >
 
         <MediaProvider >
-          <Poster className="vds-poster" src={videoPoster} alt={vod.title} />
-          {playerIsHovered && (
-            <TheaterModeIcon />
-          )}
+          <Poster className={`${classes.ganymedePoster} vds-poster`} src={videoPoster} alt={vod.title} />
           <Track
             src={`${publicRuntimeConfig.API_URL}/api/v1/chapter/video/${vod.id}/webvtt`}
             kind="chapters"
@@ -281,7 +236,11 @@ const NewVideoPlayer = ({ vod }: any) => {
           />
         </MediaProvider>
 
-        <DefaultVideoLayout icons={defaultLayoutIcons} > </DefaultVideoLayout>
+        <DefaultVideoLayout icons={defaultLayoutIcons} noScrubGesture={false}
+          slots={{
+            beforeFullscreenButton: <TheaterModeIcon />,
+          }}
+        />
       </MediaPlayer>
     </div>
   );

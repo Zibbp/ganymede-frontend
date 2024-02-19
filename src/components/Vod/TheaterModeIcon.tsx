@@ -22,7 +22,7 @@ const TheaterModeIcon = () => {
           onTouchStart={toggleTheaterMode}
           className={classes.customFullScreenButton}
         >
-          <IconMaximize size="1.8rem" />
+          <IconMaximize size="1.7rem" />
         </ActionIcon>
       </Tooltip>
     </div>
