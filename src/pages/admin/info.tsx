@@ -7,6 +7,7 @@ import {
   Switch,
   TextInput,
   Code,
+  Card,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -41,59 +42,61 @@ const AdminInfoPage = () => {
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>
         <Container className={classes.settingsSections} size="xl">
-          <div className={classes.header}>
-            <div>
-              <Title order={2}>Frontend</Title>
-            </div>
-          </div>
-          <div className={classes.settingItem}>
-            <Text mr={5}>Version:</Text>
-            <Code>{process.env.CONFIG_BUILD_ID}</Code>
-          </div>
-          <div>
+          <Card withBorder p="xl" radius="md">
             <div className={classes.header}>
               <div>
-                <Title order={2}>API</Title>
+                <Title order={2}>Frontend</Title>
               </div>
             </div>
             <div className={classes.settingItem}>
               <Text mr={5}>Version:</Text>
-              <Code>{data.version}</Code>
-            </div>
-            <div className={classes.settingItem}>
-              <Text mr={5}>Build Date:</Text>
-              <Code>{data.build_time}</Code>
-            </div>
-            <div className={classes.settingItem}>
-              <Text mr={5}>Git Commit Hash:</Text>
-              <Code>{data.git_hash}</Code>
-            </div>
-            <div className={classes.settingItem}>
-              <Text mr={5}>Uptime:</Text>
-              <Code>{data.uptime}</Code>
+              <Code>{process.env.CONFIG_BUILD_ID}</Code>
             </div>
             <div>
-              <Title mt={15} order={3}>
-                Package Versions
-              </Title>
-              <div style={{ marginBottom: "0.25rem" }}>
-                <Text mr={5}>FFmpeg:</Text>
-                <Code block>{data.program_versions.ffmpeg}</Code>
+              <div className={classes.header}>
+                <div>
+                  <Title order={2}>API</Title>
+                </div>
               </div>
               <div className={classes.settingItem}>
-                <Text mr={5}>TwitchDownloader:</Text>
-                <Code>{data.program_versions.twitch_downloader}</Code>
+                <Text mr={5}>Version:</Text>
+                <Code>{data.version}</Code>
               </div>
               <div className={classes.settingItem}>
-                <Text mr={5}>Chat Downloader:</Text>
-                <Code>{data.program_versions.chat_downloader}</Code>
+                <Text mr={5}>Build Date:</Text>
+                <Code>{data.build_time}</Code>
               </div>
               <div className={classes.settingItem}>
-                <Text mr={5}>Streamlink:</Text>
-                <Code>{data.program_versions.streamlink}</Code>
+                <Text mr={5}>Git Commit Hash:</Text>
+                <Code>{data.git_hash}</Code>
+              </div>
+              <div className={classes.settingItem}>
+                <Text mr={5}>Uptime:</Text>
+                <Code>{data.uptime}</Code>
+              </div>
+              <div>
+                <Title mt={15} order={3}>
+                  Package Versions
+                </Title>
+                <div style={{ marginBottom: "0.25rem" }}>
+                  <Text mr={5}>FFmpeg:</Text>
+                  <Code block>{data.program_versions.ffmpeg}</Code>
+                </div>
+                <div className={classes.settingItem}>
+                  <Text mr={5}>TwitchDownloader:</Text>
+                  <Code>{data.program_versions.twitch_downloader}</Code>
+                </div>
+                <div className={classes.settingItem}>
+                  <Text mr={5}>Chat Downloader:</Text>
+                  <Code>{data.program_versions.chat_downloader}</Code>
+                </div>
+                <div className={classes.settingItem}>
+                  <Text mr={5}>Streamlink:</Text>
+                  <Code>{data.program_versions.streamlink}</Code>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </Container>
       </div>
     </Authorization>

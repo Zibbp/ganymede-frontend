@@ -4,6 +4,7 @@ import {
   Group,
   Loader,
   MultiSelect,
+  NumberInput,
   Select,
   Switch,
   Text,
@@ -31,6 +32,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [lastLive, setLastLive] = useState(watched?.last_live);
   const [channelId, setChannelId] = useState([]);
   const [downloadSubOnly, setDownloadSubOnly] = useState(false);
+  const [maxVideoAge, setMaxVideoAge] = useState<string | number>(0)
 
   const [channelData, setChannelData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -63,6 +65,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setChannelId([...channelId, watched?.edges.channel.id]);
       setRenderChat(watched?.render_chat);
       setDownloadSubOnly(watched?.download_sub_only);
+      setMaxVideoAge(watched?.video_age);
 
       if (watched?.edges?.categories) {
         const tmpArr = [];
@@ -96,6 +99,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               render_chat: renderChat,
               download_sub_only: downloadSubOnly,
               categories: selectedTwitchCategories,
+              max_age: maxVideoAge,
             },
             withCredentials: true,
           },
@@ -135,6 +139,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   render_chat: renderChat,
                   download_sub_only: downloadSubOnly,
                   categories: selectedTwitchCategories,
+                  max_age: maxVideoAge,
                 },
                 withCredentials: true,
               },
@@ -157,6 +162,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   render_chat: renderChat,
                   download_sub_only: downloadSubOnly,
                   categories: selectedTwitchCategories,
+                  max_age: maxVideoAge,
                 },
                 withCredentials: true,
               },
@@ -359,6 +365,15 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           <Title order={3}>Advanced</Title>
         </div>
         <div>
+          <NumberInput
+            label="Max Video Age (days)"
+            description="Archive videos that are not older than this number of days (0 to archive all)"
+            placeholder="Enter a number"
+            value={maxVideoAge}
+            onChange={setMaxVideoAge}
+          />
+        </div>
+        <div>
           {twitchCategoriesLoading || formattedTwitchCategories.length == 0 ? (
             <Loader color="violet" />
           ) : (
@@ -368,7 +383,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               value={selectedTwitchCategories}
               onChange={setSelectedTwitchCategories}
               data={formattedTwitchCategories}
-              dropdownPosition="top"
+              comboboxProps={{ position: 'top', middlewares: { flip: false, shift: false } }}
               label="Archive specific video categories"
               placeholder="Search for a category"
               description="Archive only videos from these categories. Leave blank to archive all categories. Does not apply to live streams."

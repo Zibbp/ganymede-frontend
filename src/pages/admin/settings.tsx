@@ -9,6 +9,7 @@ import {
   Group,
   ActionIcon,
   MultiSelect,
+  Card,
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -156,237 +157,239 @@ const AdminSettingsPage = () => {
 
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
-      <div>
-        <Container className={classes.settingsSections} size="xl">
-          <div className={classes.header}>
-            <div>
-              <Title order={2}>Settings</Title>
-              <Text>
-                Visit the{" "}
-                <a
-                  className={classes.link}
-                  href="https://github.com/Zibbp/ganymede/wiki/Application-Settings"
-                  target="_blank"
-                >
-                  wiki
-                </a>{" "}
-                for documentation regarding each setting.
-              </Text>
-            </div>
-          </div>
-          <div>
-            <div>
-              <Title order={3}>Core</Title>
-              <Switch
-                mt={5}
-                checked={registrationEnabled}
-                onChange={(event) =>
-                  setRegistrationEnabled(event.currentTarget.checked)
-                }
-                label="Registration Enabled"
-              />
-
-              <Button
-                mt={15}
-                onClick={() => openDrawer()}
-                fullWidth
-                radius="md"
-                size="md"
-                variant="outline"
-                color="orange"
-              >
-                Notification Settings
-              </Button>
-            </div>
-            <div>
-              <Title mt={15} order={3}>
-                Archive
-              </Title>
-              <Text size="sm">Convert the archived mp4 to a HLS playlist.</Text>
-              <Switch
-                mt={5}
-                checked={saveAsHls}
-                onChange={(event) => setSaveAsHls(event.currentTarget.checked)}
-                label="Convert to HLS"
-              />
-              <Button
-                mt={15}
-                onClick={() => openStorageTemplateDrawer()}
-                fullWidth
-                radius="md"
-                size="md"
-                variant="outline"
-                color="orange"
-              >
-                Storage Template Settings
-              </Button>
-            </div>
-            <div>
-              <Title mt={15} order={3}>
-                Video
-              </Title>
-
-              <TextInput
-                mt={5}
-                value={twitchToken}
-                onChange={(event) => setTwitchToken(event.currentTarget.value)}
-                placeholder="abcdefg1234567890"
-                label="Twitch Token"
-                description="Supply your Twitch token for downloading ad-free livestreams and subscriber only videos."
-              />
-              <TextInput
-                mt={5}
-                value={postVideoFFmpegArgs}
-                onChange={(event) =>
-                  setPostVideoFFmpegArgs(event.currentTarget.value)
-                }
-                placeholder="-c:v copy -c:a copy"
-                label="Video Convert FFmpeg Args"
-                description="Post video download ffmpeg args."
-              />
-            </div>
-            <div>
-              <Title mt={15} order={3}>
-                Livestream
-              </Title>
-              <TextInput
-                mt={5}
-                value={streamlinkLiveArgs}
-                onChange={(event) =>
-                  setStreamlinkLiveArgs(event.currentTarget.value)
-                }
-                placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
-                label="Streamlink Parameters"
-                description="For live streams. Must be comma separated."
-              />
-
-              <Text mt={5} mb={5}>
-                Proxies
-              </Text>
-              <Text size="sm">
-                Archive livestreams through a proxy to prevent ads. Your Twitch
-                token will <b>not</b> be sent to the proxy.
-              </Text>
-              <Switch
-                label="Enable proxy"
-                color="violet"
-                checked={proxyEnabled}
-                onChange={(event) =>
-                  setProxyEnabled(event.currentTarget.checked)
-                }
-              />
-              {proxyList.map((proxy, index) => (
-                <div key={index} className={classes.proxyList}>
-                  <TextInput
-                    className={classes.proxyInput}
-                    placeholder="https://proxy.url"
-                    value={proxy.url}
-                    onChange={(event) => {
-                      const newProxyList = [...proxyList];
-                      newProxyList[index].url = event.currentTarget.value;
-                      setProxyList(newProxyList);
-                    }}
-                    label="Proxy URL"
-                  />
-                  <TextInput
-                    className={classes.proxyInput}
-                    value={proxy.header}
-                    onChange={(event) => {
-                      const newProxyList = [...proxyList];
-                      newProxyList[index].header = event.currentTarget.value;
-                      setProxyList(newProxyList);
-                    }}
-                    label="Header"
-                  />
-                  <ActionIcon
-                    color="red"
-                    size="lg"
-                    mt={20}
-                    onClick={() => {
-                      const newProxyList = [...proxyList];
-                      newProxyList.splice(index, 1);
-                      setProxyList(newProxyList);
-                    }}
+      <Container>
+        <div>
+          <Card withBorder p="xl" radius="md" className={classes.settingsSections} >
+            <div className={classes.header}>
+              <div>
+                <Title order={2}>Settings</Title>
+                <Text>
+                  Visit the{" "}
+                  <a
+                    className={classes.link}
+                    href="https://github.com/Zibbp/ganymede/wiki/Application-Settings"
+                    target="_blank"
                   >
-                    <IconTrash size="1.125rem" />
-                  </ActionIcon>
-                </div>
-              ))}
-              <Button
-                onClick={() => {
-                  const newProxyList = [...proxyList];
-                  newProxyList.push({ url: "", header: "" });
-                  setProxyList(newProxyList);
-                }}
-                mt={10}
-                leftIcon={<IconPlus size="1rem" />}
-                color="violet"
-              >
-                Add
-              </Button>
-              {/* proxy whitelist */}
-              <MultiSelect
-                data={channelData}
-                value={proxyWhitelist}
-                onChange={setProxyWhitelist}
-                label="Whitelist Channels"
-                description="These channels will not use the proxy if enabled, instead your Twitch token will be used. Select channels that you are subscribed to."
-                placeholder="Select channels"
-              />
+                    wiki
+                  </a>{" "}
+                  for documentation regarding each setting.
+                </Text>
+              </div>
             </div>
             <div>
-              <Title mt={15} order={3}>
-                Chat
-              </Title>
+              <div>
+                <Title order={3}>Core</Title>
+                <Switch
+                  mt={5}
+                  checked={registrationEnabled}
+                  onChange={(event) =>
+                    setRegistrationEnabled(event.currentTarget.checked)
+                  }
+                  label="Registration Enabled"
+                />
 
-              <TextInput
-                value={chatRenderArgs}
-                onChange={(event) =>
-                  setChatRenderArgs(event.currentTarget.value)
-                }
-                placeholder="-h 1440 -w 340 --framerate 30 --font Inter --font-size 13 --badge-filter 96"
-                label="Chat Render Args"
-                description="TwitchDownloader chat render args."
-              />
+                <Button
+                  mt={15}
+                  onClick={() => openDrawer()}
+                  fullWidth
+                  radius="md"
+                  size="md"
+                  variant="outline"
+                  color="orange"
+                >
+                  Notification Settings
+                </Button>
+              </div>
+              <div>
+                <Title mt={15} order={3}>
+                  Archive
+                </Title>
+                <Text size="sm">Convert the archived mp4 to a HLS playlist.</Text>
+                <Switch
+                  mt={5}
+                  checked={saveAsHls}
+                  onChange={(event) => setSaveAsHls(event.currentTarget.checked)}
+                  label="Convert to HLS"
+                />
+                <Button
+                  mt={15}
+                  onClick={() => openStorageTemplateDrawer()}
+                  fullWidth
+                  radius="md"
+                  size="md"
+                  variant="outline"
+                  color="orange"
+                >
+                  Storage Template Settings
+                </Button>
+              </div>
+              <div>
+                <Title mt={15} order={3}>
+                  Video
+                </Title>
+
+                <TextInput
+                  mt={5}
+                  value={twitchToken}
+                  onChange={(event) => setTwitchToken(event.currentTarget.value)}
+                  placeholder="abcdefg1234567890"
+                  label="Twitch Token"
+                  description="Supply your Twitch token for downloading ad-free livestreams and subscriber only videos."
+                />
+                <TextInput
+                  mt={5}
+                  value={postVideoFFmpegArgs}
+                  onChange={(event) =>
+                    setPostVideoFFmpegArgs(event.currentTarget.value)
+                  }
+                  placeholder="-c:v copy -c:a copy"
+                  label="Video Convert FFmpeg Args"
+                  description="Post video download ffmpeg args."
+                />
+              </div>
+              <div>
+                <Title mt={15} order={3}>
+                  Livestream
+                </Title>
+                <TextInput
+                  mt={5}
+                  value={streamlinkLiveArgs}
+                  onChange={(event) =>
+                    setStreamlinkLiveArgs(event.currentTarget.value)
+                  }
+                  placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
+                  label="Streamlink Parameters"
+                  description="For live streams. Must be comma separated."
+                />
+
+                <Text mt={5} mb={5}>
+                  Proxies
+                </Text>
+                <Text size="sm">
+                  Archive livestreams through a proxy to prevent ads. Your Twitch
+                  token will <b>not</b> be sent to the proxy.
+                </Text>
+                <Switch
+                  label="Enable proxy"
+                  color="violet"
+                  checked={proxyEnabled}
+                  onChange={(event) =>
+                    setProxyEnabled(event.currentTarget.checked)
+                  }
+                />
+                {proxyList.map((proxy, index) => (
+                  <div key={index} className={classes.proxyList}>
+                    <TextInput
+                      className={classes.proxyInput}
+                      placeholder="https://proxy.url"
+                      value={proxy.url}
+                      onChange={(event) => {
+                        const newProxyList = [...proxyList];
+                        newProxyList[index].url = event.currentTarget.value;
+                        setProxyList(newProxyList);
+                      }}
+                      label="Proxy URL"
+                    />
+                    <TextInput
+                      className={classes.proxyInput}
+                      value={proxy.header}
+                      onChange={(event) => {
+                        const newProxyList = [...proxyList];
+                        newProxyList[index].header = event.currentTarget.value;
+                        setProxyList(newProxyList);
+                      }}
+                      label="Header"
+                    />
+                    <ActionIcon
+                      color="red"
+                      size="lg"
+                      mt={20}
+                      onClick={() => {
+                        const newProxyList = [...proxyList];
+                        newProxyList.splice(index, 1);
+                        setProxyList(newProxyList);
+                      }}
+                    >
+                      <IconTrash size="1.125rem" />
+                    </ActionIcon>
+                  </div>
+                ))}
+                <Button
+                  onClick={() => {
+                    const newProxyList = [...proxyList];
+                    newProxyList.push({ url: "", header: "" });
+                    setProxyList(newProxyList);
+                  }}
+                  mt={10}
+                  leftIcon={<IconPlus size="1rem" />}
+                  color="violet"
+                >
+                  Add
+                </Button>
+                {/* proxy whitelist */}
+                <MultiSelect
+                  data={channelData}
+                  value={proxyWhitelist}
+                  onChange={setProxyWhitelist}
+                  label="Whitelist Channels"
+                  description="These channels will not use the proxy if enabled, instead your Twitch token will be used. Select channels that you are subscribed to."
+                  placeholder="Select channels"
+                />
+              </div>
+              <div>
+                <Title mt={15} order={3}>
+                  Chat
+                </Title>
+
+                <TextInput
+                  value={chatRenderArgs}
+                  onChange={(event) =>
+                    setChatRenderArgs(event.currentTarget.value)
+                  }
+                  placeholder="-h 1440 -w 340 --framerate 30 --font Inter --font-size 13 --badge-filter 96"
+                  label="Chat Render Args"
+                  description="TwitchDownloader chat render args."
+                />
+              </div>
+              <Button
+                onClick={() => saveSettings.mutate()}
+                loading={loading}
+                fullWidth
+                radius="md"
+                mt="md"
+                size="md"
+                color="violet"
+              >
+                Save
+              </Button>
             </div>
-            <Button
-              onClick={() => saveSettings.mutate()}
-              loading={loading}
-              fullWidth
-              radius="md"
-              mt="md"
-              size="md"
-              color="violet"
-            >
-              Save
-            </Button>
-          </div>
-        </Container>
-      </div>
-      <Drawer
-        className={classes.notificationDrawer}
-        opened={drawerOpened}
-        onClose={() => setDrawerOpened(false)}
-        title="Notification Settings"
-        padding="xl"
-        size="xl"
-        position="right"
-      >
-        <AdminNotificationsDrawer handleClose={closeDrawerCallback} />
-      </Drawer>
-      <Drawer
-        className={classes.notificationDrawer}
-        opened={storageTemplateDrawerOpened}
-        onClose={() => setStorageTemplateDrawerOpened(false)}
-        title="Storage Template Settings"
-        padding="xl"
-        size="xl"
-        position="right"
-      >
-        <AdminStorageSettingsDrawer
-          handleClose={closeStorageTemplateDrawerCallback}
-        />
-      </Drawer>
+          </Card>
+        </div>
+        <Drawer
+          className={classes.notificationDrawer}
+          opened={drawerOpened}
+          onClose={() => setDrawerOpened(false)}
+          title="Notification Settings"
+          padding="xl"
+          size="xl"
+          position="right"
+        >
+          <AdminNotificationsDrawer handleClose={closeDrawerCallback} />
+        </Drawer>
+        <Drawer
+          className={classes.notificationDrawer}
+          opened={storageTemplateDrawerOpened}
+          onClose={() => setStorageTemplateDrawerOpened(false)}
+          title="Storage Template Settings"
+          padding="xl"
+          size="xl"
+          position="right"
+        >
+          <AdminStorageSettingsDrawer
+            handleClose={closeStorageTemplateDrawerCallback}
+          />
+        </Drawer>
+      </Container>
     </Authorization>
   );
 };
