@@ -33,15 +33,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     getAuthentication().then(() => setIsLoaded(true));
   }, []);
 
-  // const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-  //   key: "ganymede-color-scheme",
-  //   defaultValue: "dark",
-  //   getInitialValueInEffect: true,
-  // });
-
-  // const toggleColorScheme = (value?: ColorScheme) =>
-  //   setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
-
   const CONTAINER_SIZES: Record<string, string> = {
     xxs: rem(300),
     xs: rem(400),

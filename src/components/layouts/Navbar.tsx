@@ -17,6 +17,9 @@ import {
   rem,
   useMantineTheme,
   TextInput,
+  useMantineColorScheme,
+  ActionIcon,
+  useComputedColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -36,6 +39,8 @@ import {
   IconInfoCircle,
   IconSubtask,
   IconSearch,
+  IconSun,
+  IconMoon,
 } from '@tabler/icons-react';
 import classes from './Navbar.module.css';
 import Image from 'next/image';
@@ -45,6 +50,7 @@ import getConfig from 'next/config';
 import useUserStore from '../../store/user';
 import router from 'next/router';
 import { useState } from 'react';
+import cx from "clsx"
 
 const adminLinks = [
   {
@@ -111,6 +117,9 @@ export function HeaderMegaMenu() {
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const [search, setSearch] = useState("");
   const theme = useMantineTheme();
+  // const { setColorScheme, clearColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
 
   const user = useUserStore((state) => state);
 
@@ -249,6 +258,15 @@ export function HeaderMegaMenu() {
                 </Link>
               </div>
             )}
+            <ActionIcon
+              onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
+              variant="default"
+              size="lg"
+              aria-label="Toggle color scheme"
+            >
+              <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
+              <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
+            </ActionIcon>
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

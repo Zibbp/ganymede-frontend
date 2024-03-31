@@ -240,7 +240,7 @@ const ArchivePage = () => {
                     value={archiveQuality}
                     onChange={setArchiveQuality}
                     data={qualityOptions}
-                    dropdownPosition="bottom"
+                    comboboxProps={{ position: 'bottom', middlewares: { flip: false, shift: false } }}
                   />
                   <Switch
                     checked={archiveChat}

@@ -368,7 +368,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               value={selectedTwitchCategories}
               onChange={setSelectedTwitchCategories}
               data={formattedTwitchCategories}
-              dropdownPosition="top"
+              comboboxProps={{ position: 'top', middlewares: { flip: false, shift: false } }}
               label="Archive specific video categories"
               placeholder="Search for a category"
               description="Archive only videos from these categories. Leave blank to archive all categories. Does not apply to live streams."
