@@ -8,15 +8,7 @@
   order: 2
 }
 .settingsSections {
-  background-color: var(--mantine-color-dark-6);
-  border-radius: var(--mantine-radius-md);
-  padding-left: var(--mantine-spacing-md);
-  padding-right: var(--mantine-spacing-md);
-  padding-bottom: var(--mantine-spacing-xs);
   margin-top: var(--mantine-spacing-md);
-  margin-bottom: var(--mantine-spacing-md);
-  border: 1px solid var(--mantine-color-dark-5);
-  box-shadow: var(--mantine-shadow-sm);
 }
 .link {
   color: var(--mantine-color-blue-6);

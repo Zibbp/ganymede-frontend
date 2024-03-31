@@ -106,18 +106,16 @@ const VideoCard = ({
       )}
       <Link href={video.processing ? `#` : `/vods/${video.id}`}>
         <Card.Section>
-          <a>
-            <Image
-              className={classes.videoImage}
-              src={`${publicRuntimeConfig.CDN_URL}${escapeURL(
-                video.web_thumbnail_path
-              )}`}
-              onError={handleError}
-              width={imageError ? "100%" : "100%"}
-              height={imageError ? "5rem" : "100%"}
-              fallbackSrc="/images/ganymede-thumbnail.webp"
-            />
-          </a>
+          <Image
+            className={classes.videoImage}
+            src={`${publicRuntimeConfig.CDN_URL}${escapeURL(
+              video.web_thumbnail_path
+            )}`}
+            onError={handleError}
+            width={imageError ? "100%" : "100%"}
+            height={imageError ? "5rem" : "100%"}
+            fallbackSrc="/images/ganymede-thumbnail.webp"
+          />
           {Math.round(progress) > 0 && !watched && (
             <Tooltip label={`${Math.round(progress)}% watched`}>
               <Progress

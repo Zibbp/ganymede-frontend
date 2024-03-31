@@ -19,7 +19,6 @@ import {
 import { useDocumentTitle, useInputState } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useApi } from "../hooks/useApi";
-import classes from "./profile.module.css"
 
 const ProfilePage = () => {
   const user = useUserStore((state) => state);
@@ -131,19 +130,19 @@ const ProfilePage = () => {
     <Authorization>
       <div>
         <Center mt={25}>
-          <Card withBorder p="xl" radius="md" className={classes.card}>
-            <Text align="center" size="lg" weight={500} mt="sm">
+          <Card withBorder p="xl" radius="md" >
+            <Text ta="center" size="lg" w={500} mt="sm">
               {user.username}
             </Text>
-            <Text align="center" size="sm" color="dimmed">
+            <Text ta="center" size="sm" color="dimmed">
               {user.role}
             </Text>
             {user.oauth && (
-              <Text align="center" size="sm" color="dimmed">
+              <Text ta="center" size="sm" color="dimmed">
                 Managed via SSO
               </Text>
             )}
-            <Text align="center" size="sm" color="dimmed">
+            <Text ta="center" size="sm" color="dimmed">
               {new Date(user.createdAt).toLocaleDateString()}
             </Text>
 

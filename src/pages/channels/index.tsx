@@ -33,13 +33,6 @@ const ChannelsPage = () => {
               <ChannelCard channel={channel} key={channel.id}></ChannelCard>
             ))}
           </SimpleGrid>
-          {/* <Grid>
-            {data.map((channel: any) => (
-              <Grid.Col key={channel.id} md={6} lg={2}>
-                <ChannelCard channel={channel}></ChannelCard>
-              </Grid.Col>
-            ))}
-          </Grid> */}
         </div>
       </Container>
     </div>
