@@ -1,11 +1,16 @@
 import {
+  ActionIcon,
+  Box,
   Button,
+  Checkbox,
   Divider,
+  Grid,
   Group,
   Loader,
   MultiSelect,
   NumberInput,
   Select,
+  SimpleGrid,
   Switch,
   Text,
   TextInput,
@@ -16,7 +21,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
-import GanymedeLoader from "../../Utils/GanymedeLoader";
+import { LiveTitleRegex } from "../../../ganymede-defs";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
+import classes from "./Watched.module.css"
 
 const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const { handleSubmit } = useForm();
@@ -42,6 +49,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
     []
   );
   const [selectedTwitchCategories, setSelectedTwitchCategories] = useState([]);
+  const [liveTitleRegexes, setLiveTitleRegexes] = useState<LiveTitleRegex[]>([]);
 
   const qualityOptions = [
     { label: "Best", value: "best" },
@@ -66,6 +74,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setRenderChat(watched?.render_chat);
       setDownloadSubOnly(watched?.download_sub_only);
       setMaxVideoAge(watched?.video_age);
+      setLiveTitleRegexes(watched?.edges.title_regex)
 
       if (watched?.edges?.categories) {
         const tmpArr = [];
@@ -100,6 +109,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               download_sub_only: downloadSubOnly,
               categories: selectedTwitchCategories,
               max_age: maxVideoAge,
+              regex: liveTitleRegexes
             },
             withCredentials: true,
           },
@@ -140,6 +150,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   download_sub_only: downloadSubOnly,
                   categories: selectedTwitchCategories,
                   max_age: maxVideoAge,
+                  regex: liveTitleRegexes
                 },
                 withCredentials: true,
               },
@@ -163,6 +174,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   download_sub_only: downloadSubOnly,
                   categories: selectedTwitchCategories,
                   max_age: maxVideoAge,
+                  regex: liveTitleRegexes
                 },
                 withCredentials: true,
               },
@@ -213,8 +225,13 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
     },
   });
 
+  const getTwitchCategoriesClick = () => {
+    getTwitchCategories()
+  }
+
   // Fetch categories
-  const { data: twitchCategoriesResp } = useQuery({
+  const { data: twitchCategoriesResp, refetch: getTwitchCategories } = useQuery({
+    enabled: false,
     queryKey: ["admin-categories"],
     queryFn: () => {
       setTwitchCategoriesLoading(true);
@@ -373,9 +390,97 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
             onChange={setMaxVideoAge}
           />
         </div>
+        <Divider my="sm" />
+        {/* title regex */}
+        <Group>
+          <Title order={5}>Title Regex</Title>
+          <ActionIcon size="sm" variant="filled" color="green" aria-label="Settings" onClick={() => {
+            const newRegex: LiveTitleRegex = {
+              apply_to_videos: false,
+              case_sensitive: false,
+              negative: false,
+              regex: ""
+            }
+            setLiveTitleRegexes(liveTitleRegexes => [...(liveTitleRegexes ?? []), newRegex])
+          }}>
+            <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
+          </ActionIcon>
+        </Group>
         <div>
-          {twitchCategoriesLoading || formattedTwitchCategories.length == 0 ? (
-            <Loader color="violet" />
+          <Text size="sm">Use regex to filter and match specific patterns in livestream and video titles. See <a className={classes.link} href="https://github.com/Zibbp/ganymede/wiki/Watched-Channel-Title-Regex" target="_blank">wiki</a> for more information.</Text>
+        </div>
+
+        <div>
+          {liveTitleRegexes && liveTitleRegexes.map((regex: LiveTitleRegex, index) => (
+            <div>
+              <Grid grow>
+                <Grid.Col span={11}>
+                  <TextInput
+                    label="Regex"
+                    placeholder="(?i:rerun)"
+                    value={regex.regex}
+                    onChange={(e) => {
+                      const updatedRegexes = [...liveTitleRegexes];
+                      updatedRegexes[index].regex = e.currentTarget.value;
+                      setLiveTitleRegexes(updatedRegexes)
+                    }}
+                  />
+                  <Group mt={7}>
+                    <Checkbox
+                      defaultChecked
+                      label="Negative"
+                      description="Invert match"
+                      color="violet"
+                      checked={regex.negative}
+                      onChange={(e) => {
+                        const updatedRegexes = [...liveTitleRegexes];
+                        updatedRegexes[index].negative = e.currentTarget.checked;
+                        setLiveTitleRegexes(updatedRegexes)
+                      }}
+                    />
+                    <Checkbox
+                      defaultChecked
+                      label="Apply to video downloads"
+                      description="Applies to live streams only by default"
+                      color="violet"
+                      checked={regex.apply_to_videos}
+                      onChange={(e) => {
+                        const updatedRegexes = [...liveTitleRegexes];
+                        updatedRegexes[index].apply_to_videos = e.currentTarget.checked;
+                        setLiveTitleRegexes(updatedRegexes)
+                      }}
+                    />
+                  </Group>
+                </Grid.Col>
+                <Grid.Col span={1}>
+                  <Group mt={25}>
+                    <ActionIcon size="lg" variant="filled" color="red" aria-label="Settings" onClick={() => {
+                      const updatedRegexs = [...liveTitleRegexes]
+                      updatedRegexs.splice(index, 1)
+                      setLiveTitleRegexes(updatedRegexs)
+                    }}>
+                      <IconTrash style={{ width: '70%', height: '70%' }} stroke={1.5} />
+                    </ActionIcon>
+                  </Group>
+                </Grid.Col>
+              </Grid>
+            </div>
+          ))}
+        </div>
+        <Divider my="sm" />
+
+        <Group>
+          <Title order={5}>Categories</Title>
+        </Group>
+        <div>
+          <Text size="sm">Archive videos from these categories. Leave blank to archive all categories. Does not apply to live streams.</Text>
+        </div>
+
+        <div>
+          {formattedTwitchCategories.length == 0 ? (
+            <Button variant="filled" color="violet" onClick={(e) => getTwitchCategoriesClick()}
+              loading={twitchCategoriesLoading}
+            >Load categories</Button>
           ) : (
             <MultiSelect
               searchable
@@ -384,9 +489,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               onChange={setSelectedTwitchCategories}
               data={formattedTwitchCategories}
               comboboxProps={{ position: 'top', middlewares: { flip: false, shift: false } }}
-              label="Archive specific video categories"
               placeholder="Search for a category"
-              description="Archive only videos from these categories. Leave blank to archive all categories. Does not apply to live streams."
               clearButtonLabel="Clear selection"
               clearable
             />

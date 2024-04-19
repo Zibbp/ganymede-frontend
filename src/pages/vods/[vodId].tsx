@@ -17,7 +17,7 @@ import classes from "./vodId.module.css"
 
 async function fetchVod(vodId: string) {
   return useApi(
-    { method: "GET", url: `/api/v1/vod/${vodId}?with_channel=true` },
+    { method: "GET", url: `/api/v1/vod/${vodId}?with_channel=true&with_chapters=true&with_muted_segments=true` },
     false
   ).then((res) => res?.data);
 }

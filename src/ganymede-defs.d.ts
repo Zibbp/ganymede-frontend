@@ -167,3 +167,24 @@ export interface ProxyItem {
   url: string;
   header: string;
 }
+
+export interface Chapter {
+  startTime: string;
+  endTime: string;
+  text: string;
+}
+
+export interface ChapterData {
+  id: string;
+  type: string;
+  title: string;
+  start?: number;
+  end: number;
+  edges: any;
+}
+
+export interface LiveTitleRegex {
+  regex: string;
+  negative: boolean;
+  apply_to_videos: boolean;
+}

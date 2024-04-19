@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
 
-import { MediaPlayer, MediaPlayerInstance, MediaProvider, Poster, Track } from '@vidstack/react';
+import { MediaPlayer, MediaPlayerInstance, MediaProvider, MediaSrc, Poster, Track, VideoMimeType } from '@vidstack/react';
 import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
 import TheaterModeIcon from "./TheaterModeIcon";
 import { escapeURL } from "../../util/util";
@@ -24,7 +24,7 @@ const NewVideoPlayer = ({ vod }: any) => {
 
   const player = useRef<MediaPlayerInstance>(null)
 
-  const [videoSource, setVideoSource] = useState([{ src: "", type: "" }]);
+  const [videoSource, setVideoSource] = useState<MediaSrc>();
   const [videoType, setVideoType] = useState<string>("");
   const [videoPoster, setVideoPoster] = useState<string>("");
   const [videoTitle, setVideoTitle] = useState<string>("");
@@ -97,17 +97,15 @@ const NewVideoPlayer = ({ vod }: any) => {
     if (!player) return;
 
     const ext = vod.video_path.substr(vod.video_path.length - 4);
-    let type = "video/mp4";
+    let type: VideoMimeType = "video/mp4";
     if (ext == "m3u8") {
-      type = "application/x-mpegURL";
+      type = "application/x-mpegurl";
     }
 
-    setVideoSource([
-      {
-        src: `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`,
-        type: type,
-      },
-    ]);
+    setVideoSource({
+      src: `${publicRuntimeConfig.CDN_URL}${escapeURL(vod.video_path)}`,
+      type: type
+    })
     setVideoType(type);
     setVideoTitle(vod.title);
 
