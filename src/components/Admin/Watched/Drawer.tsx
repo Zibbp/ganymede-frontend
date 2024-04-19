@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import { useApi } from "../../../hooks/useApi";
 import { LiveTitleRegex } from "../../../ganymede-defs";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
+import classes from "./Watched.module.css"
 
 const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const { handleSubmit } = useForm();
@@ -406,7 +407,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
           </ActionIcon>
         </Group>
         <div>
-          <Text size="sm">Use regex to filter and match specific patterns in livestream and video titles.</Text>
+          <Text size="sm">Use regex to filter and match specific patterns in livestream and video titles. See <a className={classes.link} href="https://github.com/Zibbp/ganymede/wiki/Watched-Channel-Title-Regex" target="_blank">wiki</a> for more information.</Text>
         </div>
 
         <div>
