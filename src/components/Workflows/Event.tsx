@@ -46,7 +46,7 @@ const WorkflowEvent = (props: Props) => {
         <div className={classes.eventBar}>
           <Text fw={700} mr={15}>{props.event.event_id}</Text>
 
-          <Text mr={15}>{dayjs(props.event.event_time).format('YYYY-MM-DD HH:mm:ss.SSS')} </Text>
+          <Text mr={15}>{dayjs.unix(props.event.event_time.seconds).format('YYYY-MM-DD HH:mm:ss.SSS')} </Text>
 
           <Text mr={15}>{firstAttribute}</Text>
 
