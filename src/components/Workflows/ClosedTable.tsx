@@ -80,7 +80,7 @@ const WorkflowsClosedTable = (props: Props) => {
           </span>
         </Link>
       </Table.Td>
-      <Table.Td>{dayjs(workflow.close_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
+      <Table.Td>{dayjs.unix(workflow.close_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
     </Table.Tr>
   ));
 
