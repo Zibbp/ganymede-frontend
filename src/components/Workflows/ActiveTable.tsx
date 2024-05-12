@@ -80,7 +80,7 @@ const WorkflowsActiveTable = (props: Props) => {
           </span>
         </Link>
       </Table.Td>
-      <Table.Td>{dayjs(workflow.start_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
+      <Table.Td>{dayjs.unix(workflow.start_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Table.Td>
     </Table.Tr>
   ));
 
@@ -93,7 +93,7 @@ const WorkflowsActiveTable = (props: Props) => {
             <Table.Th>Workflow ID</Table.Th>
             <Table.Th>Run ID</Table.Th>
             <Table.Th>Type</Table.Th>
-            <Table.Th>Close Time</Table.Th>
+            <Table.Th>Start Time</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>

@@ -92,7 +92,12 @@ const WorkflowInspectPage = (props: Props) => {
   useEffect(() => {
     if (workflowInfo) {
       const startTime = dayjs.unix(workflowInfo.start_time.seconds)
-      const closeTime = dayjs.unix(workflowInfo.close_time.seconds)
+      let closeTime
+      if (workflowInfo.close_time) {
+        closeTime = dayjs.unix(workflowInfo.close_time.seconds)
+      } else {
+        closeTime = dayjs()
+      }
       const duration = closeTime.diff(startTime)
       setDuration(duration)
     }
@@ -168,7 +173,9 @@ const WorkflowInspectPage = (props: Props) => {
               <div>
                 <Text size="lg" fw={700}>Start & Close Time</Text>
                 <Text>Start Time: {dayjs.unix(workflowInfo.start_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Text>
-                <Text>Close Time: {dayjs.unix(workflowInfo.start_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Text>
+                {workflowInfo.close_time && (
+                  <Text>Close Time: {dayjs.unix(workflowInfo.start_time.seconds).format("YYYY/MM/DD HH:mm:ss")}</Text>
+                )}
                 <Text>Duration: {dayjs
                   .duration(duration, "milliseconds")
                   .format("HH:mm:ss")}</Text>
