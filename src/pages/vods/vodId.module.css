@@ -39,6 +39,10 @@
   flex-grow: 1;
   width: calc(100vw - 340px);
 }
+.leftColumnNoChat {
+  flex-grow: 1;
+  width: 100vw;
+}
 .leftColumnMobile {
   flex-grow: 1;
   width: calc(100vw - 200px);

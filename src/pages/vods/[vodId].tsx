@@ -96,7 +96,7 @@ const VodPage = (props: any) => {
         <div>
           {!isMobile && (
             <Box className={classes.container} >
-              <div className={classes.leftColumn} ref={leftColumnRef}>
+              <div className={!data.chat_path ? classes.leftColumnNoChat : classes.leftColumn} ref={leftColumnRef}>
                 <div
                   className={
                     isFullscreen
@@ -106,39 +106,41 @@ const VodPage = (props: any) => {
                   <NewVideoPlayer vod={data} />
                 </div>
               </div>
-              <div className={classes.rightColumn}
-                style={{ height: "auto", maxHeight: "auto" }}>
-                {data.chat_video_path &&
-                  !useUserStore.getState().settings.useNewChatPlayer && (
-                    <div>
-                      <div
-                        ref={rightColumnRef}
-                        className={
-                          isFullscreen || fullscreen
-                            ? classes.chatColumnNoHeader
-                            : classes.chatColumn
-                        }
-                      >
-                        <VodChatPlayer vod={data} />
+              {data.chat_path && (
+                <div className={classes.rightColumn}
+                  style={{ height: "auto", maxHeight: "auto" }}>
+                  {data.chat_video_path &&
+                    !useUserStore.getState().settings.useNewChatPlayer && (
+                      <div>
+                        <div
+                          ref={rightColumnRef}
+                          className={
+                            isFullscreen || fullscreen
+                              ? classes.chatColumnNoHeader
+                              : classes.chatColumn
+                          }
+                        >
+                          <VodChatPlayer vod={data} />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                {data.chat_path &&
-                  useUserStore.getState().settings.useNewChatPlayer && (
-                    <div>
-                      <div
-                        ref={rightColumnRef}
-                        className={
-                          isFullscreen || fullscreen
-                            ? classes.chatColumnNoHeader
-                            : classes.chatColumn
-                        }
-                      >
-                        <ExperimentalChatPlayer vod={data} />
+                    )}
+                  {data.chat_path &&
+                    useUserStore.getState().settings.useNewChatPlayer && (
+                      <div>
+                        <div
+                          ref={rightColumnRef}
+                          className={
+                            isFullscreen || fullscreen
+                              ? classes.chatColumnNoHeader
+                              : classes.chatColumn
+                          }
+                        >
+                          <ExperimentalChatPlayer vod={data} />
+                        </div>
                       </div>
-                    </div>
-                  )}
-              </div>
+                    )}
+                </div>
+              )}
             </Box>
           )}
           {isMobile && (
