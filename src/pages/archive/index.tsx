@@ -64,6 +64,7 @@ const ArchivePage = () => {
     { label: "480p", value: "480p30" },
     { label: "360p", value: "360p30" },
     { label: "160p", value: "160p30" },
+    { label: "audio", value: "audio" }
   ];
 
   const archiveVodSubmit = useMutation({
