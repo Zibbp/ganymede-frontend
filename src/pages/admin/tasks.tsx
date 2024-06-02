@@ -147,37 +147,6 @@ const AdminTasksPage = () => {
                 </Grid.Col>
               </Grid>
             </div>
-            {/* Queue */}
-            <div>
-              <div className={classes.sectionHeader}>
-                <Title order={4}>Queue</Title>
-              </div>
-              <Grid className={classes.taskItem}>
-                <Grid.Col span={10}>
-                  <div>
-                    <span>
-                      <Text mr={5}>Start stuck queue items</Text>
-                      <Text italic size="xs">
-                        Occurs every hour.
-                      </Text>
-                    </span>
-                  </div>
-                </Grid.Col>
-                <Grid.Col span={2}>
-                  <Tooltip label="Start Task">
-                    <ActionIcon
-                      onClick={() => startTask.mutate("queue_hold_check")}
-                      loading={loading}
-                      color="green"
-                      variant="filled"
-                      size="lg"
-                    >
-                      <IconRefresh size={24} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Grid.Col>
-              </Grid>
-            </div>
             {/* Ganymede */}
             <div>
               <div className={classes.sectionHeader}>
