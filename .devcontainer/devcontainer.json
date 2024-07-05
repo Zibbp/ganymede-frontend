@@ -3,7 +3,7 @@
 {
 	"name": "Ganymede Frontend",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:0-20",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:20",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -16,7 +16,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"vunguyentuan.vscode-postcss",
+				"vunguyentuan.vscode-css-variables"
 			]
 		}
 	}

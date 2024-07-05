@@ -1,84 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { IconBookmark, IconHeart, IconShare } from "@tabler/icons-react";
 import {
   Card,
   Image,
   Text,
-  ActionIcon,
   Badge,
   Group,
   Center,
   Avatar,
-  rem,
   Tooltip,
   ThemeIcon,
   Progress,
-  Overlay,
   Loader,
   Flex,
   LoadingOverlay,
 } from "@mantine/core";
-import { PlaybackData, Video } from "../../ganymede-defs";
 import getConfig from "next/config";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import useUserStore, { UserState } from "../../store/user";
+import useUserStore, { UserState } from "../../../store/user";
 import { IconCircleCheck, IconMenu2 } from "@tabler/icons-react";
-import { ROLES } from "../../hooks/useJsxAuth";
-import { VodMenu } from "./Menu";
+import { ROLES } from "../../../hooks/useJsxAuth";
+import { VodMenu } from "../Menu";
 import Link from "next/link";
-import { escapeURL } from "../../util/util";
+import { escapeURL } from "../../../util/util";
 dayjs.extend(duration);
 dayjs.extend(localizedFormat);
-import classes from "./Card.module.css";
+import classes from "./VideoCard.module.css";
+import { Video } from "../../../types/video";
 
+type Props = {
+  video: Video
+  progress: number
+  showMenu: boolean
+  showChannel: boolean
+}
 
-const formatDuration = (duration: number) => {
-  const hours = Math.floor(duration / 3600);
-  const minutes = Math.floor((duration % 3600) / 60);
-  const seconds = Math.floor(duration % 60);
-
-  const formattedHours = hours.toString().padStart(2, "0");
-  const formattedMinutes = minutes.toString().padStart(2, "0");
-  const formattedSeconds = seconds.toString().padStart(2, "0");
-
-  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-};
-
-const VideoCard = ({
-  video,
-  playback,
-  showChannel = false,
-}: {
-  video: Video;
-  playback?: PlaybackData[];
-  showChannel?: boolean;
-}) => {
+const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }: Props) => {
   const { publicRuntimeConfig } = getConfig();
   const user: UserState = useUserStore();
-  const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const handleError = () => {
     setImageError(true);
   };
-
-  useEffect(() => {
-    if (playback) {
-      const videoInPlayback = playback.find((p: any) => p.vod_id === video.id);
-      if (videoInPlayback) {
-        if (videoInPlayback.status == "finished") {
-          setWatched(true);
-        }
-        if (videoInPlayback.time) {
-          const progress = (videoInPlayback.time / video.duration) * 100;
-          setProgress(progress);
-        }
-      }
-    }
-  }, [playback]);
 
   const menuPermissions = () => {
     if (!user.isLoggedIn) {
@@ -194,7 +160,7 @@ const VideoCard = ({
             {video.type.toUpperCase()}
           </Badge>
 
-          {menuPermissions() && (
+          {(showMenu && menuPermissions()) && (
             <VodMenu vod={video} style="card" />
           )}
         </div>

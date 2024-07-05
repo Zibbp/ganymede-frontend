@@ -2,9 +2,43 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import getConfig from "next/config";
 import useUserStore from "../store/user";
+import { AuthMeResponse } from "../types/authentication";
+
+const getUserData = async () => {
+  const { publicRuntimeConfig } = getConfig();
+
+  const axiosInstance = axios.create({
+    baseURL: publicRuntimeConfig.API_URL,
+    timeout: 5000,
+    withCredentials: true
+  })
+
+  return await axiosInstance.get<AuthMeResponse>(
+    `/api/v1/auth/me`,
+  );
+}
+
+const setUserState = (data: AuthMeResponse, oauth: boolean = false) => {
+  useUserStore.setState({
+    isLoggedIn: true,
+    id: data.id,
+    username: data.username,
+    role: data.role, // @ts-ignore
+    updatedAt: data.updated_at,
+    createdAt: data.created_at,
+    oauth: oauth,
+  });
+}
 
 export const getAuthentication = async () => {
   const { publicRuntimeConfig } = getConfig();
+
+  const axiosInstance = axios.create({
+    baseURL: publicRuntimeConfig.API_URL,
+    timeout: 5000,
+    withCredentials: true
+  })
+
   console.debug("getAuthentication hook called");
 
   // Check for user settings stored in localstorage
@@ -24,26 +58,15 @@ export const getAuthentication = async () => {
   if (refreshTokenCookie) {
     // If refresh token exists, attempt to refresh and get access token
     try {
-      await axios.post(
-        `${publicRuntimeConfig.API_URL}/api/v1/auth/refresh`,
-        {},
-        { withCredentials: true }
+      await axiosInstance.post(
+        `/api/v1/auth/refresh`,
       );
-      const response = await axios.get(
-        `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await getUserData()
 
-      useUserStore.setState({
-        isLoggedIn: true,
-        id: response.data.id,
-        username: response.data.username,
-        role: response.data.role,
-        updatedAt: response.data.updatedAt,
-        createdAt: response.data.created_at,
-      });
+      console.log(response)
+
+      setUserState(response.data)
+
       console.debug("getAuthentication hook: user logged in");
     } catch (error) {
       console.error("Error refreshing token");
@@ -53,59 +76,37 @@ export const getAuthentication = async () => {
 
   if (oauthRefreshCookie) {
     try {
-      const response = await axios.get(
-        `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
-        {
-          withCredentials: true,
-        }
-      );
-      useUserStore.setState({
-        isLoggedIn: true,
-        id: response.data.id,
-        username: response.data.username,
-        role: response.data.role,
-        updatedAt: response.data.updatedAt,
-        createdAt: response.data.created_at,
-        oauth: true,
-      });
-      console.debug("[getAuthentication]: user logged in via oauth");
+      const response = await getUserData()
+
+      setUserState(response.data)
+
+      console.debug("getAuthentication: user logged in via oauth");
     } catch (error) {
-      if (error.response.status === 401) {
-        // Attempt a refresh
+      if (axios.isAxiosError(error) && error.response?.status == 401) {
+        // attempt refresh
         try {
-          await axios.get(
-            `${publicRuntimeConfig.API_URL}/api/v1/auth/oauth/refresh`,
-            {
-              withCredentials: true,
-            }
+          await axiosInstance.get(
+            `/api/v1/auth/oauth/refresh`,
           );
 
-          const response = await axios.get(
-            `${publicRuntimeConfig.API_URL}/api/v1/auth/me`,
-            {
-              withCredentials: true,
-            }
-          );
+          const response = await getUserData()
 
-          useUserStore.setState({
-            isLoggedIn: true,
-            id: response.data.id,
-            username: response.data.username,
-            role: response.data.role,
-            updatedAt: response.data.updatedAt,
-            createdAt: response.data.created_at,
-            oauth: true,
-          });
+          setUserState(response.data, true
+
+          )
           console.debug(
-            "[getAuthentication]: tokens refreshed and user logged in via oauth"
+            "getAuthentication hook: tokens refreshed and user logged in via oauth"
           );
         } catch (error) {
           console.debug(
-            "[getAuthentication]: error refreshing oauth tokens - user not logged in"
+            "getAuthentication hook: error refreshing oauth tokens - user not logged in"
           );
           return;
         }
+      } else {
+        console.error(`Unexpected error: ${error}`)
       }
+
     }
   }
 

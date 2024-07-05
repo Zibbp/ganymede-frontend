@@ -81,62 +81,34 @@ const ArchivePage = () => {
         return;
       }
       setArchiveSubmitLoading(true);
-      if (archiveInput != "") {
-        return useApi(
-          {
-            method: "POST",
-            url: `/api/v1/archive/vod`,
-            data: {
-              vod_id: archiveInput,
-              quality: archiveQuality,
-              chat: archiveChat,
-              render_chat: renderChat,
-            },
-            withCredentials: true,
+
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/archive/video`,
+          data: {
+            video_id: archiveInput,
+            channel_id: channelId,
+            quality: archiveQuality,
+            archive_chat: archiveChat,
+            render_chat: renderChat,
           },
-          false
-        )
-          .then((res) => {
-            setArchiveSubmitLoading(false);
-            setTwitchVodInfo(null);
-            setArchiveInput("");
-            showNotification({
-              title: "VOD Archived",
-              message: "VOD has been added to the archive queue",
-            });
-          })
-          .catch((err) => {
-            setArchiveSubmitLoading(false);
+          withCredentials: true,
+        },
+        false
+      )
+        .then((res) => {
+          setArchiveSubmitLoading(false);
+          setTwitchVodInfo(null);
+          setArchiveInput("");
+          showNotification({
+            title: "VOD Archived",
+            message: "VOD has been added to the archive queue",
           });
-      }
-      if (channelId != "") {
-        return useApi(
-          {
-            method: "POST",
-            url: `/api/v1/live/archive`,
-            data: {
-              channel_id: channelId,
-              resolution: archiveQuality,
-              archive_chat: archiveChat,
-              render_chat: renderChat,
-            },
-            withCredentials: true,
-          },
-          false
-        )
-          .then((res) => {
-            setArchiveSubmitLoading(false);
-            setTwitchVodInfo(null);
-            setArchiveInput("");
-            showNotification({
-              title: "Livestream Archived",
-              message: "Livestream has been added to the archive queue",
-            });
-          })
-          .catch((err) => {
-            setArchiveSubmitLoading(false);
-          });
-      }
+        })
+        .catch((err) => {
+          setArchiveSubmitLoading(false);
+        });
     },
   });
 

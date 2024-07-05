@@ -8,7 +8,7 @@ import DeletePlaylistModal from "../../components/Playlist/DeletePlaylistModal";
 import EditPlaylistModal from "../../components/Playlist/EditPlaylistModal";
 import PlaylistHeader from "../../components/Playlist/Header";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
-import VideoCard from "../../components/Vod/Card";
+import VideoCard from "../../components/Video/Core/VideoCard";
 import { useApi } from "../../hooks/useApi";
 
 const PlaylistPage = (props: any) => {
