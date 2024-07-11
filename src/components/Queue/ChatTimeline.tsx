@@ -14,6 +14,10 @@ import classes from "./Timeline.module.css"
 const QueueChatTimeline = ({ queue }: Object) => {
   const [logName, setLogName] = useState("");
 
+  // modal
+  const [opened, setOpened] = useState(false);
+  const [restartTaskName, setRestartTaskName] = useState("");
+
   const openLog = (log: string) => {
     setLogName(log);
     window.open(
@@ -21,6 +25,12 @@ const QueueChatTimeline = ({ queue }: Object) => {
       "Queue Logs",
       "width=700,height=500"
     );
+  };
+
+  const restartTask = (task: string) => {
+    console.log(task);
+    setRestartTaskName(task);
+    setOpened(true);
   };
 
   return (
@@ -37,6 +47,17 @@ const QueueChatTimeline = ({ queue }: Object) => {
           title="Chat Download"
         >
           <Text color="dimmed" size="sm">
+            {!queue.live_archive && (
+              <span>
+                <span
+                  className={classes.restartText}
+                  onClick={() => restartTask("task_chat_download")}
+                >
+                  restart
+                </span>
+                <span> - </span>
+              </span>
+            )}
             <span
               className={classes.restartText}
               onClick={() => openLog("chat")}
@@ -52,6 +73,15 @@ const QueueChatTimeline = ({ queue }: Object) => {
             title="Chat Convert"
           >
             <Text color="dimmed" size="sm">
+              <span>
+                <span
+                  className={classes.restartText}
+                  onClick={() => restartTask("task_chat_convert")}
+                >
+                  restart
+                </span>
+                <span> - </span>
+              </span>
               <span
                 className={classes.restartText}
                 onClick={() => openLog("chat-convert")}
@@ -67,6 +97,15 @@ const QueueChatTimeline = ({ queue }: Object) => {
           title="Chat Render"
         >
           <Text color="dimmed" size="sm">
+            <span>
+              <span
+                className={classes.restartText}
+                onClick={() => restartTask("task_chat_render")}
+              >
+                restart
+              </span>
+              <span> - </span>
+            </span>
             <span
               className={classes.restartText}
               onClick={() => openLog("chat-render")}
@@ -80,8 +119,24 @@ const QueueChatTimeline = ({ queue }: Object) => {
           bullet={<QueueTimelineBullet status={queue.task_chat_move} />}
           title="Chat Move"
         >
+          <Text color="dimmed" size="sm">
+            <span
+              className={classes.restartText}
+              onClick={() => restartTask("task_chat_move")}
+            >
+              restart
+            </span>
+          </Text>
         </Timeline.Item>
       </Timeline>
+
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title="Restart Queue Task"
+      >
+        <QueueRestartTaskModalContent queue={queue} task={restartTaskName} />
+      </Modal>
     </div>
   );
 };
