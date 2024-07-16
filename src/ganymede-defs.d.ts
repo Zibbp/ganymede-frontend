@@ -188,3 +188,37 @@ export interface LiveTitleRegex {
   negative: boolean;
   apply_to_videos: boolean;
 }
+
+type PlatformVideoInfo = {
+  id: string;
+  stream_id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  title: string;
+  description: string;
+  created_at: string;
+  published_at: string;
+  url: string;
+  thumbnail_url: string;
+  viewable: string;
+  view_count: number;
+  language: string;
+  type: string;
+  duration: string;
+  chapters: Chapter[];
+  muted_segments: MutedSegment[];
+}
+
+type MutedSegment = {
+  duration: number;
+  offset: number;
+}
+
+type Chapter = {
+  id: string;
+  type: string;
+  title: string;
+  start: number;
+  end: number;
+}
