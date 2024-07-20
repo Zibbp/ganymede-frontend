@@ -239,7 +239,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       return useApi(
         {
           method: "GET",
-          url: `/api/v1/twitch/categories`,
+          url: `/api/v1/category`,
           withCredentials: true,
         },
         false
