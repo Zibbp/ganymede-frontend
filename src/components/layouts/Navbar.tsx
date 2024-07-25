@@ -41,6 +41,7 @@ import {
   IconSearch,
   IconSun,
   IconMoon,
+  IconBarrierBlock,
 } from '@tabler/icons-react';
 import classes from './Navbar.module.css';
 import Image from 'next/image';
@@ -66,6 +67,13 @@ const adminLinks = [
     title: "VODs",
     description: "Manage and create VODs",
     link: "/admin/vods",
+  },
+  {
+    id: "blocked_vods",
+    icon: IconBarrierBlock,
+    title: "Blocked VODs",
+    description: "Manage blocked VODs",
+    link: "/admin/blocked-vods",
   },
   {
     id: "user",

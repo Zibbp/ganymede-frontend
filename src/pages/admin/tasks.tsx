@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconPlayerPlay, IconRefresh } from "@tabler/icons-react";
+import { IconPlayerPlay } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
@@ -98,8 +98,8 @@ const AdminTasksPage = () => {
                 <Grid.Col span={10}>
                   <div>
                     <span>
-                      <Text mr={5}>Check watched channels for live streams</Text>
-                      <Text italic size="xs">
+                      <Text mr={5}>Check watched channels for live streams to archive</Text>
+                      <Text size="xs">
                         Occurs at interval set in config.
                       </Text>
                     </span>
@@ -114,7 +114,7 @@ const AdminTasksPage = () => {
                       variant="filled"
                       size="lg"
                     >
-                      <IconRefresh size={24} />
+                      <IconPlayerPlay size={24} />
                     </ActionIcon>
                   </Tooltip>
                 </Grid.Col>
@@ -126,7 +126,7 @@ const AdminTasksPage = () => {
                       <Text mr={5}>
                         Check watched channels for new videos to archive
                       </Text>
-                      <Text italic size="xs">
+                      <Text size="xs">
                         Occurs at interval set in config.
                       </Text>
                     </span>
@@ -141,7 +141,7 @@ const AdminTasksPage = () => {
                       variant="filled"
                       size="lg"
                     >
-                      <IconRefresh size={24} />
+                      <IconPlayerPlay size={24} />
                     </ActionIcon>
                   </Tooltip>
                 </Grid.Col>
@@ -156,34 +156,9 @@ const AdminTasksPage = () => {
                 <Grid.Col span={10}>
                   <div>
                     <span>
-                      <Text mr={5}>Authenticate with Twitch</Text>
-                      <Text italic size="xs">
-                        Occurs every 7 days.
-                      </Text>
-                    </span>
-                  </div>
-                </Grid.Col>
-                <Grid.Col span={2}>
-                  <Tooltip label="Start Task">
-                    <ActionIcon
-                      onClick={() => startTask.mutate("twitch_auth")}
-                      loading={loading}
-                      color="green"
-                      variant="filled"
-                      size="lg"
-                    >
-                      <IconRefresh size={24} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Grid.Col>
-              </Grid>
-              <Grid className={classes.taskItem}>
-                <Grid.Col span={10}>
-                  <div>
-                    <span>
                       <Text mr={5}>Get JWKS</Text>
-                      <Text italic size="xs">
-                        Occurs every day.
+                      <Text size="xs">
+                        Occurs daily at 00:00.
                       </Text>
                     </span>
                   </div>
@@ -197,7 +172,7 @@ const AdminTasksPage = () => {
                       variant="filled"
                       size="lg"
                     >
-                      <IconRefresh size={24} />
+                      <IconPlayerPlay size={24} />
                     </ActionIcon>
                   </Tooltip>
                 </Grid.Col>
@@ -213,8 +188,8 @@ const AdminTasksPage = () => {
                   <div>
                     <span>
                       <Text mr={5}>Storage Template Migration</Text>
-                      <Text italic size="xs">
-                        Apply your current storage template to existing files.
+                      <Text size="xs">
+                        Apply storage template to existing files.
                         Read the{" "}
                         <a
                           href="https://github.com/Zibbp/ganymede/wiki/Storage-Templates-and-Migration"
@@ -237,7 +212,7 @@ const AdminTasksPage = () => {
                       variant="filled"
                       size="lg"
                     >
-                      <IconRefresh size={24} />
+                      <IconPlayerPlay size={24} />
                     </ActionIcon>
                   </Tooltip>
                 </Grid.Col>
@@ -253,12 +228,12 @@ const AdminTasksPage = () => {
                   <div>
                     <span>
                       <Text mr={5}>Prune Videos</Text>
-                      <Text italic size="xs">
+                      <Text size="xs">
                         Prune videos from channels that have retention settings
                         set.
                       </Text>
-                      <Text italic size="xs">
-                        Occurs every day at 01:00.
+                      <Text size="xs">
+                        Occurs daily at 00:00.
                       </Text>
                     </span>
                   </div>
@@ -272,7 +247,7 @@ const AdminTasksPage = () => {
                       variant="filled"
                       size="lg"
                     >
-                      <IconRefresh size={24} />
+                      <IconPlayerPlay size={24} />
                     </ActionIcon>
                   </Tooltip>
                 </Grid.Col>
@@ -299,8 +274,8 @@ const AdminTasksPage = () => {
                 </div>
               </Grid.Col>
               <Grid.Col span={2}>
-                <Tooltip label="Start Workflow">
-                  <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={workflowLoading} onClick={() => startWorkflow.mutate("SaveTwitchVideoChapters")}>
+                <Tooltip label="Start Task">
+                  <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={loading} onClick={() => startTask.mutate("save_chapters")}>
                     <IconPlayerPlay stroke={2} />
                   </ActionIcon>
                 </Tooltip>
@@ -317,7 +292,7 @@ const AdminTasksPage = () => {
               </Grid.Col>
               <Grid.Col span={2}>
                 <Tooltip label="Start Workflow">
-                  <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={workflowLoading} onClick={() => startWorkflow.mutate("UpdateTwitchLiveStreamArchivesWithVodIds")}>
+                  <ActionIcon variant="filled" size="lg" color="green" aria-label="Settings" loading={loading} onClick={() => startTask.mutate("update_stream_vod_ids")}>
                     <IconPlayerPlay stroke={2} />
                   </ActionIcon>
                 </Tooltip>
