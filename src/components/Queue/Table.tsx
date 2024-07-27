@@ -1,16 +1,20 @@
 import {
   ActionIcon,
+  Button,
   Loader,
+  Modal,
+  Switch,
   Text,
   ThemeIcon,
   Tooltip,
 } from "@mantine/core";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
 import { DataTable } from "mantine-datatable";
 import {
   IconCheck,
+  IconEye,
   IconPlayerPause,
   IconPlayerStop,
   IconSquareX,
@@ -20,13 +24,22 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { showNotification } from "@mantine/notifications";
 import classes from "./Table.module.css"
+import { useDisclosure } from "@mantine/hooks";
 
 const QueueTable = () => {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [records, setRecords] = useState(null);
   const [initialRecords, setInitialRecords] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [opened, { open, close }] = useDisclosure(false);
+  const [activeQueue, setActiveQueue] = useState(null);
+  const [cancelQueueLoading, setCancelQueueLoading] = useState(false);
+  const [deleteVideoAndFiles, setDeleteVideoAndFiles] = useState(false);
+  const [blockVideoId, setBlockVideoId] = useState(false);
+
   const { isLoading, error, data } = useQuery({
     queryKey: ["queue"],
     queryFn: async () =>
@@ -52,28 +65,54 @@ const QueueTable = () => {
     }
   }, [data, page, perPage]);
 
-  const stopQueueItem = useMutation({
-    mutationKey: ["stop-queue"],
-    mutationFn: (id: string) => {
-      setLoading(true);
-      return useApi(
-        {
-          method: "POST",
-          url: `/api/v1/queue/${id}/stop`,
-          withCredentials: true,
-        },
-        false
-      )
-        .then(() => {
-          setLoading(false);
-          showNotification({
-            title: "Stopped Queue Item",
-            message: "Video and chat download has been stopped",
-          });
-        })
-        .catch((err) => {
-          setLoading(false);
+  const cancelQueueItem = useMutation({
+    mutationKey: ["cancel-queue"],
+    mutationFn: async () => {
+      if (activeQueue == null) return;
+      setCancelQueueLoading(true);
+      try {
+        await useApi(
+          {
+            method: "POST",
+            url: `/api/v1/queue/${activeQueue.id}/stop`,
+            withCredentials: true,
+          },
+          false
+        )
+
+        if (deleteVideoAndFiles) {
+          await useApi(
+            {
+              method: "DELETE",
+              url: `/api/v1/vod/${activeQueue.edges.vod.id}?delete_files=true`,
+              withCredentials: true,
+            },
+            false
+          )
+        }
+
+        if (blockVideoId) {
+          await useApi(
+            {
+              method: "POST",
+              url: `/api/v1/blocked-video/${activeQueue.edges.vod.ext_id}`,
+              withCredentials: true,
+            },
+            false
+          )
+        }
+
+        queryClient.invalidateQueries(["queue"]);
+        showNotification({
+          title: "Queue Item Cancelled",
+          message: "Queue item has been cancelled successfully",
         });
+        close();
+        setCancelQueueLoading(false);
+        setActiveQueue(null);
+      } catch (err) {
+        setCancelQueueLoading(false);
+      }
     },
   });
 
@@ -162,7 +201,7 @@ const QueueTable = () => {
           {
             accessor: "actions",
             title: "Actions",
-            render: ({ id, live_archive }) => (
+            render: (record) => (
               <div
                 style={{
                   display: "flex",
@@ -170,18 +209,24 @@ const QueueTable = () => {
                   alignItems: "center",
                 }}
               >
-                <Link href={"/queue/" + id}>View</Link>
-                {live_archive && (
-                  <Tooltip label="Stop queue item" withinPortal>
-                    <ActionIcon
-                      color="red"
-                      variant="light"
-                      onClick={() => stopQueueItem.mutate(id)}
-                    >
-                      <IconSquareX size="1.125rem" />
+                <Link href={"/queue/" + record.id}>
+                  <Tooltip label="View queue item" withinPortal>
+                    <ActionIcon >
+                      <IconEye size="1.125rem" />
                     </ActionIcon>
                   </Tooltip>
-                )}
+                </Link>
+                <Tooltip label="Stop queue item" withinPortal>
+                  <ActionIcon
+                    color="red"
+                    onClick={() => {
+                      setActiveQueue(record);
+                      open();
+                    }}
+                  >
+                    <IconSquareX size="1.125rem" />
+                  </ActionIcon>
+                </Tooltip>
               </div>
             ),
           },
@@ -193,6 +238,29 @@ const QueueTable = () => {
         recordsPerPageOptions={[10, 20, 50]}
         onRecordsPerPageChange={setPerPage}
       />
+      <Modal opened={opened} onClose={close} title="Cancel Queue Item">
+        <div>
+          <Text>Are you sure you want to cancel the queue item?</Text>
+          <Text size="sm" fs="italic">For live archives this will stop the video and chat download then proceed with post-processing. For VOD archives this will stop all the tasks.</Text>
+          <Switch
+            mt={5}
+            defaultChecked
+            color="red"
+            label="Delete video and video files"
+            checked={deleteVideoAndFiles}
+            onChange={(event) => setDeleteVideoAndFiles(event.currentTarget.checked)}
+          />
+          {(activeQueue != null && !activeQueue.live_archive) && (<Switch
+            mt={5}
+            defaultChecked
+            color="violet"
+            label="Block video ID"
+            checked={blockVideoId}
+            onChange={(event) => setBlockVideoId(event.currentTarget.checked)}
+          />)}
+          <Button variant="filled" color="violet" fullWidth loading={cancelQueueLoading} mt={10} onClick={() => cancelQueueItem.mutate()}>Cancel Queue Item</Button>
+        </div>
+      </Modal>
     </div>
   );
 };
