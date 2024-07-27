@@ -55,31 +55,6 @@ const AdminTasksPage = () => {
     },
   });
 
-  const startWorkflow = useMutation({
-    mutationFn: (workflowName: string) => {
-      setWorkflowLoading(true);
-      return useApi(
-        {
-          method: "POST",
-          url: `/api/v1/workflows/start`,
-          data: { "workflow_name": workflowName },
-          withCredentials: true,
-        },
-        false
-      )
-        .then(() => {
-          setWorkflowLoading(false);
-          showNotification({
-            title: "Workflow Started",
-            message: "Visit the Workflows page to view the status of the workflow",
-          });
-        })
-        .catch((err) => {
-          setWorkflowLoading(false);
-        });
-    },
-  });
-
   return (
     <Authorization allowedRoles={[ROLES.ARCHIVER, ROLES.EDITOR, ROLES.ADMIN]}>
       <div>

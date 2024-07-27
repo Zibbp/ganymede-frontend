@@ -186,14 +186,6 @@ export function HeaderMegaMenu() {
               loggedIn: true,
               roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
             }) && (
-                <Link href="/workflows" className={classes.link}>
-                  Workflows
-                </Link>
-              )}
-            {useJsxAuth({
-              loggedIn: true,
-              roles: [ROLES.EDITOR, ROLES.ARCHIVER, ROLES.ADMIN],
-            }) && (
                 <Link href="/queue" className={classes.link}>
                   Queue
                 </Link>
