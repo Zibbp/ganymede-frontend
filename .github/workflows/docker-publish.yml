@@ -23,13 +23,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Git in container
-        run: |
-          sudo apt update
-          sudo apt install -y git
-          # one time fix to avoid permission problems later on
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
       - name: Checkout repository
         uses: actions/checkout@v4
 

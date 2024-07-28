@@ -12,6 +12,7 @@ RUN apk add --no-cache git
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY .git .git
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV DOCKER_BUILD 1
