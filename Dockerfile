@@ -1,5 +1,4 @@
 ARG GITHUB_SHA
-ENV NEXT_PUBLIC_GIT_COMMIT=$GITHUB_SHA
 
 # Install dependencies only when needed
 FROM node:18-alpine AS deps
@@ -11,6 +10,8 @@ RUN npm install
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
+
+ENV NEXT_PUBLIC_GIT_COMMIT=$GITHUB_SHA
 
 RUN apk add --no-cache git
 WORKDIR /app
