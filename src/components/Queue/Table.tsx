@@ -151,6 +151,7 @@ const QueueTable = () => {
             accessor: "id",
             title: "ID",
           },
+          { accessor: "edges.vod.edges.channel.name", title: "Channel" },
           { accessor: "edges.vod.ext_id", title: "External ID" },
           {
             accessor: "processing",
@@ -211,13 +212,14 @@ const QueueTable = () => {
               >
                 <Link href={"/queue/" + record.id}>
                   <Tooltip label="View queue item" withinPortal>
-                    <ActionIcon >
+                    <ActionIcon variant="light">
                       <IconEye size="1.125rem" />
                     </ActionIcon>
                   </Tooltip>
                 </Link>
                 <Tooltip label="Stop queue item" withinPortal>
                   <ActionIcon
+                    variant="light"
                     color="red"
                     onClick={() => {
                       setActiveQueue(record);
