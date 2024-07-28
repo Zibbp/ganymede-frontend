@@ -68,7 +68,7 @@ const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }:
   return (
     <Card radius="md" className={classes.card} padding={5}>
       {video.processing && (
-        <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 1 }} loaderProps={{ children: <div><Text>Processing</Text><Center><Loader color="violet" /></Center></div> }} />
+        <LoadingOverlay visible zIndex={5} overlayProps={{ radius: "sm", blur: 1 }} loaderProps={{ children: <div><Text size="xl">Processing</Text><Center><Loader color="red" /></Center></div> }} />
       )}
       <Link href={video.processing ? `#` : `/vods/${video.id}`}>
         <Card.Section>
