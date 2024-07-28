@@ -11,34 +11,47 @@ const AdminVodDelete = ({ handleClose, vod }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [deleteFiles, setDeleteFiles] = useState(false);
+  const [blockVideoId, setBlockVideoId] = useState(false);
 
   const deleteVod = useMutation({
     mutationKey: ["delete-vod"],
-    mutationFn: () => {
-      setLoading(true);
-      const url = deleteFiles
-        ? `/api/v1/vod/${vod.id}?delete_files=true`
-        : `/api/v1/vod/${vod.id}`;
-      return useApi(
-        {
-          method: "DELETE",
-          url,
-          withCredentials: true,
-        },
-        false
-      )
-        .then(() => {
-          queryClient.invalidateQueries(["admin-vods"]);
-          setLoading(false);
-          showNotification({
-            title: "VOD Deleted",
-            message: "VOD has been deleted successfully",
-          });
-          handleClose();
-        })
-        .catch((err) => {
-          setLoading(false);
+    mutationFn: async () => {
+      try {
+        setLoading(true);
+        const url = deleteFiles
+          ? `/api/v1/vod/${vod.id}?delete_files=true`
+          : `/api/v1/vod/${vod.id}`;
+        await useApi(
+          {
+            method: "DELETE",
+            url,
+            withCredentials: true,
+          },
+          false
+        )
+
+        if (blockVideoId) {
+          await useApi(
+            {
+              method: "POST",
+              url: `/api/v1/blocked-video/${vod.ext_id}`,
+              withCredentials: true,
+            },
+            false
+          )
+        }
+
+        queryClient.invalidateQueries(["admin-vods"]);
+        setLoading(false);
+        showNotification({
+          title: "VOD Deleted",
+          message: "VOD has been deleted successfully",
         });
+        handleClose();
+
+      } catch (error) {
+        setLoading(false);
+      }
     },
   });
 
@@ -61,6 +74,16 @@ const AdminVodDelete = ({ handleClose, vod }) => {
       />
       <div style={{ float: "right", marginTop: "1rem" }}>
         <div style={{ display: "flex" }}>
+          <Switch
+            mt={6}
+            mr={10}
+            defaultChecked
+            color="violet"
+            label="Block video ID"
+            labelPosition="left"
+            checked={blockVideoId}
+            onChange={(event) => setBlockVideoId(event.currentTarget.checked)}
+          />
           <Switch
             checked={deleteFiles}
             onChange={(event) => setDeleteFiles(event.currentTarget.checked)}
