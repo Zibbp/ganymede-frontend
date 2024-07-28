@@ -62,5 +62,5 @@ jobs:
           push: true # TODO: remove this line
           # push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            GITHUB_SHA=${GITHUB_SHA}
+          context: .
+          dockerfile: ./Dockerfile

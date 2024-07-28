@@ -15,7 +15,8 @@ const nextConfig = {
   },
   generateBuildId: async () => {
     // Get the latest commit hash from git
-    const gitHash = process.env.GITHUB_SHA || 'development';
+    const { execSync } = require("child_process");
+    const gitHash = execSync("git rev-parse HEAD").toString().trim();
     // Get the current date
     const date = new Date();
     const year = date.getFullYear();
