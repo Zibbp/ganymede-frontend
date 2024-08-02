@@ -18,6 +18,7 @@ import {
   IconLock,
   IconLockOpen,
   IconShare,
+  IconPhoto,
 } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -112,6 +113,25 @@ export const VodMenu = ({ vod, style }: any) => {
     },
   });
 
+  const generateStaticThumbnail = useMutation({
+    mutationKey: ["generate-static-thumbnail", vod.id],
+    mutationFn: () => {
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/vod/${vod.id}/generate-static-thumbnail`,
+          withCredentials: true,
+        },
+        false
+      ).then(() => {
+        showNotification({
+          title: "Task Queued",
+          message: "Queued task to regenerate static thumbnail",
+        });
+      });
+    },
+  });
+
   const openDeleteModal = () => {
     setDeletedOpened(true);
   };
@@ -162,7 +182,7 @@ export const VodMenu = ({ vod, style }: any) => {
 
   return (
     <div>
-      <Menu shadow="md" width={200} position="top-end" withinPortal>
+      <Menu shadow="md" width={225} position="top-end" withinPortal>
         {style == "card" && (
           <Menu.Target>
             <ActionIcon color="gray" variant="subtle">
@@ -217,7 +237,14 @@ export const VodMenu = ({ vod, style }: any) => {
             >
               Lock
             </Menu.Item>
+
           )}
+          <Menu.Item
+            onClick={() => generateStaticThumbnail.mutate()}
+            leftSection={<IconPhoto size={14} />}
+          >
+            Regenerate Thumbnail
+          </Menu.Item>
           {useJsxAuth({
             loggedIn: true,
             roles: [ROLES.ADMIN],
