@@ -87,7 +87,7 @@ const VideoCard = ({ video, showProgress = true, showMenu = true, showChannel = 
 
   useEffect(() => {
     if (playbackData) {
-      setProgress(playbackData.data?.time || 0);
+      setProgress(((playbackData.data?.time || 0) / video.duration) * 100);
       setWatched(playbackData.data?.status === "finished");
     }
   }, [playbackData]);
