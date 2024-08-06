@@ -276,3 +276,9 @@ export interface StorageTemplates {
   folder_template: string;
   file_template:   string;
 }
+
+export interface PlaybackDataResponse {
+  success: boolean;
+  data: PlaybackData?;
+  message: string;
+}

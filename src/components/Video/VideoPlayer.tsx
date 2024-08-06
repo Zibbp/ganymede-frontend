@@ -16,6 +16,7 @@ import { useSearchParams } from 'next/navigation'
 import { showNotification } from "@mantine/notifications";
 import classes from "./VideoPlayer.module.css"
 import eventBus from "../../util/eventBus";
+import { PlaybackDataResponse } from "../../ganymede-defs";
 
 const NewVideoPlayer = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
@@ -42,7 +43,6 @@ const NewVideoPlayer = ({ vod }: any) => {
   // Fetch playback data
   const { data } = useQuery({
     refetchOnWindowFocus: false,
-    refetchOnmount: false,
     refetchOnReconnect: false,
     retry: false,
     staleTime: Infinity,
@@ -55,15 +55,7 @@ const NewVideoPlayer = ({ vod }: any) => {
           withCredentials: true,
         },
         true
-      ).then((res) => {
-        if (res != undefined) {
-          return res.data;
-        } else {
-          return {
-            error: "No playback data",
-          };
-        }
-      }),
+      ).then((res) => res?.data as PlaybackDataResponse),
   });
 
   // start playback
@@ -133,8 +125,8 @@ const NewVideoPlayer = ({ vod }: any) => {
     });
 
     // Playback data
-    if (data.time) {
-      player.current!.currentTime = data.time;
+    if (data.data?.time) {
+      player.current!.currentTime = data.data?.time;
     }
 
     // Check if time is set in the url

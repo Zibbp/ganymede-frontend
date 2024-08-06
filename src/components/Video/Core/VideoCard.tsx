@@ -28,18 +28,22 @@ dayjs.extend(duration);
 dayjs.extend(localizedFormat);
 import classes from "./VideoCard.module.css";
 import { Video } from "../../../types/video";
+import { useQuery } from "@tanstack/react-query";
+import { PlaybackData, PlaybackDataResponse } from "../../../ganymede-defs";
+import { useApi } from "../../../hooks/useApi";
 
 type Props = {
   video: Video
-  progress: number
+  showProgress: boolean
   showMenu: boolean
   showChannel: boolean
 }
 
-const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }: Props) => {
+const VideoCard = ({ video, showProgress = true, showMenu = true, showChannel = true }: Props) => {
   const { publicRuntimeConfig } = getConfig();
   const user: UserState = useUserStore();
   const [watched, setWatched] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [imageError, setImageError] = useState(false);
 
   const handleError = () => {
@@ -65,6 +69,29 @@ const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }:
     return true;
   };
 
+  const { isLoading: playbackLoading, data: playbackData, error: playbackError } = showProgress
+    ? useQuery<PlaybackDataResponse>({
+      queryKey: ["progress", video.id],
+      staleTime: 5 * 1000,
+      queryFn: async () =>
+        useApi(
+          {
+            method: "GET",
+            url: `/api/v1/playback/${video.id}`,
+            withCredentials: true,
+          },
+          false
+        ).then((res) => res?.data as PlaybackDataResponse),
+    })
+    : { isLoading: false, data: null, error: null };
+
+  useEffect(() => {
+    if (playbackData) {
+      setProgress(playbackData.data?.time || 0);
+      setWatched(playbackData.data?.status === "finished");
+    }
+  }, [playbackData]);
+
   return (
     <Card radius="md" className={classes.card} padding={5}>
       {video.processing && (
@@ -82,7 +109,7 @@ const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }:
             height={imageError ? "5rem" : "100%"}
             fallbackSrc="/images/ganymede-thumbnail.webp"
           />
-          {Math.round(progress) > 0 && !watched && (
+          {showProgress && Math.round(progress) > 0 && !watched && (
             <Tooltip label={`${Math.round(progress)}% watched`}>
               <Progress
                 className={classes.progressBar}
@@ -104,7 +131,7 @@ const VideoCard = ({ video, progress = 5, showMenu = true, showChannel = true }:
         </Text>
       </Badge>
 
-      {watched && (
+      {showProgress && watched && (
         <ThemeIcon className={classes.watchedIcon} radius="xl" color="green">
           <IconCircleCheck />
         </ThemeIcon>
