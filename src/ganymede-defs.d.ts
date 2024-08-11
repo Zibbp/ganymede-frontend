@@ -188,3 +188,97 @@ export interface LiveTitleRegex {
   negative: boolean;
   apply_to_videos: boolean;
 }
+
+type PlatformVideoInfo = {
+  id: string;
+  stream_id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  title: string;
+  description: string;
+  created_at: string;
+  published_at: string;
+  url: string;
+  thumbnail_url: string;
+  viewable: string;
+  view_count: number;
+  language: string;
+  type: string;
+  duration: string;
+  chapters: Chapter[];
+  muted_segments: MutedSegment[];
+}
+
+type MutedSegment = {
+  duration: number;
+  offset: number;
+}
+
+type Chapter = {
+  id: string;
+  type: string;
+  title: string;
+  start: number;
+  end: number;
+}
+
+export interface Config {
+  live_check_interval_seconds:  number;
+  video_check_interval_minutes: number;
+  registration_enabled:         boolean;
+  parameters:                   Parameters;
+  archive:                      Archive;
+  notifications:                Notifications;
+  storage_templates:            StorageTemplates;
+  livestream:                   Livestream;
+}
+
+export interface Archive {
+  save_as_hls: boolean;
+}
+
+export interface Livestream {
+  proxies:          Proxy[];
+  proxy_enabled:    boolean;
+  proxy_parameters: string;
+  proxy_whitelist:  any[];
+}
+
+export interface Proxy {
+  url:    string;
+  header: string;
+}
+
+export interface Notifications {
+  video_success_webhook_url: string;
+  video_success_template:    string;
+  video_success_enabled:     boolean;
+  live_success_webhook_url:  string;
+  live_success_template:     string;
+  live_success_enabled:      boolean;
+  error_webhook_url:         string;
+  error_template:            string;
+  error_enabled:             boolean;
+  is_live_webhook_url:       string;
+  is_live_template:          string;
+  is_live_enabled:           boolean;
+}
+
+export interface Parameters {
+  twitch_token:    string;
+  video_convert:   string;
+  chat_render:     string;
+  streamlink_live: string;
+}
+
+export interface StorageTemplates {
+  folder_template: string;
+  file_template:   string;
+}
+
+export interface PlaybackDataResponse {
+  success: boolean;
+  data: PlaybackData?;
+  message: string;
+}

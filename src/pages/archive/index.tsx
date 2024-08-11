@@ -22,31 +22,14 @@ import { VodPreview } from "../../components/Archive/VodPreview";
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import { useApi } from "../../hooks/useApi";
 import classes from "./archive.module.css"
+import { PlatformVideoInfo } from "../../ganymede-defs";
 
-export interface TwitchVODResponse {
-  id: string;
-  stream_id: string;
-  user_id: string;
-  user_login: string;
-  user_name: string;
-  title: string;
-  description: string;
-  created_at: Date;
-  published_at: Date;
-  url: string;
-  thumbnail_url: string;
-  viewable: string;
-  view_count: number;
-  language: string;
-  type: string;
-  duration: string;
-  muted_segments: null;
-}
+
 
 const ArchivePage = () => {
   const [archiveInput, setArchiveInput] = useInputState("");
   const [archiveSubmitLoading, setArchiveSubmitLoading] = useState(false);
-  const [twitchVodInfo, setTwitchVodInfo] = useState<TwitchVODResponse | null>(
+  const [twitchVodInfo, setTwitchVodInfo] = useState<PlatformVideoInfo | null>(
     null
   );
   const [archiveChat, setArchiveChat] = useInputState(true);
@@ -81,62 +64,34 @@ const ArchivePage = () => {
         return;
       }
       setArchiveSubmitLoading(true);
-      if (archiveInput != "") {
-        return useApi(
-          {
-            method: "POST",
-            url: `/api/v1/archive/vod`,
-            data: {
-              vod_id: archiveInput,
-              quality: archiveQuality,
-              chat: archiveChat,
-              render_chat: renderChat,
-            },
-            withCredentials: true,
+
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/archive/video`,
+          data: {
+            video_id: archiveInput,
+            channel_id: channelId,
+            quality: archiveQuality,
+            archive_chat: archiveChat,
+            render_chat: renderChat,
           },
-          false
-        )
-          .then((res) => {
-            setArchiveSubmitLoading(false);
-            setTwitchVodInfo(null);
-            setArchiveInput("");
-            showNotification({
-              title: "VOD Archived",
-              message: "VOD has been added to the archive queue",
-            });
-          })
-          .catch((err) => {
-            setArchiveSubmitLoading(false);
+          withCredentials: true,
+        },
+        false
+      )
+        .then((res) => {
+          setArchiveSubmitLoading(false);
+          setTwitchVodInfo(null);
+          setArchiveInput("");
+          showNotification({
+            title: "VOD Archived",
+            message: "VOD has been added to the archive queue",
           });
-      }
-      if (channelId != "") {
-        return useApi(
-          {
-            method: "POST",
-            url: `/api/v1/live/archive`,
-            data: {
-              channel_id: channelId,
-              resolution: archiveQuality,
-              archive_chat: archiveChat,
-              render_chat: renderChat,
-            },
-            withCredentials: true,
-          },
-          false
-        )
-          .then((res) => {
-            setArchiveSubmitLoading(false);
-            setTwitchVodInfo(null);
-            setArchiveInput("");
-            showNotification({
-              title: "Livestream Archived",
-              message: "Livestream has been added to the archive queue",
-            });
-          })
-          .catch((err) => {
-            setArchiveSubmitLoading(false);
-          });
-      }
+        })
+        .catch((err) => {
+          setArchiveSubmitLoading(false);
+        });
     },
   });
 
@@ -184,7 +139,7 @@ const ArchivePage = () => {
       if (id.length < 4) return;
 
       return useApi(
-        { method: "GET", url: `/api/v1/twitch/vod?id=${id}` },
+        { method: "GET", url: `/api/v1/twitch/video?id=${id}` },
         false
       )
         .then((res) => {
@@ -268,7 +223,7 @@ const ArchivePage = () => {
                   Archive
                 </Button>
               </Card>
-              {twitchVodInfo?.id && <VodPreview vod={twitchVodInfo} />}
+              {twitchVodInfo?.id && <VodPreview video={twitchVodInfo} />}
             </div>
           </Center>
         </Container>

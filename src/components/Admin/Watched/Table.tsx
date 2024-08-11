@@ -164,6 +164,14 @@ const AdminWatchedTable = () => {
             },
           },
           {
+            accessor: "is_live",
+            title: "Is Live",
+            sortable: true,
+            render: ({ is_live }) => {
+              return is_live ? "true" : "false";
+            },
+          },
+          {
             accessor: "watch_vod",
             title: "Watch Videos",
             sortable: true,

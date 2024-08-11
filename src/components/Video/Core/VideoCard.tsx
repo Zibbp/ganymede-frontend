@@ -1,84 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { IconBookmark, IconHeart, IconShare } from "@tabler/icons-react";
 import {
   Card,
   Image,
   Text,
-  ActionIcon,
   Badge,
   Group,
   Center,
   Avatar,
-  rem,
   Tooltip,
   ThemeIcon,
   Progress,
-  Overlay,
   Loader,
   Flex,
   LoadingOverlay,
 } from "@mantine/core";
-import { PlaybackData, Video } from "../../ganymede-defs";
 import getConfig from "next/config";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import useUserStore, { UserState } from "../../store/user";
+import useUserStore, { UserState } from "../../../store/user";
 import { IconCircleCheck, IconMenu2 } from "@tabler/icons-react";
-import { ROLES } from "../../hooks/useJsxAuth";
-import { VodMenu } from "./Menu";
+import { ROLES } from "../../../hooks/useJsxAuth";
+import { VodMenu } from "../Menu";
 import Link from "next/link";
-import { escapeURL } from "../../util/util";
+import { escapeURL } from "../../../util/util";
 dayjs.extend(duration);
 dayjs.extend(localizedFormat);
-import classes from "./Card.module.css";
+import classes from "./VideoCard.module.css";
+import { Video } from "../../../types/video";
+import { useQuery } from "@tanstack/react-query";
+import { PlaybackData, PlaybackDataResponse } from "../../../ganymede-defs";
+import { useApi } from "../../../hooks/useApi";
 
+type Props = {
+  video: Video
+  showProgress: boolean
+  showMenu: boolean
+  showChannel: boolean
+}
 
-const formatDuration = (duration: number) => {
-  const hours = Math.floor(duration / 3600);
-  const minutes = Math.floor((duration % 3600) / 60);
-  const seconds = Math.floor(duration % 60);
-
-  const formattedHours = hours.toString().padStart(2, "0");
-  const formattedMinutes = minutes.toString().padStart(2, "0");
-  const formattedSeconds = seconds.toString().padStart(2, "0");
-
-  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-};
-
-const VideoCard = ({
-  video,
-  playback,
-  showChannel = false,
-}: {
-  video: Video;
-  playback?: PlaybackData[];
-  showChannel?: boolean;
-}) => {
+const VideoCard = ({ video, showProgress = true, showMenu = true, showChannel = true }: Props) => {
   const { publicRuntimeConfig } = getConfig();
   const user: UserState = useUserStore();
-  const [progress, setProgress] = useState(0);
   const [watched, setWatched] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [imageError, setImageError] = useState(false);
 
   const handleError = () => {
     setImageError(true);
   };
-
-  useEffect(() => {
-    if (playback) {
-      const videoInPlayback = playback.find((p: any) => p.vod_id === video.id);
-      if (videoInPlayback) {
-        if (videoInPlayback.status == "finished") {
-          setWatched(true);
-        }
-        if (videoInPlayback.time) {
-          const progress = (videoInPlayback.time / video.duration) * 100;
-          setProgress(progress);
-        }
-      }
-    }
-  }, [playback]);
 
   const menuPermissions = () => {
     if (!user.isLoggedIn) {
@@ -99,10 +69,33 @@ const VideoCard = ({
     return true;
   };
 
+  const { isLoading: playbackLoading, data: playbackData, error: playbackError } = showProgress
+    ? useQuery<PlaybackDataResponse>({
+      queryKey: ["progress", video.id],
+      staleTime: 5 * 1000,
+      queryFn: async () =>
+        useApi(
+          {
+            method: "GET",
+            url: `/api/v1/playback/${video.id}`,
+            withCredentials: true,
+          },
+          false
+        ).then((res) => res?.data as PlaybackDataResponse),
+    })
+    : { isLoading: false, data: null, error: null };
+
+  useEffect(() => {
+    if (playbackData) {
+      setProgress(((playbackData.data?.time || 0) / video.duration) * 100);
+      setWatched(playbackData.data?.status === "finished");
+    }
+  }, [playbackData]);
+
   return (
     <Card radius="md" className={classes.card} padding={5}>
       {video.processing && (
-        <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 1 }} loaderProps={{ children: <div><Text>Processing</Text><Center><Loader color="violet" /></Center></div> }} />
+        <LoadingOverlay visible zIndex={5} overlayProps={{ radius: "sm", blur: 1 }} loaderProps={{ children: <div><Text size="xl">Processing</Text><Center><Loader color="red" /></Center></div> }} />
       )}
       <Link href={video.processing ? `#` : `/vods/${video.id}`}>
         <Card.Section>
@@ -116,7 +109,7 @@ const VideoCard = ({
             height={imageError ? "5rem" : "100%"}
             fallbackSrc="/images/ganymede-thumbnail.webp"
           />
-          {Math.round(progress) > 0 && !watched && (
+          {showProgress && Math.round(progress) > 0 && !watched && (
             <Tooltip label={`${Math.round(progress)}% watched`}>
               <Progress
                 className={classes.progressBar}
@@ -138,7 +131,7 @@ const VideoCard = ({
         </Text>
       </Badge>
 
-      {watched && (
+      {showProgress && watched && (
         <ThemeIcon className={classes.watchedIcon} radius="xl" color="green">
           <IconCircleCheck />
         </ThemeIcon>
@@ -194,7 +187,7 @@ const VideoCard = ({
             {video.type.toUpperCase()}
           </Badge>
 
-          {menuPermissions() && (
+          {(showMenu && menuPermissions()) && (
             <VodMenu vod={video} style="card" />
           )}
         </div>

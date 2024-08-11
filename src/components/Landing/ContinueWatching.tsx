@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useApi } from "../../hooks/useApi";
 import GanymedeLoader from "../Utils/GanymedeLoader";
-import VideoCard from "../Vod/Card";
+import VideoCard from "../Video/Core/VideoCard";
 import { useMediaQuery } from "@mantine/hooks";
 import { Carousel } from "@mantine/carousel";
 

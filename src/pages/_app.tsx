@@ -48,16 +48,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     "7xl": rem(1400),
   };
 
-  const BREAK_POINTS: Record<string, string> = {
-    xs: em(36),
-    sm: em(48),
-    md: em(62),
-    lg: em(75),
-    xl: em(88),
-    xxl: em(100),
-  }
-
-
   const theme = createTheme({
     fontFamily: inter.style.fontFamily,
     breakpoints: {

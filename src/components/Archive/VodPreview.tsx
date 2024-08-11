@@ -1,8 +1,9 @@
-import { TwitchVODResponse } from "../../pages/archive";
+import { PlatformVideoInfo } from "../../ganymede-defs";
 import { Image, Title } from "@mantine/core";
 
-export const VodPreview = ({ vod }: TwitchVODResponse) => {
-  const thumbnailUrl = vod.thumbnail_url
+export const VodPreview = ({ video }: { video: PlatformVideoInfo }) => {
+  console.log(video)
+  const thumbnailUrl = video.thumbnail_url
     .replace("%{width}", "640")
     .replace("%{height}", "360");
   return (
@@ -10,21 +11,33 @@ export const VodPreview = ({ vod }: TwitchVODResponse) => {
       <div>
         <Image src={thumbnailUrl} radius="sm" />
         <Title mt={5} order={4}>
-          {vod.title}
+          {video.title}
         </Title>
         <div>
           <div>
             <span>Created At: </span>
-            {vod.created_at}
+            {video.created_at}
           </div>
           <div>
             <span>Duration: </span>
-            {vod.duration}
+            {video.duration}
           </div>
           <div>
             <span>Views: </span>
-            {vod.view_count}
+            {video.view_count}
           </div>
+          {video.chapters && (
+            <div>
+              <span>Chapters: </span>
+              {video.chapters.length}
+            </div>
+          )}
+          {video.muted_segments && (
+            <div>
+              <span>Muted Segments: </span>
+              {video.muted_segments.length}
+            </div>
+          )}
         </div>
       </div>
     </div>

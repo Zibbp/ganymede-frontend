@@ -17,7 +17,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ChannelNoVideosFound from "../../components/Channel/NoVideosFound";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-import VideoCard from "../../components/Vod/Card";
+import VideoCard from "../../components/Video/Core/VideoCard";
 
 interface SearchPageProps {
   q: string;

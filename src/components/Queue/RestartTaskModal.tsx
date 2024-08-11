@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useApi } from "../../hooks/useApi";
 
 const QueueRestartTaskModalContent = ({ queue, task }: any) => {
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const restartTaskMutation = useMutation({
@@ -15,11 +15,11 @@ const QueueRestartTaskModalContent = ({ queue, task }: any) => {
       return useApi(
         {
           method: "POST",
-          url: `/api/v1/archive/restart`,
+          url: `/api/v1/queue/task/start`,
           data: {
             queue_id: queue.id,
-            task: task,
-            cont: checked,
+            task_name: task,
+            continue: checked,
           },
           withCredentials: true,
         },
@@ -38,11 +38,12 @@ const QueueRestartTaskModalContent = ({ queue, task }: any) => {
   return (
     <div>
       <div>
-        Restart task <Code>{task}</Code> for queue item <Code>{queue.id}</Code>?
+        Restart queue task <Code>{task}</Code>?
       </div>
       <div>
         <Switch
-          label="Continue with subsequent steps"
+          mt={10}
+          label="Continue with subsequent tasks"
           checked={checked}
           onChange={(event) => setChecked(event.currentTarget.checked)}
         />
@@ -52,7 +53,7 @@ const QueueRestartTaskModalContent = ({ queue, task }: any) => {
           onClick={() => restartTaskMutation.mutate()}
           fullWidth
           radius="md"
-          mt="xl"
+          mt="sm"
           size="md"
           color="green"
           loading={isLoading}

@@ -59,16 +59,12 @@ const AdminInfoPage = () => {
                 </div>
               </div>
               <div className={classes.settingItem}>
-                <Text mr={5}>Version:</Text>
-                <Code>{data.version}</Code>
+                <Text mr={5}>Commit:</Text>
+                <Code>{data.commit_hash}</Code>
               </div>
               <div className={classes.settingItem}>
                 <Text mr={5}>Build Date:</Text>
                 <Code>{data.build_time}</Code>
-              </div>
-              <div className={classes.settingItem}>
-                <Text mr={5}>Git Commit Hash:</Text>
-                <Code>{data.git_hash}</Code>
               </div>
               <div className={classes.settingItem}>
                 <Text mr={5}>Uptime:</Text>

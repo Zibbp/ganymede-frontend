@@ -10,8 +10,11 @@ import {
   ActionIcon,
   MultiSelect,
   Card,
+  Collapse,
+  Code,
+  Textarea,
 } from "@mantine/core";
-import { useDocumentTitle } from "@mantine/hooks";
+import { useDisclosure, useDocumentTitle } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -20,25 +23,54 @@ import AdminStorageSettingsDrawer from "../../components/Admin/Settings/StorageS
 import { Authorization, ROLES } from "../../components/ProtectedRoute";
 import GanymedeLoader from "../../components/Utils/GanymedeLoader";
 import { useApi } from "../../hooks/useApi";
-import { ProxyItem } from "../../ganymede-defs";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { Config, ProxyItem } from "../../ganymede-defs";
+import { IconChevronDown, IconChevronUp, IconPlus, IconTrash } from "@tabler/icons-react";
 import classes from "./settings.module.css"
+import Link from "next/link";
+import { S } from "@vidstack/react/types/vidstack-framework";
 
 const AdminSettingsPage = () => {
-  const [registrationEnabled, setRegistrationEnabled] = useState(true);
-  const [postVideoFFmpegArgs, setPostVideoFFmpegArgs] = useState("");
-  const [streamlinkLiveArgs, setStreamlinkLiveArgs] = useState("");
-  const [chatRenderArgs, setChatRenderArgs] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [drawerOpened, setDrawerOpened] = useState(false);
-  const [storageTemplateDrawerOpened, setStorageTemplateDrawerOpened] =
-    useState(false);
-  const [saveAsHls, setSaveAsHls] = useState(false);
-  const [twitchToken, setTwitchToken] = useState("");
-  const [proxyEnabled, setProxyEnabled] = useState(false);
-  const [proxyList, setProxyList] = useState<ProxyItem[]>([]);
-  const [proxyWhitelist, setProxyWhitelist] = useState<string[]>([]);
+  const [config, setConfig] = useState<Config>({} as Config);
   const [channelData, setChannelData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // notifications
+  const [notificationSettingsOpened, { toggle: toggleNotificationSettings }] = useDisclosure(false)
+  const [videoSuccessCollapse, setVideoSuccessCollapse] = useState(false);
+  const [liveSuccessCollapse, setLiveSuccessCollapse] = useState(false);
+  const [errorCollapse, setErrorCollapse] = useState(false);
+  const [isLiveCollapse, setIsLiveCollapse] = useState(false);
+  const [testNotificationLoading, setTestNotificationLoading] = useState(false);
+
+  // storage settings
+  const [storageSettingsOpened, { toggle: toggleStorageSettings }] = useDisclosure(false)
+  const folderExample1 = "{{id}}-{{uuid}}";
+  const folderExample2 = "{{date}}-{{title}}-{{type}}-{{id}}-{{uuid}}";
+  const fileExample1 = "{{id}}";
+
+
+  const { mutate: testNotification } = useMutation({
+    mutationKey: ["test-notification"],
+    mutationFn: (type: string) => {
+      setTestNotificationLoading(true);
+      return useApi(
+        {
+          method: "POST",
+          url: `/api/v1/notification/test?type=${type}`,
+          withCredentials: true,
+        },
+        false
+      )
+        .then((res) => {
+          setTestNotificationLoading(false);
+          return res?.data;
+        })
+        .catch((err) => {
+          setTestNotificationLoading(false);
+          return err;
+        });
+    },
+  });
 
   useDocumentTitle("Ganymede - Admin - Settings");
 
@@ -51,15 +83,7 @@ const AdminSettingsPage = () => {
         { method: "GET", url: "/api/v1/config", withCredentials: true },
         false
       ).then((res) => {
-        setRegistrationEnabled(res?.data.registration_enabled);
-        setPostVideoFFmpegArgs(res?.data.parameters.video_convert);
-        setStreamlinkLiveArgs(res?.data.parameters.streamlink_live);
-        setChatRenderArgs(res?.data.parameters.chat_render);
-        setSaveAsHls(res?.data.archive.save_as_hls);
-        setTwitchToken(res?.data.parameters.twitch_token);
-        setProxyEnabled(res?.data.livestream.proxy_enabled);
-        setProxyList(res?.data.livestream.proxies);
-        setProxyWhitelist(res?.data.livestream.proxy_whitelist);
+        setConfig(res?.data);
         return res?.data;
       }),
   });
@@ -102,28 +126,13 @@ const AdminSettingsPage = () => {
           method: "PUT",
           url: `/api/v1/config`,
           data: {
-            registration_enabled: registrationEnabled,
-            parameters: {
-              video_convert: postVideoFFmpegArgs,
-              streamlink_live: streamlinkLiveArgs,
-              chat_render: chatRenderArgs,
-              twitch_token: twitchToken,
-            },
-            archive: {
-              save_as_hls: saveAsHls,
-            },
-            livestream: {
-              proxy_enabled: proxyEnabled,
-              proxies: proxyList,
-              proxy_whitelist: proxyWhitelist,
-            },
+            ...config,
           },
           withCredentials: true,
         },
         false
       )
         .then(() => {
-          queryClient.invalidateQueries(["save-settings"]);
           setLoading(false);
           showNotification({
             title: "Settings Updated",
@@ -181,16 +190,19 @@ const AdminSettingsPage = () => {
                 <Title order={3}>Core</Title>
                 <Switch
                   mt={5}
-                  checked={registrationEnabled}
+                  checked={config.registration_enabled}
                   onChange={(event) =>
-                    setRegistrationEnabled(event.currentTarget.checked)
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      registration_enabled: event.currentTarget.checked
+                    }))
                   }
                   label="Registration Enabled"
                 />
 
                 <Button
                   mt={15}
-                  onClick={() => openDrawer()}
+                  onClick={toggleNotificationSettings}
                   fullWidth
                   radius="md"
                   size="md"
@@ -199,6 +211,416 @@ const AdminSettingsPage = () => {
                 >
                   Notification Settings
                 </Button>
+
+
+                <Collapse in={notificationSettingsOpened}>
+                  <div>
+                    <Text mb={10}>
+                      Must be a webhook url or an
+                      <a
+                        className={classes.link}
+                        href="https://github.com/caronc/apprise-api"
+                        target="_blank"
+                      >
+                        {" "}
+                        Apprise{" "}
+                      </a>
+                      url, visit the{" "}
+                      <a
+                        className={classes.link}
+                        href="https://github.com/Zibbp/ganymede/wiki/Notifications"
+                        target="_blank"
+                      >
+                        {" "}
+                        wiki{" "}
+                      </a>
+                      for more information.
+                    </Text>
+
+                    <div>
+                      <Title order={4} mb={-10}>
+                        Video Archive Success Notification
+                      </Title>
+                      <div className={classes.notificationRow}>
+                        <Group mt={10}>
+                          <Switch
+                            checked={config.notifications.video_success_enabled}
+                            onChange={(event) =>
+                              setConfig(prevConfig => ({
+                                ...prevConfig,
+                                notifications: {
+                                  ...prevConfig.notifications,
+                                  video_success_enabled: event.currentTarget.checked,
+                                },
+                              }))
+                            }
+                            label="Enabled"
+                          />
+                          <div className={classes.notificationRight}>
+                            <Button
+                              onClick={() => testNotification("video_success")}
+                              variant="outline"
+                              color="violet"
+                              loading={testNotificationLoading}
+                            >
+                              Test
+                            </Button>
+                          </div>
+                        </Group>
+                      </div>
+                      <TextInput
+                        value={config.notifications.video_success_webhook_url}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              video_success_webhook_url: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        placeholder="https://webhook.curl"
+                        label="Webhook URL"
+                        mb="xs"
+                      />
+                      <Textarea
+                        label="Template"
+                        value={config.notifications.video_success_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              video_success_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                      />
+                      <Button
+                        mt={5}
+                        onClick={() => setVideoSuccessCollapse((o) => !o)}
+                        leftSection={
+                          videoSuccessCollapse ? (
+                            <IconChevronUp size={18} />
+                          ) : (
+                            <IconChevronDown size={18} />
+                          )
+                        }
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                      >
+                        Available variables
+                      </Button>
+
+                      <Collapse in={videoSuccessCollapse}>
+                        <div>
+                          <Text>Channel</Text>
+                          <Code>
+                            {"{{channel_id}} {{channel_ext_id}} {{channel_display_name}}"}
+                          </Code>
+                          <Text>Video</Text>
+                          <Code>
+                            {
+                              "{{vod_id}} {{vod_ext_id}} {{vod_platform}} {{vod_type}} {{vod_title}} {{vod_duration}} {{vod_views}} {{vod_resolution}} {{vod_streamed_at}} {{vod_created_at}}"
+                            }
+                          </Code>
+                          <Text>Queue</Text>
+                          <Code>{"{{queue_id}} {{queue_created_at}}"}</Code>
+                        </div>
+                      </Collapse>
+                    </div>
+                    {/* Live Success */}
+                    <div>
+                      <Title order={4} mb={-10}>
+                        Live Achive Success Notification
+                      </Title>
+                      <div className={classes.notificationRow}>
+                        <Group mt={10}>
+                          <Switch
+                            checked={config.notifications.live_success_enabled}
+                            onChange={(event) =>
+                              setConfig(prevConfig => ({
+                                ...prevConfig,
+                                notifications: {
+                                  ...prevConfig.notifications,
+                                  live_success_enabled: event.currentTarget.checked,
+                                },
+                              }))
+                            }
+                            label="Enabled"
+                          />
+                          <div className={classes.notificationRight}>
+                            <Button
+                              onClick={() => testNotification("live_success")}
+                              variant="outline"
+                              color="violet"
+                              loading={testNotificationLoading}
+                            >
+                              Test
+                            </Button>
+                          </div>
+                        </Group>
+                      </div>
+                      <TextInput
+                        value={config.notifications.live_success_webhook_url}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              live_success_webhook_url: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        placeholder="https://webhook.curl"
+                        label="Webhook URL"
+                        mb="xs"
+                      />
+                      <Textarea
+                        label="Template"
+                        value={config.notifications.live_success_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              live_success_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                      />
+                      <Button
+                        mt={5}
+                        onClick={() => setLiveSuccessCollapse((o) => !o)}
+                        leftSection={
+                          liveSuccessCollapse ? (
+                            <IconChevronUp size={18} />
+                          ) : (
+                            <IconChevronDown size={18} />
+                          )
+                        }
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                      >
+                        Available variables
+                      </Button>
+
+                      <Collapse in={liveSuccessCollapse}>
+                        <div>
+                          <Text>Channel</Text>
+                          <Code>
+                            {"{{channel_id}} {{channel_ext_id}} {{channel_display_name}}"}
+                          </Code>
+                          <Text>Video</Text>
+                          <Code>
+                            {
+                              "{{vod_id}} {{vod_ext_id}} {{vod_platform}} {{vod_type}} {{vod_title}} {{vod_duration}} {{vod_views}} {{vod_resolution}} {{vod_streamed_at}} {{vod_created_at}}"
+                            }
+                          </Code>
+                          <Text>Queue</Text>
+                          <Code>{"{{queue_id}} {{queue_created_at}}"}</Code>
+                        </div>
+                      </Collapse>
+                    </div>
+                    {/* Is Live */}
+                    <div>
+                      <Title order={4} mb={-10}>
+                        Is Live Notification
+                      </Title>
+                      <div className={classes.notificationRow}>
+                        <Group mt={10}>
+                          <Switch
+                            checked={config.notifications.is_live_enabled}
+                            onChange={(event) =>
+                              setConfig(prevConfig => ({
+                                ...prevConfig,
+                                notifications: {
+                                  ...prevConfig.notifications,
+                                  is_live_enabled: event.currentTarget.checked,
+                                },
+                              }))
+                            }
+                            label="Enabled"
+                          />
+                          <div className={classes.notificationRight}>
+                            <Button
+                              onClick={() => testNotification("is_live")}
+                              variant="outline"
+                              color="violet"
+                              loading={testNotificationLoading}
+                            >
+                              Test
+                            </Button>
+                          </div>
+                        </Group>
+                      </div>
+                      <TextInput
+                        value={config.notifications.is_live_webhook_url}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              is_live_webhook_url: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        placeholder="https://webhook.curl"
+                        label="Webhook URL"
+                        mb="xs"
+                      />
+                      <Textarea
+                        label="Template"
+                        value={config.notifications.is_live_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              is_live_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                      />
+                      <Button
+                        mt={5}
+                        onClick={() => setIsLiveCollapse((o) => !o)}
+                        leftSection={
+                          isLiveCollapse ? (
+                            <IconChevronUp size={18} />
+                          ) : (
+                            <IconChevronDown size={18} />
+                          )
+                        }
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                      >
+                        Available variables
+                      </Button>
+
+                      <Collapse in={isLiveCollapse}>
+                        <div>
+                          <Text>Channel</Text>
+                          <Code>
+                            {"{{channel_id}} {{channel_ext_id}} {{channel_display_name}}"}
+                          </Code>
+                          <Text>Video</Text>
+                          <Code>
+                            {
+                              "{{vod_id}} {{vod_ext_id}} {{vod_platform}} {{vod_type}} {{vod_title}} {{vod_duration}} {{vod_views}} {{vod_resolution}} {{vod_streamed_at}} {{vod_created_at}}"
+                            }
+                          </Code>
+                          <Text>Queue</Text>
+                          <Code>{"{{queue_id}} {{queue_created_at}}"}</Code>
+                        </div>
+                      </Collapse>
+                    </div>
+                    {/* Error */}
+                    <div>
+                      <Title mt={10} order={4} mb={-10}>
+                        Error Notification
+                      </Title>
+                      <Text mt={3} size="xs">
+                        In certain circumstances your template may be overriden.
+                      </Text>
+                      <div className={classes.notificationRow}>
+                        <Group mt={10}>
+                          <Switch
+                            checked={config.notifications.error_enabled}
+                            onChange={(event) =>
+                              setConfig(prevConfig => ({
+                                ...prevConfig,
+                                notifications: {
+                                  ...prevConfig.notifications,
+                                  error_enabled: event.currentTarget.checked
+                                }
+                              }))
+                            }
+                            label="Enabled"
+                          />
+                          <div className={classes.notificationRight}>
+                            <Button
+                              onClick={() => testNotification("error")}
+                              variant="outline"
+                              color="violet"
+                              loading={testNotificationLoading}
+                            >
+                              Test
+                            </Button>
+                          </div>
+                        </Group>
+                      </div>
+                      <TextInput
+                        value={config.notifications.error_webhook_url}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              error_webhook_url: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        placeholder="https://webhook.curl"
+                        label="Webhook URL"
+                        mb="xs"
+                      />
+                      <Textarea
+                        label="Template"
+                        value={config.notifications.error_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            notifications: {
+                              ...prevConfig.notifications,
+                              error_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                      />
+                      <Button
+                        mt={5}
+                        onClick={() => setErrorCollapse((o) => !o)}
+                        leftSection={
+                          errorCollapse ? (
+                            <IconChevronUp size={18} />
+                          ) : (
+                            <IconChevronDown size={18} />
+                          )
+                        }
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                      >
+                        Available variables
+                      </Button>
+
+                      <Collapse in={errorCollapse}>
+                        <div>
+                          <Text>Task</Text>
+                          <Code>{"{{failed_task}}"}</Code>
+                          <Text>Channel</Text>
+                          <Code>
+                            {"{{channel_id}} {{channel_ext_id}} {{channel_display_name}}"}
+                          </Code>
+                          <Text>Video</Text>
+                          <Code>
+                            {
+                              "{{vod_id}} {{vod_ext_id}} {{vod_platform}} {{vod_type}} {{vod_title}} {{vod_duration}} {{vod_views}} {{vod_resolution}} {{vod_streamed_at}} {{vod_created_at}}"
+                            }
+                          </Code>
+                          <Text>Queue</Text>
+                          <Code>{"{{queue_id}} {{queue_created_at}}"}</Code>
+                        </div>
+                      </Collapse>
+                    </div>
+                  </div>
+                </Collapse>
+
+
               </div>
               <div>
                 <Title mt={15} order={3}>
@@ -207,13 +629,21 @@ const AdminSettingsPage = () => {
                 <Text size="sm">Convert the archived mp4 to a HLS playlist.</Text>
                 <Switch
                   mt={5}
-                  checked={saveAsHls}
-                  onChange={(event) => setSaveAsHls(event.currentTarget.checked)}
+                  checked={config.archive.save_as_hls}
+                  onChange={(event) =>
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      archive: {
+                        ...prevConfig.archive,
+                        save_as_hls: event.currentTarget.checked
+                      }
+                    }))
+                  }
                   label="Convert to HLS"
                 />
                 <Button
                   mt={15}
-                  onClick={() => openStorageTemplateDrawer()}
+                  onClick={toggleStorageSettings}
                   fullWidth
                   radius="md"
                   size="md"
@@ -222,6 +652,90 @@ const AdminSettingsPage = () => {
                 >
                   Storage Template Settings
                 </Button>
+
+                <Collapse in={storageSettingsOpened}>
+                  <div>
+                    <Text mb={10}>
+                      Customize how folders and files are named. This only applies to new
+                      files. To apply to existing files execute the migration task on the{" "}
+                      <Link className={classes.link} href="/admin/tasks">
+                        tasks
+                      </Link>{" "}
+                      page.
+                    </Text>
+                    <div>
+                      <Title order={4}>Folder Template</Title>
+
+                      <Textarea
+                        description="{{uuid}} is required to be present for the folder template."
+                        value={config.storage_templates.folder_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            storage_templates: {
+                              ...prevConfig.storage_templates,
+                              folder_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Title mt={5} order={4}>
+                        File Template
+                      </Title>
+
+                      <Textarea
+                        description="Do not include the file extension. The file type will be appened to the end of the file name such as -video -chat and -thumbnail."
+                        value={config.storage_templates.file_template}
+                        onChange={(event) =>
+                          setConfig(prevConfig => ({
+                            ...prevConfig,
+                            storage_templates: {
+                              ...prevConfig.storage_templates,
+                              file_template: event.currentTarget.value
+                            }
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Title mt={5} order={4}>
+                        Available Variables
+                      </Title>
+
+                      <div>
+                        <Text>Ganymede</Text>
+                        <Code>{"{{uuid}}"}</Code>
+                        <Text>Twitch Video</Text>
+                        <Code>{"{{id}} {{channel}} {{title}} {{date}} {{type}}"}</Code>
+                        <Text ml={20} mt={5} size="sm">
+                          ID: Twitch video ID <br /> Date: Date streamed or uploaded <br />{" "}
+                          Type: Twitch video type (live, archive, highlight)
+                        </Text>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Title mt={5} order={4}>
+                        Examples
+                      </Title>
+
+                      <Text>Folder</Text>
+                      <Code block>{folderExample1}</Code>
+                      <Code block>{folderExample2}</Code>
+                      <Text>File</Text>
+                      <Code block>{fileExample1}</Code>
+                    </div>
+
+
+                  </div>
+                </Collapse>
+
               </div>
               <div>
                 <Title mt={15} order={3}>
@@ -230,17 +744,31 @@ const AdminSettingsPage = () => {
 
                 <TextInput
                   mt={5}
-                  value={twitchToken}
-                  onChange={(event) => setTwitchToken(event.currentTarget.value)}
+                  value={config.parameters.twitch_token}
+                  onChange={(event) =>
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      parameters: {
+                        ...prevConfig.parameters,
+                        twitch_token: event.currentTarget.value
+                      }
+                    }))
+                  }
                   placeholder="abcdefg1234567890"
                   label="Twitch Token"
                   description="Supply your Twitch token for downloading ad-free livestreams and subscriber only videos."
                 />
                 <TextInput
                   mt={5}
-                  value={postVideoFFmpegArgs}
+                  value={config.parameters.video_convert}
                   onChange={(event) =>
-                    setPostVideoFFmpegArgs(event.currentTarget.value)
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      parameters: {
+                        ...prevConfig.parameters,
+                        video_convert: event.currentTarget.value
+                      }
+                    }))
                   }
                   placeholder="-c:v copy -c:a copy"
                   label="Video Convert FFmpeg Args"
@@ -253,9 +781,15 @@ const AdminSettingsPage = () => {
                 </Title>
                 <TextInput
                   mt={5}
-                  value={streamlinkLiveArgs}
+                  value={config.parameters.streamlink_live}
                   onChange={(event) =>
-                    setStreamlinkLiveArgs(event.currentTarget.value)
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      parameters: {
+                        ...prevConfig.parameters,
+                        streamlink_live: event.currentTarget.value
+                      }
+                    }))
                   }
                   placeholder="--force-progress,--force,--twitch-low-latency,--twitch-disable-hosting"
                   label="Streamlink Parameters"
@@ -272,21 +806,33 @@ const AdminSettingsPage = () => {
                 <Switch
                   label="Enable proxy"
                   color="violet"
-                  checked={proxyEnabled}
+                  checked={config.livestream.proxy_enabled}
                   onChange={(event) =>
-                    setProxyEnabled(event.currentTarget.checked)
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      livestream: {
+                        ...prevConfig.livestream,
+                        proxy_enabled: event.currentTarget.checked
+                      }
+                    }))
                   }
                 />
-                {proxyList.map((proxy, index) => (
+                {config.livestream.proxies.map((proxy, index) => (
                   <div key={index} className={classes.proxyList}>
                     <TextInput
                       className={classes.proxyInput}
                       placeholder="https://proxy.url"
                       value={proxy.url}
                       onChange={(event) => {
-                        const newProxyList = [...proxyList];
-                        newProxyList[index].url = event.currentTarget.value;
-                        setProxyList(newProxyList);
+                        setConfig(prevConfig => ({
+                          ...prevConfig,
+                          livestream: {
+                            ...prevConfig.livestream,
+                            proxies: prevConfig.livestream.proxies.map((p, i) =>
+                              i === index ? { ...p, url: event.currentTarget.value } : p
+                            )
+                          }
+                        }));
                       }}
                       label="Proxy URL"
                     />
@@ -294,9 +840,15 @@ const AdminSettingsPage = () => {
                       className={classes.proxyInput}
                       value={proxy.header}
                       onChange={(event) => {
-                        const newProxyList = [...proxyList];
-                        newProxyList[index].header = event.currentTarget.value;
-                        setProxyList(newProxyList);
+                        setConfig(prevConfig => ({
+                          ...prevConfig,
+                          livestream: {
+                            ...prevConfig.livestream,
+                            proxies: prevConfig.livestream.proxies.map((proxy, i) =>
+                              i === index ? { ...proxy, header: event.currentTarget.value } : proxy
+                            )
+                          }
+                        }));
                       }}
                       label="Header"
                     />
@@ -305,9 +857,13 @@ const AdminSettingsPage = () => {
                       size="lg"
                       mt={20}
                       onClick={() => {
-                        const newProxyList = [...proxyList];
-                        newProxyList.splice(index, 1);
-                        setProxyList(newProxyList);
+                        setConfig(prevConfig => ({
+                          ...prevConfig,
+                          livestream: {
+                            ...prevConfig.livestream,
+                            proxies: prevConfig.livestream.proxies.filter((_, i) => i !== index)
+                          }
+                        }));
                       }}
                     >
                       <IconTrash size="1.125rem" />
@@ -316,12 +872,22 @@ const AdminSettingsPage = () => {
                 ))}
                 <Button
                   onClick={() => {
-                    const newProxyList = [...proxyList];
-                    newProxyList.push({ url: "", header: "" });
-                    setProxyList(newProxyList);
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      livestream: {
+                        ...prevConfig.livestream,
+                        proxies: [
+                          ...prevConfig.livestream.proxies,
+                          {
+                            url: "",
+                            header: ""
+                          }
+                        ]
+                      }
+                    }));
                   }}
                   mt={10}
-                  leftIcon={<IconPlus size="1rem" />}
+                  leftSection={<IconPlus size="1rem" />}
                   color="violet"
                 >
                   Add
@@ -329,9 +895,16 @@ const AdminSettingsPage = () => {
                 {/* proxy whitelist */}
                 <MultiSelect
                   data={channelData}
-                  value={proxyWhitelist}
-                  onChange={setProxyWhitelist}
-                  label="Whitelist Channels"
+                  value={config.livestream.proxy_whitelist}
+                  onChange={(value) => {
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      livestream: {
+                        ...prevConfig.livestream,
+                        proxy_whitelist: value
+                      }
+                    }));
+                  }} label="Whitelist Channels"
                   description="These channels will not use the proxy if enabled, instead your Twitch token will be used. Select channels that you are subscribed to."
                   placeholder="Select channels"
                 />
@@ -342,9 +915,15 @@ const AdminSettingsPage = () => {
                 </Title>
 
                 <TextInput
-                  value={chatRenderArgs}
+                  value={config.parameters.chat_render}
                   onChange={(event) =>
-                    setChatRenderArgs(event.currentTarget.value)
+                    setConfig(prevConfig => ({
+                      ...prevConfig,
+                      parameters: {
+                        ...prevConfig.parameters,
+                        chat_render: event.currentTarget.value
+                      }
+                    }))
                   }
                   placeholder="-h 1440 -w 340 --framerate 30 --font Inter --font-size 13 --badge-filter 96"
                   label="Chat Render Args"
@@ -365,30 +944,6 @@ const AdminSettingsPage = () => {
             </div>
           </Card>
         </div>
-        <Drawer
-          className={classes.notificationDrawer}
-          opened={drawerOpened}
-          onClose={() => setDrawerOpened(false)}
-          title="Notification Settings"
-          padding="xl"
-          size="xl"
-          position="right"
-        >
-          <AdminNotificationsDrawer handleClose={closeDrawerCallback} />
-        </Drawer>
-        <Drawer
-          className={classes.notificationDrawer}
-          opened={storageTemplateDrawerOpened}
-          onClose={() => setStorageTemplateDrawerOpened(false)}
-          title="Storage Template Settings"
-          padding="xl"
-          size="xl"
-          position="right"
-        >
-          <AdminStorageSettingsDrawer
-            handleClose={closeStorageTemplateDrawerCallback}
-          />
-        </Drawer>
       </Container>
     </Authorization>
   );
