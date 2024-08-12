@@ -299,7 +299,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={thumbnailPath}
           onChange={(e) => setThumbnailPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-thumbnail.jpg"
+          placeholder="/data/videos/channel/123_456/123-thumbnail.jpg"
           label="Thumbnail Path"
           mb="xs"
         />
@@ -307,7 +307,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={webThumbnailPath}
           onChange={(e) => setWebThumbnailPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-web_thumbnail.jpg"
+          placeholder="/data/videos/channel/123_456/123-web_thumbnail.jpg"
           label="Web Thumbnail Path"
           required
           mb="xs"
@@ -316,7 +316,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={videoPath}
           onChange={(e) => setVideoPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-video.mp4"
+          placeholder="/data/videos/channel/123_456/123-video.mp4"
           label="Video Path"
           required
           mb="xs"
@@ -325,7 +325,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={chatPath}
           onChange={(e) => setChatPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-chat.json"
+          placeholder="/data/videos/channel/123_456/123-chat.json"
           label="Chat Path"
           mb="xs"
         />
@@ -333,7 +333,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={chatVideoPath}
           onChange={(e) => setChatVideoPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-chat.mp4"
+          placeholder="/data/videos/channel/123_456/123-chat.mp4"
           label="Chat Video Path"
           mb="xs"
         />
@@ -341,7 +341,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={captionPath}
           onChange={(e) => setCaptionPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123.vtt"
+          placeholder="/data/videos/channel/123_456/123.vtt"
           label="Caption Path (vtt)"
           mb="xs"
         />
@@ -349,7 +349,7 @@ const AdminVodDrawer = ({ handleClose, vod, mode }) => {
         <TextInput
           value={infoPath}
           onChange={(e) => setInfoPath(e.currentTarget.value)}
-          placeholder="/vods/channel/123_456/123-info.json"
+          placeholder="/data/videos/channel/123_456/123-info.json"
           label="Info Path"
           mb="xs"
         />

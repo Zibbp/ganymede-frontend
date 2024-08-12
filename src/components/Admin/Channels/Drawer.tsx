@@ -163,7 +163,7 @@ const AdminChannelDrawer = ({ handleClose, channel, mode }) => {
         <TextInput
           value={imagePath}
           onChange={(e) => setImagePath(e.currentTarget.value)}
-          placeholder="Image Path"
+          placeholder="/data/videos/channel/channel.png"
           label="Image Path"
           required
           mb="xs"
