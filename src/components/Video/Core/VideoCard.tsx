@@ -69,7 +69,7 @@ const VideoCard = ({ video, showProgress = true, showMenu = true, showChannel = 
     return true;
   };
 
-  const { isLoading: playbackLoading, data: playbackData, error: playbackError } = showProgress
+  const { isLoading: playbackLoading, data: playbackData, error: playbackError } = (showProgress && user.isLoggedIn)
     ? useQuery<PlaybackDataResponse>({
       queryKey: ["progress", video.id],
       staleTime: 5 * 1000,
