@@ -31,6 +31,7 @@ const NewVideoPlayer = ({ vod }: any) => {
   const [videoTitle, setVideoTitle] = useState<string>("");
   const startedPlayback = useRef(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [playerVolume, setPlayerVolume] = useState(1);
 
   const searchParams = useSearchParams()
 
@@ -59,32 +60,34 @@ const NewVideoPlayer = ({ vod }: any) => {
   });
 
   // start playback
-  useEffect(() => {
-    if (!data) return;
-    if (startedPlayback.current) return;
-    try {
-      useApi(
-        {
-          method: "POST",
-          url: `/api/v1/playback/start?video_id=${vod.id}`,
-          withCredentials: false,
-        },
-        false
-      ).then(() => {
-        startedPlayback.current = true;
-      })
-    } catch (error) {
-      console.error(error);
-      showNotification({
-        title: "Error",
-        message: "Failed to start playback",
-        color: "red",
-      });
-    }
-  }, [data])
+  if (user.isLoggedIn) {
+    useEffect(() => {
+      if (!data) return;
+      if (startedPlayback.current) return;
+      try {
+        useApi(
+          {
+            method: "POST",
+            url: `/api/v1/playback/start?video_id=${vod.id}`,
+            withCredentials: false,
+          },
+          false
+        ).then(() => {
+          startedPlayback.current = true;
+        })
+      } catch (error) {
+        console.error(error);
+        showNotification({
+          title: "Error",
+          message: "Failed to start playback",
+          color: "red",
+        });
+      }
+    }, [data])
+  }
 
   useEffect(() => {
-    if (!data) return;
+    // if (!data) return;
 
     if (!player) return;
 
@@ -115,17 +118,19 @@ const NewVideoPlayer = ({ vod }: any) => {
 
     // Volume
     const localVolume = localStorage.getItem("ganymede-volume");
+    console.debug(`local volume: ${localVolume}`);
     if (localVolume) {
-      console.debug(`setting volume to ${parseFloat(localVolume)}`);
-      player.current!.volume = parseFloat(localVolume);
+      setPlayerVolume(parseFloat(localVolume));
     }
 
     player.current?.subscribe(({ volume }) => {
-      localStorage.setItem("ganymede-volume", volume.toString());
+      if (volume != 1) {
+        localStorage.setItem("ganymede-volume", volume.toString());
+      }
     });
 
     // Playback data
-    if (data.data?.time) {
+    if (data && data.data?.time) {
       player.current!.currentTime = data.data?.time;
     }
 
@@ -215,6 +220,7 @@ const NewVideoPlayer = ({ vod }: any) => {
         playsInline={true}
         load="eager"
         posterLoad="eager"
+        volume={playerVolume}
       >
 
         <MediaProvider >
