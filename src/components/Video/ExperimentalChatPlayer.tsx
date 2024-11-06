@@ -294,7 +294,12 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     const videoPlayerInterval = setInterval(() => {
       setCount((count) => count + 1);
 
-      const { time, playing, paused } = vodDataBus.getData();
+      let { time, playing, paused } = vodDataBus.getData();
+      // Clip chat files are offset with the position of the clip in the VOD
+      // Append the offset to the current player time to account for this
+      if (vod.type == "clip" && vod.clip_vod_offset) {
+        time = time + vod.clip_vod_offset
+      }
 
       if (!internalReady) {
         return;
@@ -340,7 +345,12 @@ const ExperimentalChatPlayer = ({ vod }: any) => {
     }, 100);
 
     const chatInterval = setInterval(() => {
-      const { time, playing, paused } = vodDataBus.getData();
+      let { time, playing, paused } = vodDataBus.getData();
+      // Clip chat files are offset wit the position of the clip in the VOD
+      // Append the offset to the current player time to account for this
+      if (vod.type == "clip" && vod.clip_vod_offset) {
+        time = time + vod.clip_vod_offset
+      }
       chatTick(time);
     }, 100);
 
