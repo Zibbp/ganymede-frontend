@@ -121,6 +121,33 @@ const AdminTasksPage = () => {
                   </Tooltip>
                 </Grid.Col>
               </Grid>
+              <Grid className={classes.taskItem}>
+                <Grid.Col span={10}>
+                  <div>
+                    <span>
+                      <Text mr={5}>
+                        Check watched channels for clips to archive
+                      </Text>
+                      <Text size="xs">
+                        Occurs daily at 00:00 but restricted by the interval setting.
+                      </Text>
+                    </span>
+                  </div>
+                </Grid.Col>
+                <Grid.Col span={2}>
+                  <Tooltip label="Start Task">
+                    <ActionIcon
+                      onClick={() => startTask.mutate("check_clips")}
+                      loading={loading}
+                      color="green"
+                      variant="filled"
+                      size="lg"
+                    >
+                      <IconPlayerPlay size={24} />
+                    </ActionIcon>
+                  </Tooltip>
+                </Grid.Col>
+              </Grid>
             </div>
             {/* Ganymede */}
             <div>

@@ -404,7 +404,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
 
           <Text>Scheduled Clip Archiving</Text>
           <Text size="xs">
-            Check channels every <code>interval</code> days archiving the top <code>number</code> of clips.
+            Check channels every <code>interval</code> days archiving the top <code>number</code> of clips. No restrictions (categories, age, title regex, etc) are applied to this.
           </Text>
 
           <Switch
