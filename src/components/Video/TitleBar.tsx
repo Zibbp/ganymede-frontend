@@ -1,6 +1,7 @@
 import {
   Avatar,
   Badge,
+  Button,
   Divider,
   Group,
   Text,
@@ -13,10 +14,29 @@ import { ROLES, useJsxAuth } from "../../hooks/useJsxAuth";
 import useUserStore from "../../store/user";
 import { VodMenu } from "./Menu";
 import classes from "./TitleBar.module.css"
+import { useQuery } from "@tanstack/react-query";
+import { useApi } from "../../hooks/useApi";
+import Link from "next/link";
+
+
 
 export const VodTitleBar = ({ vod }: any) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
+
+  const { isLoading, error, data: clipFullVideo } = useQuery({
+    queryKey: ["title-bar-clip", vod.id],
+    queryFn: async () =>
+      vod.clip_ext_vod_id // Only run if clip_ext_vod_id is present
+        ? useApi(
+          { method: "GET", url: `/api/v1/vod/external_id/${vod.clip_ext_vod_id}`, withCredentials: true },
+          true
+        ).then((res) => res?.data)
+        : null, // Return null if clip_ext_vod_id is not present
+    enabled: !!vod.clip_ext_vod_id, // Disable query if clip_ext_vod_id is null or undefined
+  });
+
+
   return (
     <div className={classes.titleBarContainer}>
       <div className={classes.titleBar}>
@@ -36,6 +56,12 @@ export const VodTitleBar = ({ vod }: any) => {
           </Tooltip>
         </div>
         <div className={classes.titleBarRight}>
+          {clipFullVideo && (
+            <Group mr={15}>
+              {/* Link to vod using clip_vod_ffset - vod.duration to get the timestamp in the vod */}
+              <Button variant="default" size="xs" component={Link} href={`/vods/${clipFullVideo.id}?t=${(vod.clip_vod_offset - vod.duration)}`}>Go To Full Video</Button>
+            </Group>
+          )}
           <div className={classes.titleBarBadge}>
             {vod.views && (
               <Group mr={15}>
