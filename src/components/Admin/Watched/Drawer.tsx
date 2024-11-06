@@ -52,6 +52,10 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
   const [liveTitleRegexes, setLiveTitleRegexes] = useState<LiveTitleRegex[]>([]);
   const [applyCategoriesToLive, setApplyCategoriesToLive] = useState(false);
 
+  const [clipsWatchEnabled, setClipsWatchedEnabled] = useState(false);
+  const [clipsLimit, setClipsLimit] = useState(5);
+  const [clipsIntervalDays, setClipsIntervalDays] = useState(7);
+
   const qualityOptions = [
     { label: "Best", value: "best" },
     { label: "720p60", value: "720p60" },
@@ -78,6 +82,9 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
       setMaxVideoAge(watched?.video_age);
       setLiveTitleRegexes(watched?.edges.title_regex)
       setApplyCategoriesToLive(watched?.apply_categories_to_live);
+      setClipsWatchedEnabled(watched?.clips_watch);
+      setClipsLimit(watched?.clips_limit);
+      setClipsIntervalDays(watched?.clips_interval_days);
 
       if (watched?.edges?.categories) {
         const tmpArr = [];
@@ -113,7 +120,10 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               categories: selectedTwitchCategories,
               max_age: maxVideoAge,
               regex: liveTitleRegexes,
-              apply_categories_to_live: applyCategoriesToLive
+              apply_categories_to_live: applyCategoriesToLive,
+              clips_watch: clipsWatchEnabled,
+              clips_limit: clipsLimit,
+              clips_interval_days: clipsIntervalDays
             },
             withCredentials: true,
           },
@@ -155,7 +165,10 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   categories: selectedTwitchCategories,
                   max_age: maxVideoAge,
                   regex: liveTitleRegexes,
-                  apply_categories_to_live: applyCategoriesToLive
+                  apply_categories_to_live: applyCategoriesToLive,
+                  clips_watch: clipsWatchEnabled,
+                  clips_limit: clipsLimit,
+                  clips_interval_days: clipsIntervalDays
                 },
                 withCredentials: true,
               },
@@ -180,7 +193,10 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
                   categories: selectedTwitchCategories,
                   max_age: maxVideoAge,
                   regex: liveTitleRegexes,
-                  apply_categories_to_live: applyCategoriesToLive
+                  apply_categories_to_live: applyCategoriesToLive,
+                  clips_watch: clipsWatchEnabled,
+                  clips_limit: clipsLimit,
+                  clips_interval_days: clipsIntervalDays
                 },
                 withCredentials: true,
               },
@@ -336,7 +352,7 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
         <div>
           <Title order={3}>Channel Videos</Title>
           <Text>Archive past channel videos.</Text>
-          <Text size="xs" italic>
+          <Text size="xs">
             Check for new videos occurs once a day.
           </Text>
           <Switch
@@ -381,6 +397,42 @@ const AdminWatchedDrawer = ({ handleClose, watched, mode }) => {
               onChange={(e) => setDownloadSubOnly(e.currentTarget.checked)}
             />
           </div>
+        </div>
+        <Divider my="md" size="md" />
+        <div>
+          <Title order={3}>Clips</Title>
+
+          <Text>Scheduled Clip Archiving</Text>
+          <Text size="xs">
+            Check channels every <code>interval</code> days archiving the top <code>number</code> of clips.
+          </Text>
+
+          <Switch
+            mt={5}
+            label="Enabled"
+            checked={clipsWatchEnabled}
+            onChange={(e) => setClipsWatchedEnabled(e.currentTarget.checked)}
+          />
+
+          <Group mt={5}>
+            <NumberInput
+              label="Number of Clips"
+              description="Number of clips to archive."
+              placeholder="5"
+              min={1}
+              value={clipsLimit}
+              onChange={setClipsLimit}
+            />
+            <NumberInput
+              label="Interval Days"
+              description="How often channel is checked for clips to archive."
+              placeholder="7"
+              min={1}
+              value={clipsIntervalDays}
+              onChange={setClipsIntervalDays}
+            />
+          </Group>
+
         </div>
 
         <Divider my="md" size="md" />
