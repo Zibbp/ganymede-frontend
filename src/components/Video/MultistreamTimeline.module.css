@@ -1,7 +1,5 @@
 .timelineGrid {
   position: relative;
-  min-height: 5rem;
-  max-height: 5rem;
   flex-shrink: 0;
   overflow: auto;
   display: grid;
@@ -39,6 +37,10 @@
   bottom: 0;
   left: var(--bar-start);
   width: var(--bar-length);
+}
+
+.gridInput {
+  width: 4.5rem;
 }
 
 .offsetInput {

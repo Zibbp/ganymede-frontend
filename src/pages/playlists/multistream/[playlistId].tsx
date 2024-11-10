@@ -5,7 +5,7 @@ import VodLoginRequired from "../../../components/Video/LoginRequred";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/useApi";
 import GanymedeLoader from "../../../components/Utils/GanymedeLoader";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import SyncedVideoPlayer from "../../../components/Video/SyncedVideoPlayer";
 import { escapeURL } from "../../../util/util";
 import classes from "./playlistMultistream.module.css"
@@ -26,7 +26,8 @@ export async function getServerSideProps(context: any) {
 const PlaylistMultistream = (props: { playlistId: string }) => {
   const { publicRuntimeConfig } = getConfig();
   const user = useUserStore((state) => state);
-  const [streamerViewState, setStreamerViewState] = useState<Record<string, boolean>>({});
+  const videoGrid = React.createRef<HTMLDivElement>();
+  const [streamerViewState, setStreamerViewState] = useState<Record<string, { tileX: number; tileY: number; tileWidth: number; tileHeight: number } | null>>({});
   const [vodPlaybackOffsets, setVodPlaybackOffsets] = useState<Record<string, number>>({});
 
   const checkLoginRequired = () => {
@@ -80,8 +81,16 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
   const [endDateMs, setEndDateMs] = useState<number | null>(null);
   const [streamers, setStreamers] = useState<Record<string, {
     name: string
-    vods: Vod[]
+    vods: Vod[],
+    imagePath: string
   }>>({});
+  const [gridWidth, setGridWidth] = useState<number>(2);
+  const [gridHeight, setGridHeight] = useState<number>(1);
+  const [dragOverTile, setDragOverTile] = useState<[number, number] | null>(null);
+  const [dropEnabled, setDropEnabled] = useState<boolean>(false);
+  const [_, setEnterEvents] = useState<number>(0);
+  const [resizeMode, setResizeMode] = useState<false | 'resize' | 'move'>(false);
+  const [resizeOverlayParams, setResizeOverlayParams] = useState<{ tileX: number; tileY: number; tileWidth: number; tileHeight: number, streamerId: string } | null>(null);
 
   const [opened, { open, close }] = useDisclosure(true);
 
@@ -98,7 +107,8 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     let _endDateMs: number | null = null;
     let _streamers: Record<string, {
       name: string
-      vods: Vod[]
+      vods: Vod[],
+      imagePath: string
     }> = {};
     for (let i = 0; i < data.edges.vods.length; i++) {
       const vod = data.edges.vods[i];
@@ -114,7 +124,8 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
       if (!_streamers[vod.edges.channel.id]) {
         _streamers[vod.edges.channel.id] = {
           name: vod.edges.channel.name,
-          vods: []
+          vods: [],
+          imagePath: vod.edges.channel.image_path,
         }
       }
 
@@ -170,36 +181,116 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     setGlobalTimeUpdate(pausedAtGlobalTime);
   }
 
-  const toggleView = (streamerId: string) => {
+  const startMovingTile = (streamerId: string) => {
+    if (!streamerViewState[streamerId]) return
+    setResizeMode('move');
+    setResizeOverlayParams({ ...streamerViewState[streamerId], streamerId });
+  }
+
+  const startResizingTile = (streamerId: string) => {
+    if (!streamerViewState[streamerId]) return
+    setResizeMode('resize');
+    setResizeOverlayParams({ ...streamerViewState[streamerId], streamerId });
+  }
+
+  const checkResize = (event: React.PointerEvent) => {
+    if (!resizeOverlayParams || !resizeMode) return;
+    const gridRect = videoGrid.current?.getBoundingClientRect();
+    if (!gridRect) return;
+    const tileXUnderMouse = Math.floor((event.clientX - gridRect.left) / (gridRect.width / gridWidth));
+    const tileYUnderMouse = Math.floor((event.clientY - gridRect.top) / (gridRect.height / gridHeight));
+    switch (resizeMode) {
+      case 'move': {
+        setResizeOverlayParams((prevState) => {
+          if (!prevState) return null;
+          const newState = { ...prevState };
+          newState.tileX = Math.min(tileXUnderMouse, gridWidth - 1);
+          newState.tileY = Math.min(tileYUnderMouse, gridHeight - 1);
+          return newState;
+        })
+        break
+      }
+      case 'resize': {
+        setResizeOverlayParams((prevState) => {
+          if (!prevState) return null;
+          const newState = { ...prevState };
+          newState.tileWidth = Math.min(Math.max(1, tileXUnderMouse - prevState.tileX + 1), gridWidth - prevState.tileX);
+          newState.tileHeight = Math.min(Math.max(1, tileYUnderMouse - prevState.tileY + 1), gridHeight - prevState.tileY);
+          return newState;
+        })
+        break
+      }
+    }
+  }
+
+  const endTileResize = () => {
+    if (resizeMode) {
+      setResizeMode(false);
+    } else {
+      return
+    }
+    if (!resizeOverlayParams) return;
     setStreamerViewState((prevState) => {
       const newState = { ...prevState };
-      newState[streamerId] = !newState[streamerId];
+      newState[resizeOverlayParams.streamerId] = {
+        tileX: resizeOverlayParams.tileX,
+        tileY: resizeOverlayParams.tileY,
+        tileWidth: resizeOverlayParams.tileWidth,
+        tileHeight: resizeOverlayParams.tileHeight,
+      };
       return newState;
     })
   }
 
   const playingVodForStreamer: Record<string, Vod | null> = {};
 
-  const playerTiles = Object.keys(streamers).map((streamerId) => {
+  const playerTiles = Object.keys(streamerViewState).map((streamerId) => {
     const streamer = streamers[streamerId];
-    const playingVod = getVodAtTime(streamer.vods, vodPlaybackOffsets, globalTimeUpdate);
-    playingVodForStreamer[streamerId] = playingVod;
-    if (!streamerViewState[streamerId]) {
+    const viewState = streamerViewState[streamerId];
+    if (!viewState || !streamer) {
       return null;
     }
+    const playingVod = getVodAtTime(streamer.vods, vodPlaybackOffsets, globalTimeUpdate);
+    playingVodForStreamer[streamerId] = playingVod;
     if (!playingVod) {
-      return <div className={`${classes.streamerOffline} ${classes.playerTile}`} key={streamer.name + "-no-playing-vod"}>
+      return <ResizableTile
+        className={`${classes.streamerOffline} ${classes.playerTile}`}
+        style={{ '--tile-x': `${viewState.tileX + 1} / ${viewState.tileX + viewState.tileWidth + 1}`, '--tile-y': `${viewState.tileY + 1} / ${viewState.tileY + viewState.tileHeight + 1}` } as React.CSSProperties}
+        key={streamer.name + "-no-playing-vod"}
+        startMoving={() => startMovingTile(streamerId)}
+        startResizing={() => startResizingTile(streamerId)}
+        remove={() => {
+          setStreamerViewState((prevState) => {
+            const newState = { ...prevState };
+            delete newState[streamerId];
+            return newState;
+          })
+        }}
+      >
         <Text size="xl" span>
           {streamer.name}<br />
           <Text size="xl" fw={700} span>OFFLINE</Text>
         </Text>
-      </div>
+      </ResizableTile>
     }
     const playbackOffset = (vodPlaybackOffsets[playingVod.id] || 0) / 1000;
     const currentGlobalTime = (playing ? (Date.now() - playStartAtDate) : 0) + globalTime
     const vodTime = (currentGlobalTime - (+new Date(playingVod?.streamed_at))) / 1000 + playbackOffset;
     return (
-      <div className={classes.playerTile} key={playingVod.id + "-vod-player"}>
+      <ResizableTile
+        className={classes.playerTile}
+        style={{ '--tile-x': `${viewState.tileX + 1} / ${viewState.tileX + viewState.tileWidth + 1}`, '--tile-y': `${viewState.tileY + 1} / ${viewState.tileY + viewState.tileHeight + 1}` } as React.CSSProperties}
+        key={playingVod.id + "-vod-player"}
+        startMoving={() => startMovingTile(streamerId)}
+        startResizing={() => startResizingTile(streamerId)}
+        remove={() => {
+          setStreamerViewState((prevState) => {
+            const newState = { ...prevState };
+            delete newState[streamerId];
+            return newState;
+          })
+        }}
+      >
         <SyncedVideoPlayer
           src={`${publicRuntimeConfig.CDN_URL}${escapeURL(playingVod.video_path)}`}
           vodId={playingVod.id}
@@ -209,9 +300,68 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
           playing={playing}
           muted={true}
         />
-      </div>
+      </ResizableTile>
     )
   })
+
+  const checkDropData = (event: React.DragEvent) => {
+    if (!event.dataTransfer.types.includes('streamerid')) return
+    setDropEnabled(true);
+    setEnterEvents((prevState) => {
+      const newEnterEvents = Math.min(2, prevState + 1)
+      return newEnterEvents
+    })
+  }
+  const leaveDropZone = () => {
+    setEnterEvents((prevState) => {
+      const newEnterEvents = Math.max(0, prevState - 1)
+      if (newEnterEvents == 0) {
+        setDropEnabled(false)
+        setDragOverTile(null)
+      }
+      return newEnterEvents
+    })
+  }
+
+  const dragOverTileHandler = (x: number, y: number, event: React.DragEvent, immediate: boolean) => {
+    if (!event.dataTransfer.types.includes('streamerid')) return
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    if (immediate) {
+      setDragOverTile([x, y])
+    } else {
+      setTimeout(() => {
+        setDragOverTile([x, y])
+      })
+    }
+  }
+
+  const dropOverTileHander = (x: number, y: number, event: React.DragEvent) => {
+    event.preventDefault();
+    const streamerId = event.dataTransfer.getData('streamerid');
+    setStreamerViewState((prevState) => {
+      const newState = { ...prevState };
+      newState[streamerId] = { tileX: x, tileY: y, tileWidth: 1, tileHeight: 1 };
+      return newState;
+    })
+    setEnterEvents(0)
+    setDropEnabled(false)
+    setDragOverTile(null)
+  }
+
+  const dropTiles: React.JSX.Element[] = []
+  for (let x = 0; x < gridWidth; x++) {
+    for (let y = 0; y < gridHeight; y++) {
+      dropTiles.push(<div
+        className={`${classes.dropTile} ${dragOverTile != null && dragOverTile[0] === x && dragOverTile[1] === y ? classes.dropTileHovered : ''}`}
+        style={{ '--tile-x': x + 1, '--tile-y': y + 1 } as React.CSSProperties}
+        key={`drop-tile-${x}-${y}`}
+        onDragEnter={(event) => { dragOverTileHandler(x, y, event, false) }}
+        onDragOver={(event) => { dragOverTileHandler(x, y, event, true) }}
+        onDrop={(event) => { dropOverTileHander(x, y, event) }}
+      ></div>)
+    }
+  }
 
   return (
     <div>
@@ -220,8 +370,18 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
       </Head>
       {checkLoginRequired() && <VodLoginRequired {...data} /> ||
         <div className={classes.pageWrapper}>
-          <div className={classes.videosGrid} style={{ '--players-count': playerTiles.reduce((acc, player) => acc + +(player != null), 0) } as React.CSSProperties}>
+          <div
+            ref={videoGrid}
+            className={`${classes.videosGrid} ${dropEnabled ? classes.dropEnabled : ''} ${resizeMode ? classes.resizeMode : ''}`}
+            style={{ '--grid-columns-count': gridWidth, '--grid-rows-count': gridHeight } as React.CSSProperties}
+            onDragLeave={(event) => { leaveDropZone(); }}
+            onDragEnter={(event) => { checkDropData(event); }}
+            onPointerUp={() => { endTileResize() }}
+            onPointerMove={(event) => { if (resizeMode) checkResize(event) }}
+          >
             {playerTiles}
+            {dropTiles}
+            {resizeMode && <div className={`${classes.resizeOverlay}`} style={{ '--tile-x': resizeOverlayParams?.tileX, '--tile-y': resizeOverlayParams?.tileY, '--tile-width': resizeOverlayParams?.tileWidth, '--tile-height': resizeOverlayParams?.tileHeight } as React.CSSProperties}></div>}
           </div>
           <div className={classes.timelineOpenButtonContainer}>
             <ActionIcon
@@ -243,8 +403,6 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
               playing={playing}
               playingVodForStreamer={playingVodForStreamer}
               streamers={streamers}
-              streamerViewState={streamerViewState}
-              toggleView={toggleView}
               playStartAtDate={playStartAtDate}
               seek={seek}
               setVodOffset={(vodId, offset) => {
@@ -260,6 +418,11 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
                 })
               }}
               vodPlaybackOffsets={vodPlaybackOffsets}
+              onStreamerDragStart={() => { close() }}
+              gridWidth={gridWidth}
+              gridHeight={gridHeight}
+              setGridWidth={(width) => { setGridWidth(width) }}
+              setGridHeight={(height) => { setGridHeight(height) }}
             />
           </Drawer>
         </div>
@@ -289,6 +452,23 @@ function getVodAtTime(vods: Vod[], vodPlaybackOffsets: Record<string, number>, t
     }
   }
   return null;
+}
+
+type ResizableTileProps = {
+  className: string;
+  style?: React.CSSProperties;
+  startMoving: () => void;
+  startResizing: () => void;
+  remove: () => void;
+  children: ReactNode
+}
+function ResizableTile(props: ResizableTileProps) {
+  return <div className={`${classes.resizableTile} ${props.className}`} style={props.style}>
+    {props.children}
+    <div className={classes.topLeftHandle} onPointerDown={() => props.startMoving()}></div>
+    <div className={classes.topRightHandle} onClick={() => props.remove()}></div>
+    <div className={classes.bottomRightHandle} onPointerDown={() => props.startResizing()}></div>
+  </div>
 }
 
 export default PlaylistMultistream;

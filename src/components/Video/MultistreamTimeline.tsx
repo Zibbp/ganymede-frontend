@@ -1,8 +1,9 @@
-import { ActionIcon, Center, Group, NumberInput, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Center, Group, Image, NumberInput, Stack, Tooltip } from "@mantine/core";
 import classes from "./MultistreamTimeline.module.css"
-import { IconEye, IconEyeOff, IconPlayerPauseFilled, IconPlayerPlayFilled, IconRewindBackward5, IconRewindBackward60, IconRewindForward5, IconRewindForward60 } from "@tabler/icons-react";
-import React, { Fragment, useState } from "react";
+import { IconPlayerPauseFilled, IconPlayerPlayFilled, IconRewindBackward5, IconRewindBackward60, IconRewindForward5, IconRewindForward60 } from "@tabler/icons-react";
+import React, { Fragment, useRef, useState } from "react";
 import dayjs from "dayjs";
+import getConfig from "next/config";
 
 export type MultistreamTimelineProps = {
   seek: (time: number) => void;
@@ -18,10 +19,14 @@ export type MultistreamTimelineProps = {
   playingVodForStreamer: Record<string, Vod | null>;
   streamers: Record<string, {
     name: string
-    vods: Vod[]
+    vods: Vod[],
+    imagePath: string
   }>;
-  streamerViewState: Record<string, boolean>;
-  toggleView: (streamerId: string) => void;
+  gridWidth: number;
+  gridHeight: number;
+  setGridWidth: (width: number) => void;
+  setGridHeight: (height: number) => void;
+  onStreamerDragStart: () => void;
 }
 
 type Vod = {
@@ -30,7 +35,8 @@ type Vod = {
   streamed_at: string
 }
 
-export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateMs, endDateMs, playStartAtDate, seek, pause, play, playing, playingVodForStreamer, streamerViewState, toggleView, streamers, setVodOffset }: MultistreamTimelineProps) => {
+export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateMs, endDateMs, playStartAtDate, seek, pause, play, playing, playingVodForStreamer, streamers, setVodOffset, onStreamerDragStart, gridWidth, gridHeight, setGridWidth, setGridHeight }: MultistreamTimelineProps) => {
+  const { publicRuntimeConfig } = getConfig();
   const [timelineTooltipText, setTimelineTooltipText] = useState<string>("");
   const [hoverPlayheadDate, setHoverPlayheadDate] = useState<number | null>(null);
   const timeAtMousePosition = (timelineBar: HTMLDivElement | null, event: React.MouseEvent) => {
@@ -41,6 +47,8 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
     const globalTime = startDateMs! + percentage * timelineDurationMs;
     return globalTime;
   }
+
+  const streamerImageRefs = useRef<Record<string, HTMLImageElement | null>>({});
 
   const onTimelineClick = (timelineBar: HTMLDivElement | null, event: React.MouseEvent) => {
     const newGlobalTime = timeAtMousePosition(timelineBar, event);
@@ -65,6 +73,15 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
   const updateTimelineTooltip = (timelineBar: HTMLDivElement | null, event: React.PointerEvent) => {
     const timeUnderPointer = timeAtMousePosition(timelineBar, event);
     setTimelineTooltipText(timeUnderPointer != null ? dayjs(timeUnderPointer).format("YYYY/MM/DD HH:mm:ss") : "");
+  }
+
+  const onStreamerNameDragStart = (event: React.DragEvent, streamerId: string) => {
+    event.dataTransfer.setData("streamerid", streamerId);
+    event.dataTransfer.effectAllowed = 'move';
+    if (streamerImageRefs.current?.[streamerId]) {
+      event.dataTransfer.setDragImage(streamerImageRefs.current[streamerId], 0, 0);
+    }
+    onStreamerDragStart();
   }
 
   const timelineEnd = dayjs(endDateMs).format("YYYY/MM/DD HH:mm:ss")
@@ -122,12 +139,17 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
           onClick={() => seek(getCurrentTime() + 60000)}
         ><IconRewindForward60 /></ActionIcon>
       </Tooltip>
+
+      <NumberInput className={classes.gridInput} label="Grid width" value={gridWidth} onChange={(value) => setGridWidth(+value)} size="xs" step={1} min={1} />
+      <NumberInput className={classes.gridInput} label="Grid height" value={gridHeight} onChange={(value) => setGridHeight(+value)} size="xs" step={1} min={1} />
     </Group>
 
     <Center>
-      <div>
-        {dayjs(getCurrentTime()).format("YYYY/MM/DD HH:mm:ss")} / {timelineEnd}
-      </div>
+      <Group gap="sm">
+        <div>
+          {dayjs(getCurrentTime()).format("YYYY/MM/DD HH:mm:ss")} / {timelineEnd}
+        </div>
+      </Group>
     </Center>
 
     {
@@ -147,26 +169,28 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
           return (
             <Fragment key={streamer.name + "-timeline-row"}>
               <div className={classes.timelineStreamerColumn}>
-                {streamer.name}
-                <Tooltip label={streamerViewState[streamerId] ? "Hide streamer" : "Show streamer"}>
-                  <ActionIcon variant="subtle" color="violet" onClick={() => toggleView(streamerId)} aria-label={streamerViewState[streamerId] ? "Hide streamer" : "Show streamer"}>
-                    {streamerViewState[streamerId] ? <IconEye size="1.125rem" aria-label="Currently displayed" /> : <IconEyeOff size="1.125rem" aria-label="Currently hidden" />}
-                  </ActionIcon>
-                </Tooltip>
-                <NumberInput
-                  className={classes.offsetInput}
-                  size="xs"
-                  step={0.1}
-                  value={playingVod && vodPlaybackOffsets[playingVod.id] != null ? (vodPlaybackOffsets[playingVod.id] || 0) / 1000 : ''}
-                  placeholder="Offset"
-                  disabled={!playingVod}
-                  onChange={(value) => {
-                    if (!playingVod) return;
-                    const valAsNumber = Math.trunc(+value * 1000);
-                    if (isNaN(valAsNumber)) return;
-                    setVodOffset(playingVod.id, valAsNumber);
-                  }}
-                />
+                <Group gap='sm'>
+                  <div onDragStart={(e) => onStreamerNameDragStart(e, streamerId)} draggable="true">
+                    <Group gap="sm">
+                      <Image ref={(img) => { streamerImageRefs.current[streamerId] = img }} src={`${publicRuntimeConfig.CDN_URL}${streamer.imagePath}`} alt={streamer.name} w={'1.5em'} h={'1.5em'} radius={'1.5em'} />
+                      {streamer.name}
+                    </Group>
+                  </div>
+                  <NumberInput
+                    className={classes.offsetInput}
+                    size="xs"
+                    step={0.1}
+                    value={playingVod && vodPlaybackOffsets[playingVod.id] != null ? (vodPlaybackOffsets[playingVod.id] || 0) / 1000 : ''}
+                    placeholder="Offset"
+                    disabled={!playingVod}
+                    onChange={(value) => {
+                      if (!playingVod) return;
+                      const valAsNumber = Math.trunc(+value * 1000);
+                      if (isNaN(valAsNumber)) return;
+                      setVodOffset(playingVod.id, valAsNumber);
+                    }}
+                  />
+                </Group>
               </div>
               <div>{timelineBar}</div>
             </Fragment>
