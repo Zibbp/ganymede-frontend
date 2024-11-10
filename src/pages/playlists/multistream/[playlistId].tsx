@@ -59,7 +59,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
       await useApi(
         {
           method: "PUT",
-          url: `/api/v1/playlist/${playlistId}/delay`,
+          url: `/api/v1/playlist/${playlistId}/multistream/delay`,
           withCredentials: true,
           data: {
             vod_id: vodId,
