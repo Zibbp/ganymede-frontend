@@ -112,7 +112,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     }> = {};
     for (let i = 0; i < data.edges.vods.length; i++) {
       const vod = data.edges.vods[i];
-      const vodStartDateMs = +new Date(vod.streamed_at)
+      const vodStartDateMs = +new Date(getVodStartDate(vod))
       if (_startDateMs == null || vodStartDateMs < _startDateMs) {
         _startDateMs = vodStartDateMs;
       }
@@ -275,7 +275,7 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
     }
     const playbackOffset = (vodPlaybackOffsets[playingVod.id] || 0) / 1000;
     const currentGlobalTime = (playing ? (Date.now() - playStartAtDate) : 0) + globalTime
-    const vodTime = (currentGlobalTime - (+new Date(playingVod?.streamed_at))) / 1000 + playbackOffset;
+    const vodTime = (currentGlobalTime - (+new Date(getVodStartDate(playingVod)))) / 1000 + playbackOffset;
     return (
       <ResizableTile
         className={classes.playerTile}
@@ -437,7 +437,19 @@ type Vod = {
   video_path: string
   duration: number
   streamed_at: string
+  created_at: string
+  type: 'live' | 'archive'
   title: string
+}
+
+function getVodStartDate(vod: Vod): string {
+  if (!vod) {
+    return '';
+  }
+  if (vod.type === 'live') {
+    return vod.created_at;
+  }
+  return vod.streamed_at;
 }
 
 function getVodAtTime(vods: Vod[], vodPlaybackOffsets: Record<string, number>, time: number): Vod | null {
@@ -445,7 +457,7 @@ function getVodAtTime(vods: Vod[], vodPlaybackOffsets: Record<string, number>, t
     const vod = vods[i];
     const playbackOffset = (vodPlaybackOffsets[vod.id] || 0) / 1000
     const offsettedTime = time + playbackOffset;
-    const vodStartDateMs = +new Date(vod.streamed_at)
+    const vodStartDateMs = +new Date(getVodStartDate(vod))
     const vodEndDateMs = vodStartDateMs + vod.duration * 1000;
     if (vodStartDateMs <= offsettedTime && offsettedTime <= vodEndDateMs) {
       return vod;

@@ -33,6 +33,8 @@ type Vod = {
   id: string
   duration: number
   streamed_at: string
+  created_at: string
+  type: 'live' | 'archive'
 }
 
 export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateMs, endDateMs, playStartAtDate, seek, pause, play, playing, playingVodForStreamer, streamers, setVodOffset, onStreamerDragStart, gridWidth, gridHeight, setGridWidth, setGridHeight }: MultistreamTimelineProps) => {
@@ -159,7 +161,7 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
 
           const timelineBar = <div className={classes.timelineBar}>
             {streamer.vods.map(vod => <div key={vod.id + "-vod-timeline-online"} className={classes.timelineBarActive} style={{
-              '--bar-start': `${100 * (+new Date(vod.streamed_at) - startDateMs!) / timelineDurationMs}%`,
+              '--bar-start': `${100 * (+new Date(getVodStartDate(vod)) - startDateMs!) / timelineDurationMs}%`,
               '--bar-length': `${100 * 1000 * vod.duration / timelineDurationMs}%`,
             } as React.CSSProperties}></div>)}
           </div>
@@ -212,4 +214,14 @@ export const MultistreamTimeline = ({ vodPlaybackOffsets, globalTime, startDateM
       </div>
     }
   </Stack>
+}
+
+function getVodStartDate(vod: Vod): string {
+  if (!vod) {
+    return '';
+  }
+  if (vod.type === 'live') {
+    return vod.created_at;
+  }
+  return vod.streamed_at;
 }
