@@ -131,6 +131,29 @@ const PlaylistMultistream = (props: { playlistId: string }) => {
 
       _streamers[vod.edges.channel.id].vods.push(vod)
     }
+
+    // COmpute default view
+    const streamersCount = Object.keys(_streamers).length;
+    let rows = 1;
+    if (streamersCount > 3) {
+      rows = 2;
+    }
+    let columns = Math.ceil(streamersCount / rows);
+    setGridWidth(columns);
+    setGridHeight(rows);
+    let i = 0;
+    let defaultViewState: Record<string, { tileX: number; tileY: number; tileWidth: number; tileHeight: number } | null> = {}
+    for (let streamerId in _streamers) {
+      defaultViewState[streamerId] = {
+        tileX: i % columns,
+        tileY: Math.floor(i / columns),
+        tileWidth: 1,
+        tileHeight: 1,
+      }
+      i++;
+    }
+    setStreamerViewState(defaultViewState);
+
     setStartDateMs(_startDateMs)
     setEndDateMs(_endDateMs)
     setStreamers(_streamers)
