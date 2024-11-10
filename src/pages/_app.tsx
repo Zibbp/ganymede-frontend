@@ -7,6 +7,7 @@ import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
 import {
   Container,
+  Drawer,
   MantineProvider,
   createTheme,
   em,
@@ -73,6 +74,18 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 : rem(size),
           },
         }),
+      }),
+      Drawer: Drawer.extend({
+        vars: (_, { size }) => {
+          if (size === 'auto') {
+            return {
+              root: {
+                '--drawer-size': 'auto'
+              }
+            }
+          }
+          return { root: {} }
+        }
       }),
     },
     colors: {

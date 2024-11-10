@@ -1,7 +1,11 @@
 .mediaPlayer {
-    height: 100%;
+  height: 100%;
 
   video {
     height: 100%;
   }
+}
+
+.ganymedePoster {
+  object-fit: contain;
 }
